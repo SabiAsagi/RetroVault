@@ -107,6 +107,8 @@ model Platform {
   manufacturer    String
   generation      Int?
   releaseYear     Int
+  type            String  @default("HOME") // HOME, HANDHELD, HYBRID, ARCADE, PC
+  variants        String? // JSON array of variant names e.g. '["PS4 Slim", "PS4 Pro"]'
   imageUrl        String?
   description     String?
   innovationPoint String?

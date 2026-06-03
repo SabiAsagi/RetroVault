@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { games as sampleGames, platforms as samplePlatforms } from '../src/data.js';
+import { games as sampleGames, platforms as samplePlatforms } from '../src/data-extended.js';
 
 const prisma = new PrismaClient();
 
@@ -16,8 +16,10 @@ async function main() {
       create: {
         name: p.name,
         manufacturer: p.manufacturer || 'Unknown',
-        generation: parseInt(p.generation?.charAt(0) || '0') || null,
+        generation: p.generation || null,
         releaseYear: p.releaseYear || 2000,
+        type: p.type || 'HOME',
+        variants: p.variants || null,
         imageUrl: p.imageUrl,
         description: p.description,
         innovationPoint: p.innovationPoint,
