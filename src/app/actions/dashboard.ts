@@ -29,7 +29,11 @@ export async function getDashboardData() {
       _count: { select: { collections: true } },
       collections: {
         take: 3,
-        include: { game: true }
+        include: { 
+          game: {
+            include: { platform: true }
+          }
+        }
       }
     }
   });
@@ -44,7 +48,11 @@ export async function getDashboardData() {
         title: `${user.nickname || user.name || `User${idx + 1}`}님의 베스트 컬렉션`,
         likes: user._count.collections * 15 + Math.floor(Math.random() * 50),
         views: user._count.collections * 45 + Math.floor(Math.random() * 100),
-        games: user.collections.map(c => c.game as any)
+        games: user.collections?.map(c => ({
+          ...c.game,
+          imageUrl: c.game.coverImageUrl || '',
+          platform: (c.game as any).platform?.name || 'Unknown'
+        }) as any) || []
       };
     });
 

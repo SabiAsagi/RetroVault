@@ -24,10 +24,10 @@ interface DashboardProps {
 export default function Dashboard({ games, collection, historyGame, popularCollections = [], isOwned, onAddToCollection, onSelectGame, onTabChange }: DashboardProps) {
   
   // Get recent 6 games from the complete game list to mock "Recently Added" across the platform
-  const recentlyAddedGames = [...games].sort((a, b) => b.releaseYear - a.releaseYear).slice(0, 6);
+  const recentlyAddedGames = [...(games || [])].sort((a, b) => b.releaseYear - a.releaseYear).slice(0, 6);
   
   // Get legendary/rare games for "Recommended Archives"
-  const recommendedGames = games.filter(g => g.rarity === 'Legendary' || g.rarity === 'Rare').slice(0, 4);
+  const recommendedGames = (games || []).filter(g => g.rarity === 'Legendary' || g.rarity === 'Rare').slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-8 page-enter">
@@ -96,7 +96,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {popularCollections.map(col => {
-            const colGames = col.games.slice(0, 3); // Show up to 3 games
+            const colGames = (col.games || []).slice(0, 3); // Show up to 3 games
             
             return (
               <div key={col.id} className="glass-panel border border-vault-border rounded-xl p-4 hover:border-vault-border-light transition-all cursor-pointer group">
