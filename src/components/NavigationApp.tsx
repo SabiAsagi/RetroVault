@@ -1,0 +1,220 @@
+"use client";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Home, Archive, Clock, BookOpen, BarChart3,
+  Trophy, User, Settings, Search,
+  Database, X, Menu, LogIn, ChevronDown,
+} from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
+import { useSession, signOut } from 'next-auth/react';
+
+interface NavItem {
+  id: string;
+  path: string;
+  label: string;
+  icon: React.ReactNode;
+  color: string;
+  group?: 'main' | 'user' | 'admin';
+}
+
+const navItems: NavItem[] = [
+  { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: '#4AEDC4', group: 'main' },
+  { id: 'archive', path: '/games', label: '게임 아카이브', icon: <Archive size={16} />, color: '#4EA8FF', group: 'main' },
+  { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
+  { id: 'vault', path: '/collection', label: '내 컬렉션', icon: <BookOpen size={16} />, color: '#FFB547', group: 'user' },
+  { id: 'stats', path: '/stats', label: '컬렉션 분석', icon: <BarChart3 size={16} />, color: '#FF6B6B', group: 'user' },
+  { id: 'achievements', path: '/achievements', label: '업적', icon: <Trophy size={16} />, color: '#FFB547', group: 'user' },
+  { id: 'profile', path: '/profile/me', label: '프로필', icon: <User size={16} />, color: '#4EA8FF', group: 'user' },
+  { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
+];
+
+const bottomTabIds = ['dashboard', 'archive', 'vault', 'achievements', 'profile'];
+
+export default function NavigationApp() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const user = session?.user;
+  const isAuthenticated = !!user;
+
+  const getActiveItemId = () => {
+    const item = navItems.find(n => n.path !== '/' && pathname.startsWith(n.path));
+    if (item) return item.id;
+    if (pathname === '/') return 'dashboard';
+    return '';
+  };
+
+  const activeTabId = getActiveItemId();
+  const activeItem = navItems.find(n => n.id === activeTabId);
+
+  return (
+    <>
+      <header className="sticky top-0 z-50 glass-panel border-b border-vault-border bg-vault-bg/80 backdrop-blur-md">
+        <div className="flex items-center h-14 px-4 gap-3 max-w-screen-2xl mx-auto">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-vault-surface border border-vault-border text-text-secondary hover:text-mint hover:border-mint/40 transition-all shrink-0"
+          >
+            <Menu size={17} />
+          </button>
+
+          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow-md neon-mint">
+              <span className="font-pixel text-[8px] text-vault-bg font-bold">RV</span>
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="font-pixel text-[9px] text-text-primary group-hover:text-mint transition-colors leading-none">
+                RetroVault
+              </h1>
+              <p className="text-[8px] text-text-muted leading-none mt-0.5 tracking-wider">DIGITAL MUSEUM</p>
+            </div>
+          </Link>
+
+          <span className="sm:hidden text-sm font-semibold text-text-secondary truncate flex-1">
+            {activeItem?.label}
+          </span>
+
+          <div className="relative flex-1 max-w-lg hidden sm:block">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
+            <input
+              type="text"
+              placeholder="게임 검색은 /games 에서 지원..."
+              disabled
+              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-8 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none transition-all cursor-not-allowed opacity-50"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto shrink-0">
+            <ThemeToggle />
+            {!isAuthenticated ? (
+              <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mint text-vault-bg text-xs font-bold hover:bg-mint-dim transition-colors">
+                <LogIn size={13} />
+                <span className="hidden sm:inline">로그인</span>
+              </Link>
+            ) : (
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-md bg-mint flex items-center justify-center text-[10px] text-vault-bg font-bold">
+                    {user?.name?.[0] || 'U'}
+                  </div>
+                  <span className="hidden sm:block text-xs font-bold text-white max-w-[80px] truncate">{user?.name}</span>
+                  <ChevronDown size={14} className="text-text-muted" />
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
+                    <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
+                      <p className="text-sm font-bold text-white truncate">{user?.name}</p>
+                      <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
+                    </div>
+                    <Link href={`/profile/${user.id}`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
+                      <User size={14} /> 내 프로필
+                    </Link>
+                    <div className="h-px bg-vault-border/50 my-1" />
+                    <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2">
+                      <LogIn size={14} className="rotate-180" /> 로그아웃
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <nav className="hidden lg:flex items-center gap-0 px-4 max-w-screen-2xl mx-auto border-t border-vault-border/40 overflow-x-auto">
+          {navItems.map(item => {
+            const isActive = activeTabId === item.id;
+            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
+            return (
+              <Link
+                href={item.path}
+                key={item.id}
+                className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-medium whitespace-nowrap transition-all cursor-pointer group ${
+                  isActive ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                <span style={isActive ? { color: item.color } : {}} className="transition-colors">
+                  {item.icon}
+                </span>
+                {item.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-t" style={{ background: `linear-gradient(90deg, ${item.color}, transparent)` }} />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </header>
+
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <aside className={`fixed top-0 left-0 z-[70] h-full w-72 glass-panel border-r border-vault-border shadow-2xl lg:hidden transition-transform duration-300 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center justify-between px-5 h-14 border-b border-vault-border">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow">
+              <span className="font-pixel text-[7px] text-vault-bg font-bold">RV</span>
+            </div>
+            <div>
+              <p className="font-pixel text-[8px] text-text-primary">RetroVault</p>
+            </div>
+          </div>
+          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all">
+            <X size={17} />
+          </button>
+        </div>
+
+        <nav className="py-3 px-3 space-y-0.5 overflow-y-auto">
+          {navItems.map(item => {
+            const isActive = activeTabId === item.id;
+            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
+            return (
+              <Link
+                href={item.path}
+                key={item.id}
+                onClick={() => setSidebarOpen(false)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  isActive ? 'bg-vault-surface-light text-text-primary' : 'text-text-secondary hover:bg-vault-surface-light hover:text-text-primary'
+                }`}
+              >
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={isActive ? { backgroundColor: `${item.color}18`, color: item.color, border: `1px solid ${item.color}33` } : { backgroundColor: 'var(--color-vault-surface-light)', color: 'var(--color-text-muted)' }}>
+                  {item.icon}
+                </span>
+                <span className="flex-1">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+
+      <nav className="fixed bottom-0 left-0 right-0 z-50 sm:hidden glass-panel border-t border-vault-border safe-area-inset-bottom">
+        <div className="flex items-stretch h-14">
+          {bottomTabIds.map(tabId => {
+            const item = navItems.find(n => n.id === tabId)!;
+            const isActive = activeTabId === tabId;
+            return (
+              <Link href={item.path} key={tabId} className="flex-1 flex flex-col items-center justify-center gap-0.5 cursor-pointer relative">
+                {isActive && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-b" style={{ background: item.color }} />}
+                <span style={isActive ? { color: item.color } : { color: 'var(--color-text-muted)' }} className="scale-125 inline-flex">{item.icon}</span>
+                <span className="text-[9px] font-medium" style={isActive ? { color: item.color } : { color: 'var(--color-text-muted)' }}>
+                  {item.label.replace('게임 아카이브', '아카이브').replace('레트로 타임라인', '타임라인')}
+                </span>
+              </Link>
+            );
+          })}
+          <button onClick={() => setSidebarOpen(true)} className="flex-1 flex flex-col items-center justify-center gap-0.5 cursor-pointer text-text-muted">
+            <Menu size={19} />
+            <span className="text-[9px] font-medium">더보기</span>
+          </button>
+        </div>
+      </nav>
+    </>
+  );
+}

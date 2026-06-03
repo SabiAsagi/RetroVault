@@ -1,0 +1,443 @@
+@import "tailwindcss";
+
+@theme {
+  /* Core colors */
+  --color-vault-bg: var(--color-vault-bg);
+  --color-vault-surface: var(--color-vault-surface);
+  --color-vault-surface-light: var(--color-vault-surface-light);
+  --color-vault-border: var(--color-vault-border);
+  --color-vault-border-light: var(--color-vault-border-light);
+  
+  /* Accent colors */
+  --color-mint: var(--color-mint);
+  --color-mint-dim: var(--color-mint-dim);
+  --color-amber: var(--color-amber);
+  --color-amber-dim: var(--color-amber-dim);
+  --color-coral: var(--color-coral);
+  --color-coral-dim: var(--color-coral-dim);
+  --color-neon-blue: var(--color-neon-blue);
+  --color-neon-purple: var(--color-neon-purple);
+  
+  /* Text colors */
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  
+  /* Rarity colors */
+  --color-rarity-common: var(--color-rarity-common);
+  --color-rarity-uncommon: var(--color-rarity-uncommon);
+  --color-rarity-rare: var(--color-rarity-rare);
+  --color-rarity-legendary: var(--color-rarity-legendary);
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace;
+}
+
+/* ─── Light Mode ──────────────────────────────────────────────────────────── */
+:root {
+  --color-vault-bg: #F8F9FA;
+  --color-vault-surface: #FFFFFF;
+  --color-vault-surface-light: #F1F3F5;
+  --color-vault-border: #DEE2E6;
+  --color-vault-border-light: #CED4DA;
+
+  --color-mint: #20C997;
+  --color-mint-dim: #0CA678;
+  --color-amber: #F59F00;
+  --color-amber-dim: #E67700;
+  --color-coral: #FA5252;
+  --color-coral-dim: #E03131;
+  --color-neon-blue: #339AF0;
+  --color-neon-purple: #845EF7;
+
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-muted: #868E96;
+
+  --color-rarity-common: #868E96;
+  --color-rarity-uncommon: #20C997;
+  --color-rarity-rare: #F59F00;
+  --color-rarity-legendary: #FA5252;
+
+  --crt-opacity: 0.015;
+  --crt-scanline-gap: 3px;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: 12px;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────────────────────── */
+.dark {
+  --color-vault-bg: #0A1220;
+  --color-vault-surface: #111D2E;
+  --color-vault-surface-light: #192842;
+  --color-vault-border: #243550;
+  --color-vault-border-light: #314869;
+
+  --color-mint: #4AEDC4;
+  --color-mint-dim: #2A9B7E;
+  --color-amber: #FFB547;
+  --color-amber-dim: #C88A2E;
+  --color-coral: #FF6B6B;
+  --color-coral-dim: #C44E4E;
+  --color-neon-blue: #4EA8FF;
+  --color-neon-purple: #A78BFA;
+
+  --color-text-primary: #E8EDF2;
+  --color-text-secondary: #8899AA;
+  --color-text-muted: #5A6E82;
+
+  --color-rarity-common: #8899AA;
+  --color-rarity-uncommon: #4AEDC4;
+  --color-rarity-rare: #FFB547;
+  --color-rarity-legendary: #FF6B6B;
+
+  --crt-opacity: 0.03;
+  --glass-bg: rgba(17, 29, 46, 0.75);
+  --glass-border: rgba(74, 237, 196, 0.12);
+  --glass-blur: 16px;
+}
+
+/* ─── Retro Mode ──────────────────────────────────────────────────────────── */
+.retro {
+  --color-vault-bg: #0D0D00;
+  --color-vault-surface: #141400;
+  --color-vault-surface-light: #1E1E00;
+  --color-vault-border: #333300;
+  --color-vault-border-light: #4D4D00;
+
+  --color-mint: #39FF14;
+  --color-mint-dim: #2ACC0F;
+  --color-amber: #FFB300;
+  --color-amber-dim: #CC8F00;
+  --color-coral: #FF3D00;
+  --color-coral-dim: #CC3100;
+  --color-neon-blue: #00FFFF;
+  --color-neon-purple: #FF00FF;
+
+  --color-text-primary: #FFFF99;
+  --color-text-secondary: #CCCC66;
+  --color-text-muted: #888844;
+
+  --color-rarity-common: #888844;
+  --color-rarity-uncommon: #39FF14;
+  --color-rarity-rare: #FFB300;
+  --color-rarity-legendary: #FF3D00;
+
+  --crt-opacity: 0.08;
+  --crt-scanline-gap: 2px;
+  --glass-bg: rgba(13, 13, 0, 0.85);
+  --glass-border: rgba(57, 255, 20, 0.2);
+  --glass-blur: 4px;
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-vault-border) transparent;
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-vault-bg);
+  color: var(--color-text-primary);
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ─── CRT Noise Overlay ───────────────────────────────────────────────────── */
+/* 은은한 노이즈를 body 전체에 오버레이 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: var(--crt-opacity, 0.02);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* 스캔라인 오버레이 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent var(--crt-scanline-gap, 3px),
+    rgba(0, 0, 0, 0.03) var(--crt-scanline-gap, 3px),
+    rgba(0, 0, 0, 0.03) calc(var(--crt-scanline-gap, 3px) + 1px)
+  );
+}
+
+/* 레트로 모드: 스캔라인 강화 + 포스포 그린 틴트 */
+.retro body::after,
+.retro::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 3px
+  );
+}
+
+/* ─── Glass Panel ─────────────────────────────────────────────────────────── */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Pixel Font ──────────────────────────────────────────────────────────── */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+
+/* 레트로 모드: 모든 헤딩에 픽셀 폰트 */
+.retro h1, .retro h2 {
+  font-family: var(--font-pixel);
+  letter-spacing: -0.02em;
+}
+
+/* ─── CRT Element Effect ──────────────────────────────────────────────────── */
+.crt-lines {
+  position: relative;
+}
+.crt-lines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ─── Neon Glow ───────────────────────────────────────────────────────────── */
+.neon-mint {
+  box-shadow: 0 0 8px rgba(74, 237, 196, 0.4), 0 0 20px rgba(74, 237, 196, 0.15);
+}
+.neon-blue {
+  box-shadow: 0 0 8px rgba(78, 168, 255, 0.4), 0 0 20px rgba(78, 168, 255, 0.15);
+}
+.neon-amber {
+  box-shadow: 0 0 8px rgba(255, 181, 71, 0.4), 0 0 20px rgba(255, 181, 71, 0.15);
+}
+.neon-coral {
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.4), 0 0 20px rgba(255, 107, 107, 0.15);
+}
+.neon-purple {
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.4), 0 0 20px rgba(167, 139, 250, 0.15);
+}
+
+/* 레트로 모드 더 강한 글로우 */
+.retro .neon-mint { box-shadow: 0 0 4px #39FF14, 0 0 15px #39FF1466, 0 0 30px #39FF1422; }
+
+/* ─── Rarity Badges ───────────────────────────────────────────────────────── */
+.rarity-common {
+  background-color: rgba(136, 153, 170, 0.15);
+  color: var(--color-rarity-common);
+  border: 1px solid rgba(136, 153, 170, 0.3);
+}
+.rarity-uncommon {
+  background-color: rgba(74, 237, 196, 0.12);
+  color: var(--color-rarity-uncommon);
+  border: 1px solid rgba(74, 237, 196, 0.3);
+}
+.rarity-rare {
+  background-color: rgba(255, 181, 71, 0.12);
+  color: var(--color-rarity-rare);
+  border: 1px solid rgba(255, 181, 71, 0.3);
+}
+.rarity-legendary {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(167, 139, 250, 0.15));
+  color: var(--color-rarity-legendary);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  animation: legendary-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes legendary-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 107, 107, 0.3); }
+  50% { box-shadow: 0 0 14px rgba(255, 107, 107, 0.55), 0 0 30px rgba(167, 139, 250, 0.2); }
+}
+
+/* ─── Shelf Wood Texture ──────────────────────────────────────────────────── */
+.shelf-wood {
+  background: linear-gradient(
+    180deg,
+    #3D2B1F 0%,
+    #5C3D2E 40%,
+    #6B4830 60%,
+    #4A3426 100%
+  );
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.4),
+    inset 0 -2px 4px rgba(0,0,0,0.3),
+    inset 0 2px 2px rgba(255,255,255,0.05);
+}
+
+.game-spine {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+.game-spine:hover {
+  transform: translateY(-8px) rotateY(-5deg) scale(1.02);
+  z-index: 10;
+}
+
+/* ─── Box Art Placeholder ─────────────────────────────────────────────────── */
+.box-art-placeholder {
+  background: linear-gradient(135deg, var(--color-vault-surface-light) 0%, var(--color-vault-surface) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.box-art-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--color-vault-border-light);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+/* ─── Modal Animations ────────────────────────────────────────────────────── */
+.modal-backdrop { animation: fadeIn 0.2s ease-out; }
+.modal-content { animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Game Card ───────────────────────────────────────────────────────────── */
+.game-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.game-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* ─── Tab Active Indicator ────────────────────────────────────────────────── */
+.tab-active { position: relative; }
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-mint), var(--color-neon-blue));
+  border-radius: 2px 2px 0 0;
+}
+
+/* ─── Star Rating ─────────────────────────────────────────────────────────── */
+.star-btn {
+  transition: color 0.12s ease, transform 0.12s ease;
+}
+.star-btn:hover { transform: scale(1.2); }
+
+/* ─── Timeline Line ───────────────────────────────────────────────────────── */
+.timeline-line {
+  background: linear-gradient(180deg,
+    var(--color-mint),
+    var(--color-neon-blue),
+    var(--color-neon-purple),
+    var(--color-amber)
+  );
+}
+
+/* ─── Safe Area / Mobile ──────────────────────────────────────────────────── */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Status Badges ───────────────────────────────────────────────────────── */
+.status-미개봉       { background-color: rgba(167,139,250,0.15); color: #A78BFA; }
+.status-패키지-보유  { background-color: rgba(74,237,196,0.15);  color: var(--color-mint); }
+.status-단품-보유    { background-color: rgba(78,168,255,0.15);  color: var(--color-neon-blue); }
+.status-엔딩-완료    { background-color: rgba(255,181,71,0.15);  color: var(--color-amber); }
+.status-플레이-중    { background-color: rgba(74,237,196,0.15);  color: var(--color-mint); }
+.status-위시리스트   { background-color: rgba(255,107,107,0.15); color: var(--color-coral); }
+
+/* ─── Loading Skeleton ────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-vault-surface) 25%,
+    var(--color-vault-surface-light) 50%,
+    var(--color-vault-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-vault-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-vault-border-light);
+}
+
+/* ─── Hero Gradient ───────────────────────────────────────────────────────── */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(74, 237, 196, 0.08) 0%,
+    rgba(78, 168, 255, 0.05) 50%,
+    rgba(167, 139, 250, 0.08) 100%
+  );
+}
+
+/* ─── Retro Flicker ───────────────────────────────────────────────────────── */
+@keyframes retro-flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96% { opacity: 0.85; }
+  98% { opacity: 0.92; }
+}
+.retro .font-pixel {
+  animation: retro-flicker 8s infinite;
+}
+
+/* ─── Page Transition ─────────────────────────────────────────────────────── */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: page-in 0.25s ease-out; }

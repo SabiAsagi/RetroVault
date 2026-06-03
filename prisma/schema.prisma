@@ -1,0 +1,235 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  nickname      String?
+  bio           String?
+  role          String    @default("USER") // USER, MODERATOR, ADMIN
+  visibility    String    @default("PUBLIC") // PUBLIC, FRIENDS, PRIVATE
+  theme         String    @default("dark")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  collections   CollectionItem[]
+  achievements  UserAchievement[]
+  reports       Report[]          @relation("UserReports")
+  adminLogs     AdminLog[]        @relation("AdminActionLogs")
+}
+
+model Account {
+  id                 String  @id @default(uuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Game {
+  id                String    @id @default(uuid())
+  title             String
+  releaseDate       String?
+  releaseYear       Int
+  genre             String
+  country           String?
+  coverImageUrl     String?
+  description       String?
+  historicalContext String?
+  popularity        Int       @default(0)
+  rating            Float?    @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  platformId String
+  platform   Platform @relation(fields: [platformId], references: [id])
+
+  developerId String?
+  developer   Company? @relation("DevelopedGames", fields: [developerId], references: [id])
+
+  publisherId String?
+  publisher   Company? @relation("PublishedGames", fields: [publisherId], references: [id])
+
+  screenshots Screenshot[]
+  collectedBy CollectionItem[]
+  timelineEvents TimelineEvent[]
+
+  @@unique([title, platformId, releaseYear])
+}
+
+model Platform {
+  id              String  @id @default(uuid())
+  name            String  @unique
+  manufacturer    String
+  generation      Int?
+  releaseYear     Int
+  imageUrl        String?
+  description     String?
+  innovationPoint String?
+
+  games Game[]
+  timelineEvents TimelineEvent[]
+}
+
+model Company {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  type        String // DEVELOPER, PUBLISHER, BOTH
+  country     String?
+  logoUrl     String?
+  description String?
+
+  developedGames Game[] @relation("DevelopedGames")
+  publishedGames Game[] @relation("PublishedGames")
+}
+
+model Screenshot {
+  id       String  @id @default(uuid())
+  gameId   String
+  imageUrl String
+  caption  String?
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}
+
+model CollectionItem {
+  id              String   @id @default(uuid())
+  userId          String
+  gameId          String
+  ownershipStatus String // OWNED, SOLD, WISHLIST
+  purchaseType    String? // PHYSICAL, DIGITAL, SUBSCRIPTION
+  condition       String? // SEALED, OPENED, COMPLETED, LOOSE
+  region          String? // KR, JP, US, EU
+  purchaseDate    String?
+  purchasePrice   Int?
+  memo            String?
+  playStartDate   String?
+  clearDate       String?
+  playTime        Int? // hours
+  rating          Int?     @default(0)
+  visibility      String?  @default("PUBLIC")
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+}
+
+model Achievement {
+  id             String @id @default(uuid())
+  name           String @unique
+  description    String
+  badgeImageUrl  String
+  conditionType  String // COUNT_GAMES, SPECIFIC_ERA, WIKI_CONTRIB
+  conditionValue Int
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String    @id @default(uuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime?
+  progress      Int       @default(0)
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
+
+model Report {
+  id         String    @id @default(uuid())
+  reporterId String
+  targetType String // GAME, REVIEW, COLLECTION_ITEM, USER
+  targetId   String
+  reason     String
+  status     String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminMemo  String?
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  reporter User @relation("UserReports", fields: [reporterId], references: [id])
+}
+
+model AdminLog {
+  id         String   @id @default(uuid())
+  adminId    String
+  action     String // CREATE, UPDATE, DELETE, OVERRIDE
+  targetType String // GAME, USER, COMPANY, REPORT
+  targetId   String
+  beforeJson String?
+  afterJson  String?
+  createdAt  DateTime @default(now())
+
+  admin User @relation("AdminActionLogs", fields: [adminId], references: [id])
+}
+
+model TimelineEvent {
+  id               String   @id @default(uuid())
+  year             Int
+  title            String
+  type             String   // console, game, event
+  description      String
+  imageUrl         String?
+  innovation       String?
+  era              String
+  country          String?
+  isVisible        Boolean  @default(true)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  relatedGameId    String?
+  relatedPlatformId String?
+
+  game     Game?     @relation(fields: [relatedGameId], references: [id])
+  platform Platform? @relation(fields: [relatedPlatformId], references: [id])
+}
