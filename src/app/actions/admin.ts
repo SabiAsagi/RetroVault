@@ -91,7 +91,7 @@ export async function updateGame(id: string, data: any) {
       company = await prisma.company.create({
         data: {
           name: data.developer,
-          foundedYear: data.releaseYear || 1990,
+          type: "DEVELOPER",
           country: data.country || "Unknown",
         }
       });
