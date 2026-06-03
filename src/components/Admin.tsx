@@ -42,8 +42,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   ];
 
   function executeAction() {
-    if (confirmAction === 'reset') onResetToSample();
-    else if (confirmAction === 'clear') onClearAll();
+    if (confirmAction === 'reset') onResetToSample?.();
+    else if (confirmAction === 'clear') onClearAll?.();
     setConfirmAction(null);
   }
 
