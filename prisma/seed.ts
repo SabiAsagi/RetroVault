@@ -9,7 +9,7 @@ async function main() {
 
   // 1. Create Platforms
   const platformRecords = [];
-  for (const p of samplePlatforms) {
+  for (const p of samplePlatforms as any[]) {
     const created = await prisma.platform.upsert({
       where: { name: p.name },
       update: {},
@@ -20,9 +20,9 @@ async function main() {
         releaseYear: p.releaseYear || 2000,
         type: p.type || 'HOME',
         variants: p.variants || null,
-        imageUrl: p.imageUrl,
-        description: p.description,
-        innovationPoint: p.innovationPoint,
+        imageUrl: (p as any).imageUrl,
+        description: (p as any).description,
+        innovationPoint: (p as any).innovationPoint,
       }
     });
     platformRecords.push(created);
@@ -31,7 +31,7 @@ async function main() {
 
   // 2. Create Companies and Games
   const gameRecords = [];
-  for (const gameData of sampleGames) {
+  for (const gameData of sampleGames as any[]) {
     const platform = platformRecords.find(p => p.name === gameData.platform);
     if (!platform) continue;
 
