@@ -33,6 +33,32 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const [editingTimeline, setEditingTimeline] = useState<Partial<TimelineEvent> | null>(null);
   const [isTimelineModalOpen, setIsTimelineModalOpen] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        body: file,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const blob = await response.json();
+      setter(blob.url);
+    } catch (error) {
+      console.error(error);
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const mockCompanies = [
     { id: 'C01', name: 'Nintendo', type: '개발사/퍼블리셔', gamesCount: 15, hq: '일본' },
@@ -624,8 +650,27 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">이미지 URL</label>
-                <input type="text" value={editingGame?.imageUrl || ''} onChange={e => setEditingGame({...editingGame, imageUrl: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" />
+                <label className="block text-xs font-bold text-text-muted mb-1">커버 이미지 (업로드 또는 URL)</label>
+                <div className="flex gap-2 items-center">
+                  <input type="text" value={editingGame?.imageUrl || ''} onChange={e => setEditingGame({...editingGame, imageUrl: e.target.value})} className="flex-1 bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" placeholder="https://..." />
+                  <div className="relative overflow-hidden inline-block bg-vault-surface-light border border-vault-border rounded hover:bg-vault-border-light cursor-pointer">
+                    <button type="button" className="px-4 py-2 text-sm text-white font-bold whitespace-nowrap min-w-[100px]" disabled={uploadingImage}>
+                      {uploadingImage ? '업로드 중...' : '파일 선택'}
+                    </button>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, (url) => setEditingGame({...editingGame, imageUrl: url}))}
+                      className="absolute left-0 top-0 opacity-0 w-full h-full cursor-pointer"
+                      disabled={uploadingImage}
+                    />
+                  </div>
+                </div>
+                {editingGame?.imageUrl && (
+                  <div className="mt-2 w-32 aspect-[3/4] rounded-md overflow-hidden border border-vault-border">
+                    <img src={editingGame.imageUrl} alt="preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
