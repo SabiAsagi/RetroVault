@@ -8,9 +8,11 @@ import { useRouter } from 'next/navigation';
 interface Props {
   initialGames: Game[];
   initialCollection: CollectionItem[];
+  historyGame?: Game | null;
+  popularCollections?: any[];
 }
 
-export default function DashboardWrapper({ initialGames, initialCollection }: Props) {
+export default function DashboardWrapper({ initialGames, initialCollection, historyGame, popularCollections }: Props) {
   const [collection, setCollection] = useState<CollectionItem[]>(initialCollection);
   const router = useRouter();
 
@@ -57,6 +59,8 @@ export default function DashboardWrapper({ initialGames, initialCollection }: Pr
     <Dashboard
       games={initialGames}
       collection={collection}
+      historyGame={historyGame}
+      popularCollections={popularCollections}
       isOwned={isOwned}
       onAddToCollection={handleAddToCollection}
       onSelectGame={handleSelectGame}

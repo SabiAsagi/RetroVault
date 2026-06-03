@@ -5,6 +5,15 @@ import GameCard, { BoxArtPlaceholder } from './GameCard';
 interface DashboardProps {
   games: Game[];
   collection: CollectionItem[];
+  historyGame?: Game | null;
+  popularCollections?: {
+    id: string;
+    user: string;
+    title: string;
+    likes: number;
+    views: number;
+    games: Game[];
+  }[];
   isOwned: (gameId: string) => boolean;
   onAddToCollection: (gameId: string) => void;
   onSelectGame: (game: Game) => void;
@@ -12,14 +21,7 @@ interface DashboardProps {
   onEraFilter: (era: Era) => void;
 }
 
-// Mock Data for Popular Collections
-const POPULAR_COLLECTIONS = [
-  { id: '1', user: 'RetroKing99', title: '90년대 JRPG 명작선', likes: 1240, views: 5200, gameIndices: [0, 1, 2] },
-  { id: '2', user: 'PixelHunter', title: '전설의 휴대용 게임', likes: 892, views: 3100, gameIndices: [3, 4, 5] },
-  { id: '3', user: 'ArcadeBoy', title: '세가 16비트의 혼', likes: 645, views: 2800, gameIndices: [6, 7, 8] },
-];
-
-export default function Dashboard({ games, collection, isOwned, onAddToCollection, onSelectGame, onTabChange }: DashboardProps) {
+export default function Dashboard({ games, collection, historyGame, popularCollections = [], isOwned, onAddToCollection, onSelectGame, onTabChange }: DashboardProps) {
   
   // Get recent 6 games from the complete game list to mock "Recently Added" across the platform
   const recentlyAddedGames = [...games].sort((a, b) => b.releaseYear - a.releaseYear).slice(0, 6);
@@ -46,17 +48,31 @@ export default function Dashboard({ games, collection, isOwned, onAddToCollectio
           </div>
           
           <h1 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
-            1998년 오늘,
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
-              포켓몬스터 레드/블루
-            </span>
-            <br />
-            북미 발매
+            {historyGame ? (
+              <>
+                {historyGame.releaseYear}년 오늘,
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
+                  {historyGame.title}
+                </span>
+                <br />
+                {historyGame.country ? `${historyGame.country} 발매` : '발매'}
+              </>
+            ) : (
+              <>
+                아카이브의 시작,
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
+                  레트로 게임의 세계로
+                </span>
+              </>
+            )}
           </h1>
           
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
-            닌텐도 게임보이로 발매된 이 전설적인 타이틀은 전 세계적인 포켓몬 신드롬의 시작을 알렸으며, 휴대용 게임기의 한계를 뛰어넘어 '교환'과 '수집'이라는 새로운 게임 문화를 창조했습니다.
+            {historyGame 
+              ? (historyGame.description || '이 전설적인 타이틀은 게임 역사에 큰 획을 그었습니다. 지금 바로 아카이브에서 확인해보세요.') 
+              : '수많은 명작 게임들이 당신의 컬렉션을 기다리고 있습니다. 첫 게임을 추가해보세요!'}
           </p>
           
           <div className="flex flex-wrap gap-3">
@@ -79,8 +95,8 @@ export default function Dashboard({ games, collection, isOwned, onAddToCollectio
           subtitle="다른 유저들이 구성한 멋진 컬렉션을 구경해보세요."
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {POPULAR_COLLECTIONS.map(col => {
-            const colGames = col.gameIndices.map(idx => games[idx % games.length]).filter(Boolean);
+          {popularCollections.map(col => {
+            const colGames = col.games.slice(0, 3); // Show up to 3 games
             
             return (
               <div key={col.id} className="glass-panel border border-vault-border rounded-xl p-4 hover:border-vault-border-light transition-all cursor-pointer group">
@@ -88,7 +104,7 @@ export default function Dashboard({ games, collection, isOwned, onAddToCollectio
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-vault-border to-vault-surface-light flex items-center justify-center border border-vault-border text-xs font-bold text-text-muted">
-                      {col.user.charAt(0)}
+                      {col.user.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-text-primary group-hover:text-mint transition-colors">{col.title}</h4>
@@ -101,9 +117,9 @@ export default function Dashboard({ games, collection, isOwned, onAddToCollectio
                 </div>
                 
                 {/* Thumbnails */}
-                <div className="flex gap-2 mb-4">
+                <div className="flex gap-2 mb-4 h-24">
                   {colGames.map((g, i) => (
-                    <div key={g.id + i} className="flex-1 aspect-[3/4] rounded-md overflow-hidden border border-vault-border shadow-sm">
+                    <div key={g.id + i} className="flex-1 rounded-md overflow-hidden border border-vault-border shadow-sm h-full">
                       {g.imageUrl ? (
                         <img src={g.imageUrl} alt={g.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                       ) : (
@@ -111,6 +127,12 @@ export default function Dashboard({ games, collection, isOwned, onAddToCollectio
                           <BoxArtPlaceholder game={g} />
                         </div>
                       )}
+                    </div>
+                  ))}
+                  {/* Fill empty spots if less than 3 games */}
+                  {Array.from({ length: Math.max(0, 3 - colGames.length) }).map((_, i) => (
+                    <div key={`empty-${i}`} className="flex-1 rounded-md overflow-hidden border border-vault-border/30 bg-vault-surface-light h-full flex items-center justify-center">
+                      <span className="text-text-muted text-xs">?</span>
                     </div>
                   ))}
                 </div>
@@ -123,6 +145,11 @@ export default function Dashboard({ games, collection, isOwned, onAddToCollectio
               </div>
             );
           })}
+          {popularCollections.length === 0 && (
+            <div className="col-span-3 text-center py-10 text-text-muted border border-dashed border-vault-border/50 rounded-xl">
+              아직 등록된 컬렉션이 없습니다. 첫 번째 컬렉션의 주인이 되어보세요!
+            </div>
+          )}
         </div>
       </div>
 
