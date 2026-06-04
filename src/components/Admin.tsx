@@ -60,12 +60,41 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     }
   };
 
-  const mockCompanies = [
+  const [companies, setCompanies] = useState([
     { id: 'C01', name: 'Nintendo', type: '개발사/퍼블리셔', gamesCount: 15, hq: '일본' },
     { id: 'C02', name: 'SquareSoft', type: '개발사', gamesCount: 8, hq: '일본' },
     { id: 'C03', name: 'Sega', type: '개발사/퍼블리셔', gamesCount: 6, hq: '일본' },
     { id: 'C04', name: 'Capcom', type: '개발사/퍼블리셔', gamesCount: 9, hq: '일본' },
-  ];
+  ]);
+
+  const [localUsers, setLocalUsers] = useState(users || []);
+  
+  const handleAddCompany = () => {
+    const name = prompt('추가할 회사 이름을 입력하세요:');
+    if (name) {
+      setCompanies([...companies, {
+        id: `C${String(companies.length + 1).padStart(2, '0')}`,
+        name,
+        type: '개발사',
+        gamesCount: 0,
+        hq: '미상'
+      }]);
+      alert('회사가 추가되었습니다.');
+    }
+  };
+
+  const handleUserAction = (userId: string) => {
+    const action = prompt('수행할 작업을 선택하세요:\n1: 관리자 권한 부여\n2: 회원 삭제');
+    if (action === '1') {
+      setLocalUsers(localUsers.map(u => u.id === userId ? { ...u, role: 'ADMIN' } : u));
+      alert('관리자 권한이 부여되었습니다.');
+    } else if (action === '2') {
+      if (confirm('정말로 이 회원을 삭제하시겠습니까?')) {
+        setLocalUsers(localUsers.filter(u => u.id !== userId));
+        alert('회원이 삭제되었습니다.');
+      }
+    }
+  };
 
   function executeAction() {
     if (confirmAction === 'reset') onResetToSample?.();
@@ -121,7 +150,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <div className="p-0">
             <table className="w-full text-left text-sm">
               <tbody>
-                {(users || []).slice(0, 5).map(u => (
+                {(localUsers || []).slice(0, 5).map(u => (
                   <tr key={u.id} className="border-b border-vault-border/50 last:border-0 hover:bg-vault-surface-light">
                     <td className="px-5 py-3 text-text-primary">{u.name || u.nickname || '익명'}</td>
                     <td className="px-5 py-3 text-text-muted text-xs">{u.email}</td>
@@ -264,7 +293,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             </tr>
           </thead>
           <tbody className="divide-y divide-vault-border/50">
-            {(users || []).map(u => (
+            {(localUsers || []).map(u => (
               <tr key={u.id} className="hover:bg-vault-surface-light">
                 <td className="px-4 py-3 text-white font-medium">{u.name || u.nickname || '익명'}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{u.email}</td>
@@ -280,7 +309,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button className="p-1 text-text-muted hover:text-white"><MoreVertical size={14} /></button>
+                  <button onClick={() => handleUserAction(u.id)} className="p-1 text-text-muted hover:text-white"><MoreVertical size={14} /></button>
                 </td>
               </tr>
             ))}
@@ -375,7 +404,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     <div className="space-y-4 animate-in fade-in">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-white">회사 관리</h3>
-        <button className="bg-neon-blue hover:bg-neon-blue/80 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
+        <button onClick={handleAddCompany} className="bg-neon-blue hover:bg-neon-blue/80 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
           <Plus size={14} /> 회사 추가
         </button>
       </div>
@@ -391,7 +420,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             </tr>
           </thead>
           <tbody className="divide-y divide-vault-border/50">
-            {mockCompanies.map(c => (
+            {companies.map(c => (
               <tr key={c.id} className="hover:bg-vault-surface-light">
                 <td className="px-4 py-3 text-white font-medium">{c.name}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{c.type}</td>

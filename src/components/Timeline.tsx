@@ -157,9 +157,9 @@ export default function Timeline({ games, timelineEvents, onSelectGame }: Timeli
                 onChange={e => handleJumpToYear(e.target.value)}
                 className="bg-transparent text-sm text-text-primary focus:outline-none cursor-pointer w-20 appearance-none"
               >
-                <option value="">이동...</option>
+                <option value="" className="bg-vault-surface text-white">이동...</option>
                 {timelineData.map(d => (
-                  <option key={d.year} value={d.year}>{d.year}년</option>
+                  <option key={d.year} value={d.year} className="bg-vault-surface text-white">{d.year}년</option>
                 ))}
               </select>
             </div>

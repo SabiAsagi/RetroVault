@@ -45,7 +45,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
                 {game.platform}
               </span>
               <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
-                {game.releaseYear}
+                {game.releaseDate ? game.releaseDate : `${game.releaseYear}년`}
               </span>
               {game.country && (
                 <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">

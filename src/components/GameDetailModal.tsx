@@ -87,7 +87,7 @@ export default function GameDetailModal({
             <h2 className="text-2xl font-black text-white leading-tight mb-2">{game.title}</h2>
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="px-2.5 py-1 rounded bg-mint/10 text-mint text-xs font-bold border border-mint/20">{game.platform}</span>
-              <span className="px-2.5 py-1 rounded bg-vault-surface-light border border-vault-border text-text-secondary text-xs">{game.releaseYear}</span>
+              <span className="px-2.5 py-1 rounded bg-vault-surface-light border border-vault-border text-text-secondary text-xs">{game.releaseDate ? game.releaseDate : `${game.releaseYear}년`}</span>
               <span className="px-2.5 py-1 rounded bg-vault-surface-light border border-vault-border text-text-secondary text-xs">{game.genre}</span>
               {game.country && <span className="px-2.5 py-1 rounded bg-vault-surface-light border border-vault-border text-text-secondary text-xs">{countryNames[game.country] || game.country}</span>}
               {game.rating && (

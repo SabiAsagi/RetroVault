@@ -51,8 +51,7 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
   };
 
   const handleSelectGame = (game: Game) => {
-    // Basic interaction for MVP
-    alert(`${game.title} selected! Game details page coming soon in MVP.`);
+    router.push(`/games/${game.id}`);
   };
 
   return (

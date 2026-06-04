@@ -99,7 +99,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
             const colGames = (col.games || []).slice(0, 3); // Show up to 3 games
             
             return (
-              <div key={col.id} className="glass-panel border border-vault-border rounded-xl p-4 hover:border-vault-border-light transition-all cursor-pointer group">
+              <div key={col.id} onClick={() => onTabChange('vault')} className="glass-panel border border-vault-border rounded-xl p-4 hover:border-vault-border-light transition-all cursor-pointer group">
                 {/* User Info */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
