@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo } from 'react';
 import { Game, CollectionItem, OwnershipStatus, VaultViewMode, Visibility } from '../types';
-import { LayoutGrid, BookOpen, List, Package, Check, Eye, EyeOff, Users, Store, MonitorPlay, Zap, GripVertical, Star, Library, Plus, ScanLine, Share2, Search } from 'lucide-react';
+import { LayoutGrid, BookOpen, List, Package, Check, Eye, EyeOff, Users, Store, MonitorPlay, Zap, GripVertical, Star, Library, Plus, Share2, Search, Folder } from 'lucide-react';
 import GameCard, { BoxArtPlaceholder } from './GameCard';
-import BarcodeScannerModal from './BarcodeScannerModal';
+
 import ShareCollectionModal from './ShareCollectionModal';
 import CollectionSearchModal from './CollectionSearchModal';
 import CollectionAddModal from './CollectionAddModal';
@@ -45,10 +45,11 @@ export default function MyVault({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-  const [scannerOpen, setScannerOpen] = useState(false);
+
   const [shareOpen, setShareOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [gameToAdd, setGameToAdd] = useState<Game | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<{item: CollectionItem, game: Game} | null>(null);
 
   // Sort collection by sortIndex if available
   const sortedCollection = useMemo(() => {
@@ -132,12 +133,7 @@ export default function MyVault({
             >
               <Search size={14} /> 추가하기
             </button>
-            <button 
-              onClick={() => setScannerOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-mint/10 border border-mint/20 text-mint text-xs font-bold rounded-lg hover:bg-mint/20 transition-colors hidden sm:flex"
-            >
-              <ScanLine size={14} /> 바코드 스캔
-            </button>
+
             <button 
               onClick={() => setShareOpen(true)}
               className="flex items-center gap-2 px-3 py-1.5 bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-xs font-bold rounded-lg hover:bg-neon-blue/20 transition-colors"
@@ -246,7 +242,7 @@ export default function MyVault({
                           onDragEnter={() => handleDragEnter(originalIndex)}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => e.preventDefault()}
-                          onClick={() => onSelectGame(game)}
+                          onClick={() => setItemToEdit({ item, game })}
                           className={`relative group cursor-pointer transition-all duration-300 transform perspective-1000
                             ${isDragged ? 'opacity-50 scale-95' : 'hover:-translate-y-4 hover:scale-105 hover:z-30'}
                             ${isDragOver ? 'translate-x-4 border-l-2 border-mint pl-2' : ''}
@@ -301,7 +297,7 @@ export default function MyVault({
                           onDragEnter={() => handleDragEnter(originalIndex)}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => e.preventDefault()}
-                          onClick={() => onSelectGame(game)}
+                          onClick={() => setItemToEdit({ item, game })}
                           className={`relative group cursor-pointer shrink-0 transition-all duration-300
                             ${isDragged ? 'opacity-50 scale-95' : 'hover:-translate-y-2 hover:z-30'}
                             ${isDragOver ? 'translate-x-2 border-l border-mint pl-1' : ''}
@@ -370,7 +366,7 @@ export default function MyVault({
                     ${isDragOver ? 'scale-105 border-mint border-2 rounded-xl' : ''}
                   `}
                 >
-                  <GameCard game={game} isOwned={true} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
+                  <GameCard game={game} isOwned={true} onAddToCollection={onAddToCollection} onClick={() => setItemToEdit({ item, game })} />
                 </div>
               );
             })}
@@ -392,7 +388,7 @@ export default function MyVault({
                   onDragEnter={() => handleDragEnter(originalIndex)}
                   onDragEnd={handleDragEnd}
                   onDragOver={(e) => e.preventDefault()}
-                  onClick={() => onSelectGame(game)}
+                  onClick={() => setItemToEdit({ item, game })}
                   className={`flex items-center gap-4 px-4 py-3 bg-vault-bg/80 border border-vault-border rounded-xl cursor-pointer hover:border-mint/50 transition-all group
                     ${isDragged ? 'opacity-50' : ''}
                     ${isDragOver ? 'border-mint border-2 translate-y-1' : ''}
@@ -434,15 +430,7 @@ export default function MyVault({
       </div>
       )}
 
-      <BarcodeScannerModal 
-        isOpen={scannerOpen} 
-        onClose={() => setScannerOpen(false)} 
-        onScanSuccess={(game) => {
-          onAddToCollection(game.id);
-          alert(`'${game.title}'이(가) 컬렉션에 추가되었습니다!`);
-        }} 
-        mockGameData={games[0] || { id: 'G999', title: 'Super Mario 64', platform: 'Nintendo 64' } as Game} 
-      />
+
 
       <ShareCollectionModal 
         isOpen={shareOpen} 
@@ -467,6 +455,18 @@ export default function MyVault({
           onSuccess={() => {
             alert(`'${gameToAdd.title}'이(가) 컬렉션에 추가되었습니다!`);
             setGameToAdd(null);
+          }}
+        />
+      )}
+
+      {itemToEdit && (
+        <CollectionAddModal
+          game={itemToEdit.game}
+          initialItem={itemToEdit.item}
+          onClose={() => setItemToEdit(null)}
+          onSuccess={() => {
+            alert(`'${itemToEdit.game.title}' 정보가 수정되었습니다!`);
+            setItemToEdit(null);
           }}
         />
       )}

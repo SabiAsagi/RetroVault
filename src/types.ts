@@ -4,12 +4,15 @@ export type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Legendary';
 
 export type OwnershipStatus =
   | '미개봉'
-  | '패키지 보유'
-  | '단품 보유'
+  | '전부 보유'
+  | '일부 누락';
+
+export type PlayStatus =
+  | '미플레이'
+  | '플레이중'
   | '엔딩 완료'
-  | '플레이 중'
-  | '위시리스트'
-  | '판매 완료';
+  | '중단'
+  | '반복 플레이중';
 
 export type PurchaseType = '패키지' | '다운로드' | '구독';
 
@@ -136,6 +139,7 @@ export interface CollectionItem {
   playStartDate?: string;
   clearDate?: string;
   playTime?: number; // hours
+  playStatus?: PlayStatus;
   rating: number; // 0~5
   visibility?: Visibility;
   sortIndex?: number;

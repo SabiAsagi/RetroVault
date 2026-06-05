@@ -1,15 +1,16 @@
 "use client";
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { 
   User, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
   Star, Clock, Shield, Medal, Copy, Check, Share2, History as HistoryIcon,
-  Edit2, Save, X
+  Edit2, Save, X, Download
 } from 'lucide-react';
 import { CollectionItem, Game } from '../types';
 import { calculateEmblems, Emblem } from '../lib/emblems';
 import { useAuth } from '../contexts/AuthContext';
 import { updateProfile } from '@/app/actions/profile';
 import { useRouter } from 'next/navigation';
+import { toPng } from 'html-to-image';
 
 interface ProfileProps {
   collection: CollectionItem[];
@@ -20,6 +21,7 @@ export default function Profile({ collection, games }: ProfileProps) {
   const [copied, setCopied] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -115,6 +117,20 @@ export default function Profile({ collection, games }: ProfileProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleDownloadReport = async () => {
+    if (!reportRef.current) return;
+    try {
+      const dataUrl = await toPng(reportRef.current, { cacheBust: true });
+      const link = document.createElement('a');
+      link.download = `${user?.nickname || 'retro_master'}_report.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to download image:', err);
+      alert('이미지 다운로드에 실패했습니다.');
+    }
+  };
+
   return (
     <div className="max-w-[1000px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] space-y-8">
       
@@ -163,11 +179,28 @@ export default function Profile({ collection, games }: ProfileProps) {
                 {isEditing && (
                   <div className="mt-2 w-full">
                     <input 
-                      type="text" 
-                      value={editData.image} 
-                      onChange={e => setEditData({...editData, image: e.target.value})}
+                      type="file" 
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setIsSaving(true);
+                        try {
+                          const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+                            method: 'POST',
+                            body: file,
+                          });
+                          const newBlob = (await response.json()) as any;
+                          if (newBlob.url) {
+                            setEditData({...editData, image: newBlob.url});
+                          }
+                        } catch (err) {
+                          alert('업로드 실패');
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }}
                       className="bg-vault-bg border border-vault-border rounded px-2 py-1 text-xs text-text-secondary focus:outline-none focus:border-mint w-full max-w-[300px]"
-                      placeholder="이미지 URL (아바타)"
                     />
                   </div>
                 )}
@@ -304,7 +337,7 @@ export default function Profile({ collection, games }: ProfileProps) {
           <p className="text-sm text-text-muted">이 명함을 다운로드하여 SNS에 공유해보세요!</p>
         </div>
         
-        <div className="w-full max-w-lg mx-auto bg-[#0a0a0c] border-2 border-vault-border rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative group cursor-pointer hover:border-mint/50 transition-colors">
+        <div ref={reportRef} className="w-full max-w-lg mx-auto bg-[#0a0a0c] border-2 border-vault-border rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative group cursor-pointer hover:border-mint/50 transition-colors">
           {/* Hologram Effect Overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-mint/0 via-mint/10 to-neon-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-20 mix-blend-screen"></div>
           
@@ -374,8 +407,8 @@ export default function Profile({ collection, games }: ProfileProps) {
         </div>
         
         <div className="flex justify-center mt-6">
-          <button className="flex items-center gap-2 px-6 py-3 bg-mint/10 border border-mint/30 text-mint font-bold rounded-xl hover:bg-mint/20 hover:scale-105 transition-all shadow-lg shadow-mint/10">
-            <Copy size={18} /> 명함 이미지로 저장하기
+          <button onClick={handleDownloadReport} className="flex items-center gap-2 px-6 py-3 bg-mint/10 border border-mint/30 text-mint font-bold rounded-xl hover:bg-mint/20 hover:scale-105 transition-all shadow-lg shadow-mint/10">
+            <Download size={18} /> PNG로 저장하기
           </button>
         </div>
       </div>

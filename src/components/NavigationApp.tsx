@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
   Trophy, User, Settings, Search,
-  Database, X, Menu, LogIn, ChevronDown,
+  Database, X, Menu, LogIn, ChevronDown, Loader2
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useSession, signOut } from 'next-auth/react';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface NavItem {
   id: string;
@@ -40,6 +41,25 @@ export default function NavigationApp() {
 
   const user = session?.user;
   const isAuthenticated = !!user;
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const [searchResults, setSearchResults] = useState<any>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  React.useEffect(() => {
+    if (debouncedSearch.length >= 2) {
+      setIsSearching(true);
+      fetch(`/api/search?q=${encodeURIComponent(debouncedSearch)}`)
+        .then(res => res.json())
+        .then(data => setSearchResults(data))
+        .catch(console.error)
+        .finally(() => setIsSearching(false));
+    } else {
+      setSearchResults(null);
+    }
+  }, [debouncedSearch]);
 
   const getActiveItemId = () => {
     const item = navItems.find(n => n.path !== '/' && pathname.startsWith(n.path));
@@ -78,14 +98,61 @@ export default function NavigationApp() {
             {activeItem?.label}
           </span>
 
-          <div className="relative flex-1 max-w-lg hidden sm:block">
+          <div className="relative flex-1 max-w-lg hidden sm:block z-[80]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
             <input
               type="text"
-              placeholder="게임 검색은 /games 에서 지원..."
-              disabled
-              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-8 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none transition-all cursor-not-allowed opacity-50"
+              placeholder="게임명, 회사, 유저 등 통합 검색..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-8 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-mint transition-all"
             />
+            {isSearching && (
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-mint animate-spin" size={14} />
+            )}
+            
+            {searchFocused && searchResults && (
+              <div className="absolute top-full mt-2 w-full bg-vault-surface border border-vault-border rounded-xl shadow-2xl overflow-hidden max-h-[70vh] overflow-y-auto">
+                {searchResults.games?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">게임</h3>
+                    {searchResults.games.map((g: any) => (
+                      <Link href={`/games?q=${encodeURIComponent(g.title)}`} key={g.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        {g.imageUrl ? (
+                          <img src={g.imageUrl} className="w-8 h-10 object-cover rounded" />
+                        ) : (
+                          <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border" />
+                        )}
+                        <div>
+                          <p className="text-sm font-bold text-white leading-tight">{g.title}</p>
+                          <p className="text-xs text-text-secondary">{g.platform?.name}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                
+                {searchResults.users?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
+                    {searchResults.users.map((u: any) => (
+                      <Link href={`/profile/${u.id}`} key={u.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <div className="w-6 h-6 rounded-md bg-mint/20 text-mint flex items-center justify-center text-xs font-bold">
+                          {u.nickname?.[0] || 'U'}
+                        </div>
+                        <p className="text-sm text-white">{u.nickname}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                
+                {(!searchResults.games?.length && !searchResults.users?.length && !searchResults.companies?.length) && (
+                  <div className="p-6 text-center text-sm text-text-muted">검색 결과가 없습니다.</div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 ml-auto shrink-0">

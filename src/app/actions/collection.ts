@@ -27,6 +27,7 @@ export async function getUserCollection(): Promise<CollectionItem[]> {
     playStartDate: item.playStartDate || undefined,
     clearDate: item.clearDate || undefined,
     playTime: item.playTime || undefined,
+    playStatus: item.playStatus as any || '미플레이',
     rating: item.rating || 0,
     visibility: item.visibility as any || 'public',
     sortIndex: item.sortOrder

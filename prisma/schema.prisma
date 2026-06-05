@@ -20,9 +20,10 @@ model User {
   image         String?
   nickname      String?
   bio           String?
-  role          String    @default("USER") // USER, MODERATOR, ADMIN
+  role          String    @default("USER") // USER, MANAGER, ADMIN
   visibility    String    @default("PUBLIC") // PUBLIC, FRIENDS, PRIVATE
   theme         String    @default("dark")
+  isBanned      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -32,6 +33,11 @@ model User {
   achievements  UserAchievement[]
   reports       Report[]          @relation("UserReports")
   adminLogs     AdminLog[]        @relation("AdminActionLogs")
+  
+  sentMessages  DirectMessage[]   @relation("SentMessages")
+  receivedMessages DirectMessage[] @relation("ReceivedMessages")
+  collectionGroups CollectionGroup[]
+  requestedGames Game[]           @relation("RequestedGames")
 }
 
 model Account {
@@ -81,6 +87,10 @@ model Game {
   historicalContext String?
   popularity        Int       @default(0)
   rating            Float?    @default(0)
+  status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
+  requestedById     String?
+  rejectReason      String?
+  referenceUrl      String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
@@ -93,6 +103,8 @@ model Game {
 
   publisherId String?
   publisher   Company? @relation("PublishedGames", fields: [publisherId], references: [id])
+
+  requestedBy User?    @relation("RequestedGames", fields: [requestedById], references: [id])
 
   screenshots Screenshot[]
   collectedBy CollectionItem[]
@@ -124,6 +136,8 @@ model Company {
   country     String?
   logoUrl     String?
   description String?
+  foundedAt   String?
+  websiteUrl  String?
 
   developedGames Game[] @relation("DevelopedGames")
   publishedGames Game[] @relation("PublishedGames")
@@ -151,7 +165,8 @@ model CollectionItem {
   memo            String?
   playStartDate   String?
   clearDate       String?
-  playTime        Int? // hours
+  playTime        Int?     // hours
+  playStatus      String?  @default("UNPLAYED") // UNPLAYED, PLAYING, COMPLETED, DROPPED, REPLAYING
   rating          Int?     @default(0)
   visibility      String?  @default("PUBLIC")
   sortOrder       Int      @default(0)
@@ -160,6 +175,8 @@ model CollectionItem {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  
+  groups CollectionGroupItem[]
 
   @@unique([userId, gameId])
 }
@@ -235,4 +252,41 @@ model TimelineEvent {
 
   game     Game?     @relation(fields: [relatedGameId], references: [id])
   platform Platform? @relation(fields: [relatedPlatformId], references: [id])
+}
+
+model CollectionGroup {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       CollectionGroupItem[]
+}
+
+model CollectionGroupItem {
+  id          String   @id @default(uuid())
+  groupId     String
+  itemId      String
+
+  group       CollectionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  item        CollectionItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, itemId])
+}
+
+model DirectMessage {
+  id          String   @id @default(uuid())
+  senderId    String
+  receiverId  String
+  content     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sender      User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 }

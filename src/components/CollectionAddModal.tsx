@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { Game } from '@/types';
+import { Game, CollectionItem } from '@/types';
 import { X, Save, Check } from 'lucide-react';
 import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
@@ -9,23 +9,27 @@ import Link from 'next/link';
 
 interface CollectionAddModalProps {
   game: Game;
+  initialItem?: CollectionItem;
   onClose: () => void;
   onSuccess?: () => void;
 }
 
-export default function CollectionAddModal({ game, onClose, onSuccess }: CollectionAddModalProps) {
+export default function CollectionAddModal({ game, initialItem, onClose, onSuccess }: CollectionAddModalProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    ownershipStatus: '패키지 보유',
-    purchaseType: '패키지',
-    region: 'KOR',
-    condition: 'Excellent',
-    purchaseDate: new Date().toISOString().split('T')[0],
-    purchasePrice: 0,
-    memo: '',
-    rating: 0,
+    ownershipStatus: initialItem?.ownershipStatus || '미개봉',
+    playStatus: initialItem?.playStatus || '미플레이',
+    playTime: initialItem?.playTime || 0,
+    visibility: initialItem?.visibility || 'public',
+    purchaseType: initialItem?.purchaseType || '패키지',
+    region: initialItem?.region || 'KOR',
+    condition: initialItem?.condition || 'Excellent',
+    purchaseDate: initialItem?.purchaseDate || new Date().toISOString().split('T')[0],
+    purchasePrice: initialItem?.purchasePrice || 0,
+    memo: initialItem?.memo || '',
+    rating: initialItem?.rating || 0,
   });
 
   if (!session) {
@@ -50,6 +54,7 @@ export default function CollectionAddModal({ game, onClose, onSuccess }: Collect
       await updateCollectionItem(game.id, {
         ...formData,
         purchasePrice: Number(formData.purchasePrice) || 0,
+        playTime: Number(formData.playTime) || 0,
         rating: Number(formData.rating) || 0,
       });
       if (onSuccess) onSuccess();
@@ -67,7 +72,7 @@ export default function CollectionAddModal({ game, onClose, onSuccess }: Collect
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-          <h3 className="text-lg font-bold text-white truncate pr-4">컬렉션에 추가</h3>
+          <h3 className="text-lg font-bold text-white truncate pr-4">{initialItem ? '컬렉션 수정' : '컬렉션에 추가'}</h3>
           <button onClick={onClose} className="text-text-muted hover:text-white transition-colors shrink-0">
             <X size={20} />
           </button>
@@ -97,13 +102,52 @@ export default function CollectionAddModal({ game, onClose, onSuccess }: Collect
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="미개봉">미개봉</option>
-                <option value="패키지 보유">패키지 보유</option>
-                <option value="단품 보유">단품 보유</option>
-                <option value="플레이 중">플레이 중</option>
-                <option value="엔딩 완료">엔딩 완료</option>
-                <option value="위시리스트">위시리스트</option>
+                <option value="전부 보유">전부 보유</option>
+                <option value="일부 누락">일부 누락</option>
               </select>
             </div>
+            <div>
+              <label className="block text-xs font-bold text-text-muted mb-1.5">플레이 상태</label>
+              <select 
+                value={formData.playStatus} 
+                onChange={e => setFormData({...formData, playStatus: e.target.value})}
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+              >
+                <option value="미플레이">미플레이</option>
+                <option value="플레이중">플레이중</option>
+                <option value="엔딩 완료">엔딩 완료</option>
+                <option value="중단">중단</option>
+                <option value="반복 플레이중">반복 플레이중</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-text-muted mb-1.5">플레이 시간 (시간)</label>
+              <input 
+                type="number"
+                min="0"
+                value={formData.playTime} 
+                onChange={e => setFormData({...formData, playTime: parseInt(e.target.value) || 0})}
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-text-muted mb-1.5">공개 범위</label>
+              <select 
+                value={formData.visibility} 
+                onChange={e => setFormData({...formData, visibility: e.target.value})}
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+              >
+                <option value="public">공개</option>
+                <option value="friends">친구 공개</option>
+                <option value="private">비공개</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-text-muted mb-1.5">구매 방식</label>
               <select 
