@@ -62,14 +62,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     }
   };
 
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
   const [localUsers, setLocalUsers] = useState(users || []);
   
-  const handleAddCompany = () => {
   const handleAddCompany = () => {
     // API creation is needed here, omitted for brevity, but you'd call a server action
     alert('회사 추가 기능은 API 연동이 필요합니다.');
