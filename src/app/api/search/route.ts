@@ -15,6 +15,7 @@ export async function GET(request: Request) {
         OR: [
           { title: { contains: q, mode: 'insensitive' } },
           { genre: { contains: q, mode: 'insensitive' } },
+          { platform: { name: { contains: q, mode: 'insensitive' } } },
         ]
       },
       include: { platform: true },

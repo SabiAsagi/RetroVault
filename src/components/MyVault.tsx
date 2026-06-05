@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { Game, CollectionItem, OwnershipStatus, VaultViewMode, Visibility } from '../types';
 import { LayoutGrid, BookOpen, List, Package, Check, Eye, EyeOff, Users, Store, MonitorPlay, Zap, GripVertical, Star, Library, Plus, Share2, Search, Folder } from 'lucide-react';
 import GameCard, { BoxArtPlaceholder } from './GameCard';
@@ -42,6 +42,8 @@ export default function MyVault({
   const [viewMode, setViewMode] = useState<VaultViewMode>('shelf');
   const [theme, setTheme] = useState<ExhibitionTheme>('basic');
   const [visibilityFilter, setVisibilityFilter] = useState<Visibility | 'all'>('all');
+  const [groups, setGroups] = useState<any[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string>('all');
   
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -53,6 +55,16 @@ export default function MyVault({
   const [gameToAdd, setGameToAdd] = useState<Game | null>(null);
   const [itemToEdit, setItemToEdit] = useState<{item: CollectionItem, game: Game} | null>(null);
 
+  // Fetch groups
+  useEffect(() => {
+    fetch('/api/collection-groups')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setGroups(data);
+      })
+      .catch(console.error);
+  }, [groupModalOpen]);
+
   // Sort collection by sortIndex if available
   const sortedCollection = useMemo(() => {
     return [...collection].sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0));
@@ -60,6 +72,10 @@ export default function MyVault({
 
   const filteredCollection = sortedCollection.filter(c => {
     if (visibilityFilter !== 'all' && c.visibility !== visibilityFilter) return false;
+    if (selectedGroup !== 'all') {
+      const group = groups.find(g => g.id === selectedGroup);
+      if (group && !group.items?.some((i: any) => i.itemId === c.id)) return false;
+    }
     return true;
   });
 
@@ -165,6 +181,20 @@ export default function MyVault({
               </button>
             ))}
           </div>
+
+          {/* Group Filter */}
+          {groups.length > 0 && (
+            <select
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+              className="bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-mint/50 cursor-pointer"
+            >
+              <option value="all">전체 그룹</option>
+              {groups.map(g => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          )}
 
           {/* Theme Selector */}
           <select

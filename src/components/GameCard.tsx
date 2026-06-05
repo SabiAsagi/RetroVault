@@ -38,8 +38,8 @@ export function getRarityClass(rarity: Rarity): string {
 export function BoxArtPlaceholder({ game }: { game: Game }) {
   const [c1, c2] = PLATFORM_COLORS[game.platform] ?? ['#243550', '#314869'];
 
-  const genre = game.genre.slice(0, 3).toUpperCase();
-  const year = String(game.releaseYear).slice(2);
+  const genre = (game.genre || 'UNK').slice(0, 3).toUpperCase();
+  const year = String(game.releaseYear || '').slice(2);
 
   return (
     <div
@@ -48,7 +48,7 @@ export function BoxArtPlaceholder({ game }: { game: Game }) {
     >
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 px-2 py-1.5 flex items-center justify-between">
-        <span className="font-pixel text-[5px] text-white/40">{game.platform.slice(0, 8)}</span>
+        <span className="font-pixel text-[5px] text-white/40">{(game.platform || 'UNK').slice(0, 8)}</span>
         <span className="font-pixel text-[5px] text-white/40">'{year}</span>
       </div>
 

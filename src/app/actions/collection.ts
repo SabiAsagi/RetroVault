@@ -38,16 +38,38 @@ export async function updateCollectionItem(gameId: string, data: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not logged in");
 
-  await prisma.collectionItem.upsert({
+  const { groupId, ...itemData } = data;
+
+  const item = await prisma.collectionItem.upsert({
     where: {
       userId_gameId: { userId: session.user.id, gameId }
     },
-    update: data,
+    update: itemData,
     create: {
       userId: session.user.id,
       gameId,
-      ownershipStatus: data.ownershipStatus || '위시리스트',
-      ...data
+      ownershipStatus: itemData.ownershipStatus || '위시리스트',
+      ...itemData
     }
   });
+
+  if (groupId) {
+    // Check if group exists and belongs to user
+    const group = await prisma.collectionGroup.findFirst({
+      where: { id: groupId, userId: session.user.id }
+    });
+
+    if (group) {
+      await prisma.collectionGroupItem.upsert({
+        where: {
+          groupId_itemId: { groupId: group.id, itemId: item.id }
+        },
+        update: {},
+        create: {
+          groupId: group.id,
+          itemId: item.id
+        }
+      });
+    }
+  }
 }

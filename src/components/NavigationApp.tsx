@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
-  Trophy, User, Settings, Search,
+  Trophy, User, Settings, Search, Mail,
   Database, X, Menu, LogIn, ChevronDown, Loader2
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
@@ -23,6 +23,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: '#4AEDC4', group: 'main' },
   { id: 'archive', path: '/games', label: '게임 아카이브', icon: <Archive size={16} />, color: '#4EA8FF', group: 'main' },
+  { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
   { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
   { id: 'vault', path: '/collection', label: '내 컬렉션', icon: <BookOpen size={16} />, color: '#FFB547', group: 'user' },
   { id: 'stats', path: '/stats', label: '컬렉션 분석', icon: <BarChart3 size={16} />, color: '#FF6B6B', group: 'user' },
@@ -119,9 +120,9 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">게임</h3>
                     {searchResults.games.map((g: any) => (
-                      <Link href={`/games?q=${encodeURIComponent(g.title)}`} key={g.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        {g.imageUrl ? (
-                          <img src={g.imageUrl} className="w-8 h-10 object-cover rounded" />
+                      <Link href={`/games/${g.id}`} key={g.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        {g.coverImageUrl ? (
+                          <img src={g.coverImageUrl} className="w-8 h-10 object-cover rounded" />
                         ) : (
                           <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border" />
                         )}
@@ -148,7 +149,30 @@ export default function NavigationApp() {
                   </div>
                 )}
                 
-                {(!searchResults.games?.length && !searchResults.users?.length && !searchResults.companies?.length) && (
+                {searchResults.companies?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">회사</h3>
+                    {searchResults.companies.map((c: any) => (
+                      <div key={c.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-white">{c.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {searchResults.groups?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">공개 컬렉션</h3>
+                    {searchResults.groups.map((grp: any) => (
+                      <Link href={`/profile/${grp.userId}?group=${grp.id}`} key={grp.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-white">{grp.name}</p>
+                        <span className="text-[10px] text-text-muted">by {grp.user?.nickname}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                
+                {(!searchResults.games?.length && !searchResults.users?.length && !searchResults.companies?.length && !searchResults.groups?.length) && (
                   <div className="p-6 text-center text-sm text-text-muted">검색 결과가 없습니다.</div>
                 )}
               </div>
@@ -182,6 +206,9 @@ export default function NavigationApp() {
                     </div>
                     <Link href={`/profile/${user.id}`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
                       <User size={14} /> 내 프로필
+                    </Link>
+                    <Link href={`/inbox`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
+                      <Mail size={14} /> 쪽지함
                     </Link>
                     <div className="h-px bg-vault-border/50 my-1" />
                     <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2">

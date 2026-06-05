@@ -8,6 +8,7 @@ import {
 import { CollectionItem, Game, TimelineEvent } from '../types';
 import { createGame, updateGame, deleteGame, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from '@/app/actions/admin';
 import { resolveReport } from '@/app/actions/admin-dashboard';
+import { createCompany, updateCompany, deleteCompany, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest } from '@/app/actions/admin-extensions';
 
 interface AdminProps {
   collection: CollectionItem[];
@@ -36,6 +37,12 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const [editingTimeline, setEditingTimeline] = useState<Partial<TimelineEvent> | null>(null);
   const [isTimelineModalOpen, setIsTimelineModalOpen] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  
+  const [gamesPage, setGamesPage] = useState(1);
+  const gamesPerPage = 10;
+  
+  const [editingCompany, setEditingCompany] = useState<any>(null);
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
@@ -65,20 +72,32 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const [localUsers, setLocalUsers] = useState(users || []);
   
   const handleAddCompany = () => {
-    // API creation is needed here, omitted for brevity, but you'd call a server action
-    alert('회사 추가 기능은 API 연동이 필요합니다.');
+    setEditingCompany({});
+    setIsCompanyModalOpen(true);
   };
 
-  const handleUserAction = (userId: string) => {
-    const action = prompt('수행할 작업을 선택하세요:\n1: 관리자 권한 부여\n2: 회원 삭제');
-    if (action === '1') {
-      setLocalUsers(localUsers.map(u => u.id === userId ? { ...u, role: 'ADMIN' } : u));
-      alert('관리자 권한이 부여되었습니다.');
-    } else if (action === '2') {
-      if (confirm('정말로 이 회원을 삭제하시겠습니까?')) {
-        setLocalUsers(localUsers.filter(u => u.id !== userId));
-        alert('회원이 삭제되었습니다.');
+  const handleUserAction = async (userId: string) => {
+    const action = prompt('수행할 작업을 선택하세요:\n1: 관리자 권한 부여\n2: 밴 처리/해제\n3: 회원 삭제');
+    try {
+      if (action === '1') {
+        await updateUserRole(userId, 'ADMIN');
+        setLocalUsers(localUsers.map(u => u.id === userId ? { ...u, role: 'ADMIN' } : u));
+        alert('관리자 권한이 부여되었습니다.');
+      } else if (action === '2') {
+        const user = localUsers.find(u => u.id === userId);
+        const newStatus = !user?.isBanned;
+        await toggleUserBan(userId, newStatus);
+        setLocalUsers(localUsers.map(u => u.id === userId ? { ...u, isBanned: newStatus } : u));
+        alert(`회원이 ${newStatus ? '밴 처리' : '밴 해제'} 되었습니다.`);
+      } else if (action === '3') {
+        if (confirm('정말로 이 회원을 삭제하시겠습니까?')) {
+          await deleteUser(userId);
+          setLocalUsers(localUsers.filter(u => u.id !== userId));
+          alert('회원이 삭제되었습니다.');
+        }
       }
+    } catch (e: any) {
+      alert(`오류: ${e.message || '실패'}`);
     }
   };
 
@@ -210,7 +229,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             </tr>
           </thead>
           <tbody className="divide-y divide-vault-border/50">
-            {games.slice(0, 10).map(g => (
+            {games.slice((gamesPage - 1) * gamesPerPage, gamesPage * gamesPerPage).map(g => (
               <tr key={g.id} className="hover:bg-vault-surface-light">
                 <td className="px-4 py-3 text-text-muted font-mono text-xs">{g.id}</td>
                 <td className="px-4 py-3 text-white font-medium">{g.title}</td>
@@ -254,10 +273,16 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             ))}
           </tbody>
         </table>
-        {games.length > 10 && (
-           <div className="p-3 text-center text-xs text-text-muted border-t border-vault-border bg-vault-bg">
-             전체 {games.length}개 중 상위 10개만 표시 (MVP 데모)
-           </div>
+        
+        {games.length > 0 && (
+          <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
+            <span className="text-xs text-text-muted">총 {games.length}개 게임</span>
+            <div className="flex gap-2">
+              <button disabled={gamesPage === 1} onClick={() => setGamesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-white disabled:opacity-50">이전</button>
+              <span className="px-3 py-1 text-xs text-white">{gamesPage} / {Math.ceil(games.length / gamesPerPage)}</span>
+              <button disabled={gamesPage >= Math.ceil(games.length / gamesPerPage)} onClick={() => setGamesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-white disabled:opacity-50">다음</button>
+            </div>
+          </div>
         )}
       </div>
     </div>
@@ -290,8 +315,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{new Date(u.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3">
-                  <span className={`text-[10px] px-2 py-0.5 rounded border bg-mint/10 border-mint/30 text-mint`}>
-                    활성
+                  <span className={`text-[10px] px-2 py-0.5 rounded border ${u.isBanned ? 'bg-coral/10 border-coral/30 text-coral' : 'bg-mint/10 border-mint/30 text-mint'}`}>
+                    {u.isBanned ? '밴 상태' : '활성'}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -489,7 +514,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                     onClick={async () => {
                       if (window.confirm('승인하시겠습니까?')) {
                         try {
-                          await fetch(`/api/admin/games/${r.id}/approve`, { method: 'POST' });
+                          await approveGameRequest(r.id);
                           window.location.reload();
                         } catch (e) { alert('승인 실패'); }
                       }
@@ -500,7 +525,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                     onClick={async () => {
                       if (window.confirm('반려하시겠습니까?')) {
                         try {
-                          await fetch(`/api/admin/games/${r.id}/reject`, { method: 'POST' });
+                          await rejectGameRequest(r.id);
                           window.location.reload();
                         } catch (e) { alert('반려 실패'); }
                       }

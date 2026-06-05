@@ -335,12 +335,22 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
       {/* ── 2. My Game Life ── */}
       {gameLife && (
         <div className="space-y-4">
-          <h3 className="text-lg font-black text-white flex items-center gap-2">
-            <Gamepad2 className="text-neon-purple" size={20} />
-            내 게임 인생
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-black text-white flex items-center gap-2">
+              <Gamepad2 className="text-neon-purple" size={20} />
+              내 게임 인생 리포트 카드
+            </h3>
+            {isOwnProfile && (
+              <button 
+                onClick={handleDownloadReport}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-surface-light hover:bg-vault-surface border border-vault-border text-text-secondary hover:text-white rounded-lg transition-colors text-xs font-bold"
+              >
+                <Download size={14} /> PNG로 다운로드
+              </button>
+            )}
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div ref={reportRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-vault-bg p-4 rounded-xl">
             
             <div className="bg-vault-surface border border-vault-border rounded-xl p-5 hover:border-vault-border-light transition-colors group">
               <div className="text-[10px] font-bold text-text-muted uppercase mb-3 flex items-center gap-1.5">

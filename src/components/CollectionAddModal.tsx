@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Game, CollectionItem, OwnershipStatus, PlayStatus, Visibility, PurchaseType, Region, Condition } from '@/types';
 import { X, Save, Check } from 'lucide-react';
 import { updateCollectionItem } from '@/app/actions/collection';
@@ -18,6 +18,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [groups, setGroups] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     ownershipStatus: initialItem?.ownershipStatus || '미개봉',
     playStatus: initialItem?.playStatus || '미플레이',
@@ -30,7 +31,19 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
     purchasePrice: initialItem?.purchasePrice || 0,
     memo: initialItem?.memo || '',
     rating: initialItem?.rating || 0,
+    groupId: '',
   });
+
+  useEffect(() => {
+    if (session) {
+      fetch('/api/collection-groups')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) setGroups(data);
+        })
+        .catch(console.error);
+    }
+  }, [session]);
 
   if (!session) {
     return (
@@ -147,7 +160,20 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-vault-border">
+            <div>
+              <label className="block text-xs font-bold text-text-muted mb-1.5">소장 그룹 지정</label>
+              <select 
+                value={formData.groupId} 
+                onChange={e => setFormData({ ...formData, groupId: e.target.value })}
+                className="w-full bg-vault-bg border border-vault-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mint"
+              >
+                <option value="">지정 안 함</option>
+                {groups.map(g => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="block text-xs font-bold text-text-muted mb-1.5">구매 방식</label>
               <select 

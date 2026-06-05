@@ -227,12 +227,17 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
             <Search className="text-text-muted" size={28} />
           </div>
           <h3 className="text-text-primary font-bold text-lg mb-1">검색 결과 없음</h3>
-          <p className="text-text-muted text-sm mb-4">다른 키워드나 필터를 사용해보세요.</p>
-          {hasFilters && (
-            <button onClick={clearFilters} className="text-sm text-mint hover:text-mint-dim cursor-pointer transition-colors">
-              필터 초기화
-            </button>
-          )}
+          <p className="text-text-muted text-sm mb-4">다른 키워드나 필터를 사용해보거나, 찾는 게임이 없다면 추가를 요청해보세요.</p>
+          <div className="flex items-center justify-center gap-4">
+            {hasFilters && (
+              <button onClick={clearFilters} className="px-4 py-2 text-sm text-mint border border-mint/30 rounded-lg hover:bg-mint/10 cursor-pointer transition-colors">
+                필터 초기화
+              </button>
+            )}
+            <a href="/games/request" className="px-4 py-2 text-sm text-white bg-neon-blue rounded-lg hover:bg-neon-blue-dim transition-colors flex items-center gap-2">
+              게임 추가 요청하기
+            </a>
+          </div>
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
