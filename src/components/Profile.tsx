@@ -3,7 +3,7 @@ import { useState, useMemo, useRef } from 'react';
 import { 
   User, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
   Star, Clock, Shield, Medal, Copy, Check, Share2, History as HistoryIcon,
-  Edit2, Save, X, Download
+  Edit2, Save, X, Download, MessageSquare, AlertTriangle
 } from 'lucide-react';
 import { CollectionItem, Game } from '../types';
 import { calculateEmblems, Emblem } from '../lib/emblems';
@@ -15,9 +15,17 @@ import { toPng } from 'html-to-image';
 interface ProfileProps {
   collection: CollectionItem[];
   games: Game[];
+  viewedUser?: {
+    id: string;
+    name: string;
+    email: string;
+    nickname: string;
+    bio: string;
+    image: string;
+  };
 }
 
-export default function Profile({ collection, games }: ProfileProps) {
+export default function Profile({ collection, games, viewedUser }: ProfileProps) {
   const [copied, setCopied] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
@@ -31,9 +39,17 @@ export default function Profile({ collection, games }: ProfileProps) {
   });
   const [isSaving, setIsSaving] = useState(false);
 
+  const [dmModalOpen, setDmModalOpen] = useState(false);
+  const [dmContent, setDmContent] = useState('');
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+
+  const displayUser = viewedUser || user;
+  const isOwnProfile = !viewedUser || viewedUser.id === user?.id;
+
   // Initialize editData when user loads
   useMemo(() => {
-    if (user && !isEditing) {
+    if (isOwnProfile && user && !isEditing) {
       setEditData({
         nickname: user.nickname || '',
         bio: user.bio || '',
@@ -131,6 +147,38 @@ export default function Profile({ collection, games }: ProfileProps) {
     }
   };
 
+  const handleSendDM = async () => {
+    if (!dmContent.trim() || !displayUser) return;
+    try {
+      await fetch('/api/dm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receiverId: displayUser.id, content: dmContent })
+      });
+      alert('쪽지를 보냈습니다.');
+      setDmModalOpen(false);
+      setDmContent('');
+    } catch (e) {
+      alert('쪽지 전송 실패');
+    }
+  };
+
+  const handleReport = async () => {
+    if (!reportReason.trim() || !displayUser) return;
+    try {
+      await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetType: 'USER', targetId: displayUser.id, reason: reportReason })
+      });
+      alert('신고가 접수되었습니다.');
+      setReportModalOpen(false);
+      setReportReason('');
+    } catch (e) {
+      alert('신고 접수 실패');
+    }
+  };
+
   return (
     <div className="max-w-[1000px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] space-y-8">
       
@@ -147,7 +195,7 @@ export default function Profile({ collection, games }: ProfileProps) {
                 {isEditing ? (
                   <img src={editData.image || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <img src={user?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                  <img src={displayUser?.image || displayUser?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                 )}
               </div>
               
@@ -162,7 +210,7 @@ export default function Profile({ collection, games }: ProfileProps) {
                       placeholder="닉네임"
                     />
                   ) : (
-                    <h2 className="text-2xl font-black text-white">{user?.nickname || '레트로 마스터'}</h2>
+                    <h2 className="text-2xl font-black text-white">{displayUser?.nickname || displayUser?.name || '레트로 마스터'}</h2>
                   )}
                   {repEmblem && !isEditing && (
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1 ${repEmblem.colorClass} bg-vault-surface`}>
@@ -224,7 +272,7 @@ export default function Profile({ collection, games }: ProfileProps) {
                     <X size={14} /> 취소
                   </button>
                 </>
-              ) : (
+              ) : isOwnProfile ? (
                 <>
                   <button 
                     onClick={() => setIsEditing(true)}
@@ -240,6 +288,30 @@ export default function Profile({ collection, games }: ProfileProps) {
                     {copied ? <Check size={16} /> : <Share2 size={16} />}
                   </button>
                 </>
+              ) : (
+                <div className="flex gap-2">
+                  <button 
+                    onClick={handleCopyLink}
+                    className={`p-1.5 rounded-lg border transition-colors ${copied ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-vault-bg border-vault-border text-text-primary hover:text-white hover:border-vault-border-light'}`}
+                    title="공유 링크 복사"
+                  >
+                    {copied ? <Check size={16} /> : <Share2 size={16} />}
+                  </button>
+                  <button 
+                    onClick={() => setDmModalOpen(true)}
+                    className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-text-primary hover:text-white hover:border-vault-border-light transition-colors"
+                    title="쪽지 보내기"
+                  >
+                    <MessageSquare size={16} />
+                  </button>
+                  <button 
+                    onClick={() => setReportModalOpen(true)}
+                    className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-coral/70 hover:text-coral hover:border-coral/50 transition-colors"
+                    title="유저 신고"
+                  >
+                    <AlertTriangle size={16} />
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -254,7 +326,7 @@ export default function Profile({ collection, games }: ProfileProps) {
             />
           ) : (
             <p className="text-sm text-text-secondary leading-relaxed max-w-2xl mt-2 whitespace-pre-line">
-              {user?.bio || '80년대부터 지금까지, 시대를 초월하는 명작들을 수집합니다. 특히 JRPG와 휴대용 콘솔에 깊은 애정을 가지고 있으며, 모든 게임을 꼼꼼히 플레이하고 기록으로 남기는 것을 즐깁니다. 가장 좋아하는 시리즈는 파이널 판타지입니다.'}
+              {displayUser?.bio || '아직 자기소개가 없습니다.'}
             </p>
           )}
         </div>
@@ -351,7 +423,7 @@ export default function Profile({ collection, games }: ProfileProps) {
           
           <div className="p-8 relative z-10 -mt-16">
             <div className="flex justify-between items-end mb-6">
-              <img src={user?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-24 h-24 rounded-2xl border-4 border-[#0a0a0c] bg-vault-bg shadow-xl" />
+              <img src={displayUser?.image || displayUser?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-24 h-24 rounded-2xl border-4 border-[#0a0a0c] bg-vault-bg shadow-xl object-cover" />
               <div className="text-right">
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${repEmblem?.colorClass || 'text-text-muted'} bg-vault-surface border border-vault-border mb-2 shadow-lg`}>
                   {repEmblem?.name || '신입 컬렉터'}
@@ -364,7 +436,7 @@ export default function Profile({ collection, games }: ProfileProps) {
             </div>
             
             <div className="mb-8">
-              <h4 className="text-3xl font-black text-white tracking-tight mb-1">{user?.nickname || '레트로 마스터'}</h4>
+              <h4 className="text-3xl font-black text-white tracking-tight mb-1">{displayUser?.nickname || displayUser?.name || '레트로 마스터'}</h4>
               <p className="text-sm text-text-secondary">RetroVault Verified Collector</p>
             </div>
             
@@ -400,7 +472,7 @@ export default function Profile({ collection, games }: ProfileProps) {
               </div>
               <div className="text-right">
                 <span className="font-pixel text-[10px] text-text-muted block mb-1">RETROVAULT.IO</span>
-                <span className="text-xs font-mono text-text-secondary block">/profile/{user?.nickname?.toLowerCase() || 'retro_master'}</span>
+                <span className="text-xs font-mono text-text-secondary block">/profile/{displayUser?.nickname?.toLowerCase() || displayUser?.name?.toLowerCase() || 'retro_master'}</span>
               </div>
             </div>
           </div>
@@ -412,6 +484,46 @@ export default function Profile({ collection, games }: ProfileProps) {
           </button>
         </div>
       </div>
+
+      {/* Modals */}
+      {dmModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-bold text-white mb-4">쪽지 보내기</h3>
+            <textarea
+              value={dmContent}
+              onChange={e => setDmContent(e.target.value)}
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-mint resize-none h-32 mb-4"
+              placeholder={`${displayUser?.nickname}님에게 보낼 메시지를 입력하세요...`}
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setDmModalOpen(false)} className="px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors">취소</button>
+              <button onClick={handleSendDM} className="px-4 py-2 bg-mint text-vault-bg font-bold rounded-lg hover:bg-mint-dim transition-colors">보내기</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {reportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-bold text-coral mb-4 flex items-center gap-2">
+              <AlertTriangle size={20} /> 신고하기
+            </h3>
+            <p className="text-sm text-text-secondary mb-4">이 유저를 신고하는 이유를 상세히 적어주세요.</p>
+            <textarea
+              value={reportReason}
+              onChange={e => setReportReason(e.target.value)}
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-coral resize-none h-32 mb-4"
+              placeholder="신고 사유를 입력하세요..."
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setReportModalOpen(false)} className="px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors">취소</button>
+              <button onClick={handleReport} className="px-4 py-2 bg-coral text-white font-bold rounded-lg hover:bg-red-600 transition-colors">신고 접수</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

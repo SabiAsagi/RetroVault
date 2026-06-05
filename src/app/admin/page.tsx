@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getTimelineEvents } from "@/app/actions/timeline";
-import { getAdminDashboardStats, getUsers, getReports, getAdminLogs } from "@/app/actions/admin-dashboard";
+import { getAdminDashboardStats, getUsers, getReports, getAdminLogs, getCompanies, getGameRequests } from "@/app/actions/admin-dashboard";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
@@ -22,6 +22,8 @@ export default async function AdminPage() {
   const users = await getUsers();
   const reports = await getReports();
   const logs = await getAdminLogs();
+  const companies = await getCompanies();
+  const gameRequests = await getGameRequests();
 
   // Admin page uses client-side state internally, but takes data as props
   return (
@@ -33,6 +35,8 @@ export default async function AdminPage() {
       users={users}
       reports={reports}
       logs={logs}
+      companies={companies}
+      gameRequests={gameRequests}
     />
   );
 }

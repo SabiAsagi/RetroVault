@@ -29,3 +29,31 @@ export async function updateProfile(data: { nickname?: string; bio?: string; ima
     }
   });
 }
+
+export async function getUserProfile(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      nickname: true,
+      bio: true,
+      image: true,
+      role: true,
+      createdAt: true,
+    }
+  });
+
+  if (!user) return null;
+
+  const publicCollection = await prisma.collectionItem.findMany({
+    where: { 
+      userId, 
+      visibility: { not: 'private' } // public and friends
+    },
+    orderBy: { sortOrder: 'asc' }
+  });
+
+  return { user, collection: publicCollection };
+}

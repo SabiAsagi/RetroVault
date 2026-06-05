@@ -112,3 +112,41 @@ export async function logAdminAction(adminId: string, action: string, targetType
     console.error("Failed to log admin action", e);
   }
 }
+
+export async function getCompanies() {
+  await requireAdmin();
+  const companies = await prisma.company.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      _count: {
+        select: { developedGames: true, publishedGames: true }
+      }
+    }
+  });
+
+  return companies.map(c => ({
+    id: c.id,
+    name: c.name,
+    type: c.type,
+    country: c.country,
+    gamesCount: c._count.developedGames + c._count.publishedGames,
+    hq: c.country || 'Unknown'
+  }));
+}
+
+export async function getGameRequests() {
+  await requireAdmin();
+  return prisma.game.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      requestedBy: {
+        select: { name: true, nickname: true, email: true }
+      },
+      platform: {
+        select: { name: true }
+      }
+    }
+  });
+}
+

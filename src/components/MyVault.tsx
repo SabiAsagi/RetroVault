@@ -6,6 +6,7 @@ import GameCard, { BoxArtPlaceholder } from './GameCard';
 import ShareCollectionModal from './ShareCollectionModal';
 import CollectionSearchModal from './CollectionSearchModal';
 import CollectionAddModal from './CollectionAddModal';
+import CollectionGroupModal from './CollectionGroupModal';
 
 interface MyVaultProps {
   games: Game[];
@@ -48,6 +49,7 @@ export default function MyVault({
 
   const [shareOpen, setShareOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [groupModalOpen, setGroupModalOpen] = useState(false);
   const [gameToAdd, setGameToAdd] = useState<Game | null>(null);
   const [itemToEdit, setItemToEdit] = useState<{item: CollectionItem, game: Game} | null>(null);
 
@@ -132,6 +134,13 @@ export default function MyVault({
               className="flex items-center gap-2 px-3 py-1.5 bg-amber/10 border border-amber/20 text-amber text-xs font-bold rounded-lg hover:bg-amber/20 transition-colors"
             >
               <Search size={14} /> 추가하기
+            </button>
+
+            <button 
+              onClick={() => setGroupModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-text-secondary/10 border border-text-secondary/20 text-text-primary text-xs font-bold rounded-lg hover:bg-text-secondary/20 transition-colors"
+            >
+              <Folder size={14} /> 그룹 관리
             </button>
 
             <button 
@@ -470,6 +479,13 @@ export default function MyVault({
           }}
         />
       )}
+
+      <CollectionGroupModal 
+        isOpen={groupModalOpen} 
+        onClose={() => setGroupModalOpen(false)} 
+        collection={collection} 
+        games={games} 
+      />
     </div>
   );
 }
