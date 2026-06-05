@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
-  Trophy, User, Settings, Search, Mail,
+  Trophy, User, Users, Settings, Search, Mail,
   Database, X, Menu, LogIn, ChevronDown, Loader2
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
@@ -27,10 +27,14 @@ const navItems: NavItem[] = [
   { id: 'companies', path: '/companies', label: '회사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
   { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
   { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
+  
+  // User Menu order: 프로필 / 친구 / 내 컬렉션 / 컬렉션 분석 / 업적
+  { id: 'profile', path: '/profile/me', label: '프로필', icon: <User size={16} />, color: '#4EA8FF', group: 'user' },
+  { id: 'friends', path: '/friends', label: '친구', icon: <Users size={16} />, color: '#4AEDC4', group: 'user' },
   { id: 'vault', path: '/collection', label: '내 컬렉션', icon: <BookOpen size={16} />, color: '#FFB547', group: 'user' },
   { id: 'stats', path: '/stats', label: '컬렉션 분석', icon: <BarChart3 size={16} />, color: '#FF6B6B', group: 'user' },
   { id: 'achievements', path: '/achievements', label: '업적', icon: <Trophy size={16} />, color: '#FFB547', group: 'user' },
-  { id: 'profile', path: '/profile/me', label: '프로필', icon: <User size={16} />, color: '#4EA8FF', group: 'user' },
+  
   { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
 ];
 
@@ -211,9 +215,6 @@ export default function NavigationApp() {
                         {item.icon} {item.label}
                       </Link>
                     ))}
-                    <Link href={`/inbox`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
-                      <Mail size={14} /> 쪽지함
-                    </Link>
                     <div className="h-px bg-vault-border/50 my-1" />
                     <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2">
                       <LogIn size={14} className="rotate-180" /> 로그아웃

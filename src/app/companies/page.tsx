@@ -22,6 +22,15 @@ export default async function CompaniesPage() {
         </div>
       </div>
 
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-vault-surface border border-vault-border rounded-xl p-4">
+        <div className="flex flex-wrap gap-2 flex-1">
+          <span className="px-3 py-1 bg-vault-bg border border-vault-border rounded-lg text-sm text-text-secondary">총 {companies.length}개의 회사</span>
+        </div>
+        <a href="/request" className="px-4 py-2 text-sm text-vault-bg bg-amber rounded-lg hover:bg-amber/80 transition-colors flex items-center gap-2 font-bold whitespace-nowrap shrink-0">
+          회사 추가 요청하기
+        </a>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {companies.map(c => (
           <div key={c.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-vault-border-light transition-colors p-5">

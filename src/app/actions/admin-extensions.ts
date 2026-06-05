@@ -121,3 +121,47 @@ export async function rejectGameRequest(gameId: string, reason?: string) {
   revalidatePath('/admin');
   return updated;
 }
+
+export async function approvePlatformRequest(platformId: string) {
+  const adminId = await requireAdmin();
+  const updated = await prisma.platform.update({
+    where: { id: platformId },
+    data: { status: 'APPROVED' }
+  });
+  await logAdminAction(adminId, "UPDATE", "PLATFORM_APPROVE", platformId);
+  revalidatePath('/admin');
+  return updated;
+}
+
+export async function rejectPlatformRequest(platformId: string, reason?: string) {
+  const adminId = await requireAdmin();
+  const updated = await prisma.platform.update({ 
+    where: { id: platformId },
+    data: { status: 'REJECTED', rejectReason: reason || "관리자에 의해 반려되었습니다." }
+  });
+  await logAdminAction(adminId, "UPDATE", "PLATFORM_REJECT", platformId);
+  revalidatePath('/admin');
+  return updated;
+}
+
+export async function approveCompanyRequest(companyId: string) {
+  const adminId = await requireAdmin();
+  const updated = await prisma.company.update({
+    where: { id: companyId },
+    data: { status: 'APPROVED' }
+  });
+  await logAdminAction(adminId, "UPDATE", "COMPANY_APPROVE", companyId);
+  revalidatePath('/admin');
+  return updated;
+}
+
+export async function rejectCompanyRequest(companyId: string, reason?: string) {
+  const adminId = await requireAdmin();
+  const updated = await prisma.company.update({ 
+    where: { id: companyId },
+    data: { status: 'REJECTED', rejectReason: reason || "관리자에 의해 반려되었습니다." }
+  });
+  await logAdminAction(adminId, "UPDATE", "COMPANY_REJECT", companyId);
+  revalidatePath('/admin');
+  return updated;
+}

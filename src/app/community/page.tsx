@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import Community from "@/components/Community";
 
+export const dynamic = 'force-dynamic';
+
 export default async function CommunityPage() {
   const publicUsers = await prisma.user.findMany({
     where: {

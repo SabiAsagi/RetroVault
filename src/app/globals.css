@@ -51,9 +51,9 @@
   --color-neon-blue: #339AF0;
   --color-neon-purple: #845EF7;
 
-  --color-text-primary: #212529;
-  --color-text-secondary: #495057;
-  --color-text-muted: #868E96;
+  --color-text-primary: #111111;
+  --color-text-secondary: #333333;
+  --color-text-muted: #555555;
 
   --color-rarity-common: #868E96;
   --color-rarity-uncommon: #20C997;

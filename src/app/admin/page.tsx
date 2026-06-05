@@ -5,12 +5,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getTimelineEvents } from "@/app/actions/timeline";
-import { getAdminDashboardStats, getUsers, getReports, getAdminLogs, getCompanies, getGameRequests } from "@/app/actions/admin-dashboard";
+import { 
+  getAdminDashboardStats, getUsers, getReports, getAdminLogs, getCompanies, 
+  getGameRequests, getPlatformRequests, getCompanyRequests, getPlatforms 
+} from "@/app/actions/admin-dashboard";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
   
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "MODERATOR") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "MODERATOR" && session?.user?.role !== "MANAGER") {
     redirect("/");
   }
 
@@ -23,7 +26,10 @@ export default async function AdminPage() {
   const reports = await getReports();
   const logs = await getAdminLogs();
   const companies = await getCompanies();
+  const platforms = await getPlatforms();
   const gameRequests = await getGameRequests();
+  const platformRequests = await getPlatformRequests();
+  const companyRequests = await getCompanyRequests();
 
   // Admin page uses client-side state internally, but takes data as props
   return (
@@ -36,7 +42,10 @@ export default async function AdminPage() {
       reports={reports}
       logs={logs}
       companies={companies}
+      platforms={platforms}
       gameRequests={gameRequests}
+      platformRequests={platformRequests}
+      companyRequests={companyRequests}
     />
   );
 }

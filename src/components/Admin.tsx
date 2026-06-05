@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { 
   LayoutDashboard, Gamepad2, Building2, Users, AlertOctagon, History, 
   Settings, RefreshCw, Trash2, Search, Edit, Eye, MoreVertical, Plus,
-  CheckCircle, XCircle, AlertTriangle, ShieldAlert
+  CheckCircle, XCircle, AlertTriangle, ShieldAlert, Monitor, Shield
 } from 'lucide-react';
 import { CollectionItem, Game, TimelineEvent } from '../types';
 import { createGame, updateGame, deleteGame, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from '@/app/actions/admin';
 import { resolveReport } from '@/app/actions/admin-dashboard';
-import { createCompany, updateCompany, deleteCompany, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest } from '@/app/actions/admin-extensions';
+import { createCompany, updateCompany, deleteCompany, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest, approvePlatformRequest, rejectPlatformRequest, approveCompanyRequest, rejectCompanyRequest } from '@/app/actions/admin-extensions';
 
 interface AdminProps {
   collection: CollectionItem[];
@@ -19,14 +19,17 @@ interface AdminProps {
   reports: any[];
   logs: any[];
   companies: any[];
+  platforms?: any[];
   gameRequests: any[];
+  platformRequests?: any[];
+  companyRequests?: any[];
   onResetToSample?: () => void;
   onClearAll?: () => void;
 }
 
-type Tab = 'dashboard' | 'games' | 'requests' | 'companies' | 'users' | 'reports' | 'logs' | 'settings' | 'timeline';
+type Tab = 'dashboard' | 'games' | 'requests' | 'companies' | 'platforms' | 'users' | 'reports' | 'logs' | 'settings' | 'timeline';
 
-export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, gameRequests, onResetToSample, onClearAll }: AdminProps) {
+export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, platforms, gameRequests, platformRequests, companyRequests, onResetToSample, onClearAll }: AdminProps) {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [confirmAction, setConfirmAction] = useState<'reset' | 'clear' | null>(null);
 
@@ -85,24 +88,37 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     setUserActionModalOpen(true);
   };
 
-  const executeUserAction = async (actionType: 'ROLE' | 'BAN' | 'DELETE') => {
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{ message: string; onConfirm: () => void; isPrompt?: boolean; promptLabel?: string; onPromptSubmit?: (val: string) => void }>({ message: '', onConfirm: () => {} });
+  const [promptInput, setPromptInput] = useState('');
+
+  // Request Management State
+  const [requestTab, setRequestTab] = useState<'game' | 'platform' | 'company'>('game');
+  const [reviewingRequest, setReviewingRequest] = useState<any>(null);
+  const [reviewingRequestType, setReviewingRequestType] = useState<'game'|'platform'|'company'>('game');
+
+  const executeUserAction = async (actionType: 'ROLE' | 'MAKE_MANAGER' | 'MAKE_USER' | 'BAN' | 'UNBAN' | 'DELETE', reason?: string) => {
     if (!selectedUserForAction) return;
     try {
       if (actionType === 'ROLE') {
         await updateUserRole(selectedUserForAction.id, 'ADMIN');
         setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, role: 'ADMIN' } : u));
-        alert('관리자 권한이 부여되었습니다.');
-      } else if (actionType === 'BAN') {
-        const newStatus = !selectedUserForAction.isBanned;
+      } else if (actionType === 'MAKE_MANAGER') {
+        await updateUserRole(selectedUserForAction.id, 'MANAGER');
+        setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, role: 'MANAGER' } : u));
+      } else if (actionType === 'MAKE_USER') {
+        await updateUserRole(selectedUserForAction.id, 'USER');
+        setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, role: 'USER' } : u));
+      } else if (actionType === 'BAN' || actionType === 'UNBAN') {
+        const newStatus = actionType === 'BAN';
         await toggleUserBan(selectedUserForAction.id, newStatus);
         setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, isBanned: newStatus } : u));
-        alert(`회원이 ${newStatus ? '밴 처리' : '밴 해제'} 되었습니다.`);
       } else if (actionType === 'DELETE') {
         await deleteUser(selectedUserForAction.id);
         setLocalUsers(localUsers.filter(u => u.id !== selectedUserForAction.id));
-        alert('회원이 삭제되었습니다.');
       }
       setUserActionModalOpen(false);
+      setConfirmModalOpen(false);
     } catch (e: any) {
       alert(`오류: ${e.message || '실패'}`);
     }
@@ -393,6 +409,68 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     </div>
   );
 
+  const renderRequests = () => (
+    <div className="space-y-4 animate-in fade-in">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-text-primary">아카이브 추가 요청</h3>
+        <div className="flex bg-vault-surface border border-vault-border rounded-lg p-1">
+          <button onClick={() => setRequestTab('game')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'game' ? 'bg-neon-blue text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>게임</button>
+          <button onClick={() => setRequestTab('platform')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔/플랫폼</button>
+          <button onClick={() => setRequestTab('company')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'company' ? 'bg-amber text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>회사</button>
+        </div>
+      </div>
+      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
+        <table className="w-full text-left text-sm whitespace-nowrap">
+          <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
+            <tr>
+              <th className="px-4 py-3">요청 내용</th>
+              <th className="px-4 py-3">요청자</th>
+              <th className="px-4 py-3">요청일</th>
+              <th className="px-4 py-3 text-right">관리</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-vault-border/50">
+            {requestTab === 'game' && (gameRequests || []).map((r: any) => (
+              <tr key={r.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-primary font-medium">{r.title} ({r.platform?.name})</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{r.requestedBy?.name || '익명'}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <button onClick={() => { setReviewingRequest(r); setReviewingRequestType('game'); }} className="p-1.5 text-text-primary bg-vault-bg border border-vault-border rounded hover:bg-vault-surface transition-colors text-xs font-bold" title="확인 및 수정">검토</button>
+                </td>
+              </tr>
+            ))}
+            {requestTab === 'platform' && (platformRequests || []).map((r: any) => (
+              <tr key={r.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-primary font-medium">{r.name}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{r.requestedBy?.name || '익명'}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <button onClick={() => { setReviewingRequest(r); setReviewingRequestType('platform'); }} className="p-1.5 text-text-primary bg-vault-bg border border-vault-border rounded hover:bg-vault-surface transition-colors text-xs font-bold" title="확인 및 수정">검토</button>
+                </td>
+              </tr>
+            ))}
+            {requestTab === 'company' && (companyRequests || []).map((r: any) => (
+              <tr key={r.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-primary font-medium">{r.name}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{r.requestedBy?.name || '익명'}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <button onClick={() => { setReviewingRequest(r); setReviewingRequestType('company'); }} className="p-1.5 text-text-primary bg-vault-bg border border-vault-border rounded hover:bg-vault-surface transition-colors text-xs font-bold" title="확인 및 수정">검토</button>
+                </td>
+              </tr>
+            ))}
+            {((requestTab === 'game' && (!gameRequests || gameRequests.length === 0)) ||
+              (requestTab === 'platform' && (!platformRequests || platformRequests.length === 0)) ||
+              (requestTab === 'company' && (!companyRequests || companyRequests.length === 0))) && (
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-text-muted">대기 중인 요청이 없습니다.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   const renderLogs = () => (
     <div className="space-y-4 animate-in fade-in">
       <h3 className="text-xl font-bold text-text-primary mb-4">시스템 수정 로그</h3>
@@ -448,7 +526,14 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 <td className="px-4 py-3 text-mint font-mono text-xs">{c.gamesCount}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{c.hq}</td>
                 <td className="px-4 py-3 text-right space-x-2">
-                  <button className="p-1.5 text-text-muted hover:text-neon-blue rounded transition-colors" title="수정"><Edit size={14} /></button>
+                  <button onClick={() => { setEditingCompany(c); setIsCompanyModalOpen(true); }} className="p-1.5 text-text-muted hover:text-neon-blue rounded transition-colors" title="수정"><Edit size={14} /></button>
+                  <button onClick={() => {
+                    setConfirmConfig({
+                      message: '정말 삭제하시겠습니까?',
+                      onConfirm: async () => { await deleteCompany(c.id); window.location.reload(); }
+                    });
+                    setConfirmModalOpen(true);
+                  }} className="p-1.5 text-text-muted hover:text-coral rounded transition-colors" title="삭제"><Trash2 size={14} /></button>
                 </td>
               </tr>
             ))}
@@ -500,56 +585,16 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     </div>
   );
 
-  const renderRequests = () => (
+  const renderPlatforms = () => (
     <div className="space-y-4 animate-in fade-in">
-      <h3 className="text-xl font-bold text-text-primary mb-4">게임 추가 요청</h3>
-      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
-            <tr>
-              <th className="px-4 py-3">요청 게임</th>
-              <th className="px-4 py-3">요청자</th>
-              <th className="px-4 py-3">요청일</th>
-              <th className="px-4 py-3 text-right">관리</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-vault-border/50">
-            {(gameRequests || []).map(r => (
-              <tr key={r.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-text-primary font-medium">{r.title} ({r.platform?.name})</td>
-                <td className="px-4 py-3 text-text-secondary text-xs">{r.requestedBy?.name || '익명'}</td>
-                <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
-                <td className="px-4 py-3 text-right space-x-2">
-                  <button 
-                    onClick={async () => {
-                      if (window.confirm('승인하시겠습니까?')) {
-                        try {
-                          await approveGameRequest(r.id);
-                          window.location.reload();
-                        } catch (e) { alert('승인 실패'); }
-                      }
-                    }} 
-                    className="p-1.5 text-mint bg-mint/10 rounded hover:bg-mint/20 transition-colors" title="승인"
-                  ><CheckCircle size={14} /></button>
-                  <button 
-                    onClick={async () => {
-                      if (window.confirm('반려하시겠습니까?')) {
-                        try {
-                          await rejectGameRequest(r.id);
-                          window.location.reload();
-                        } catch (e) { alert('반려 실패'); }
-                      }
-                    }} 
-                    className="p-1.5 text-coral bg-coral/10 rounded hover:bg-coral/20 transition-colors" title="반려"
-                  ><XCircle size={14} /></button>
-                </td>
-              </tr>
-            ))}
-            {(!gameRequests || gameRequests.length === 0) && (
-              <tr><td colSpan={4} className="px-4 py-8 text-center text-text-muted">대기 중인 요청이 없습니다.</td></tr>
-            )}
-          </tbody>
-        </table>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-text-primary">콘솔/플랫폼 관리</h3>
+        <button onClick={() => alert('추후 구현 예정입니다.')} className="bg-neon-purple hover:bg-neon-purple/80 text-vault-bg px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
+          <Plus size={14} /> 플랫폼 추가
+        </button>
+      </div>
+      <div className="bg-vault-surface border border-vault-border rounded-xl p-8 text-center text-text-muted">
+        플랫폼 관리 기능은 준비 중입니다.
       </div>
     </div>
   );
@@ -569,9 +614,9 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             {[
               { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
               { id: 'games', label: '게임 관리', icon: Gamepad2 },
-              { id: 'requests', label: '추가 요청', icon: Plus },
-              { id: 'timeline', label: '타임라인', icon: History },
+              { id: 'platforms', label: '콘솔 관리', icon: Monitor },
               { id: 'companies', label: '회사 관리', icon: Building2 },
+              { id: 'requests', label: '추가 요청', icon: Plus },
               { id: 'users', label: '회원 관리', icon: Users },
               { id: 'reports', label: '신고 관리', icon: AlertOctagon },
               { id: 'logs', label: '시스템 로그', icon: History },
@@ -598,8 +643,9 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       <main className="flex-1 min-w-0">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'games' && renderGames()}
-        {activeTab === 'requests' && renderRequests()}
+        {activeTab === 'platforms' && renderPlatforms()}
         {activeTab === 'companies' && renderCompanies()}
+        {activeTab === 'requests' && renderRequests()}
         {activeTab === 'users' && renderUsers()}
         {activeTab === 'reports' && renderReports()}
         {activeTab === 'logs' && renderLogs()}
@@ -870,15 +916,37 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               </button>
             </div>
             <div className="p-4 space-y-3">
-              <button onClick={() => executeUserAction('ROLE')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-mint text-sm text-text-primary transition-colors">
-                <span>관리자 권한 부여</span>
+              <button onClick={() => executeUserAction('MAKE_MANAGER')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-mint text-sm text-text-primary transition-colors">
+                <span>중간관리자 권한 부여</span>
                 <ShieldAlert size={16} className="text-mint" />
               </button>
-              <button onClick={() => executeUserAction('BAN')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
+              <button onClick={() => executeUserAction('MAKE_USER')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
+                <span>일반 유저로 강등</span>
+                <Shield size={16} className="text-amber" />
+              </button>
+              <button onClick={() => {
+                setPromptInput('');
+                setConfirmConfig({
+                  message: selectedUserForAction.isBanned ? '밴 해제 사유를 입력하세요' : '밴 사유를 입력하세요',
+                  isPrompt: true,
+                  promptLabel: '사유',
+                  onConfirm: () => {},
+                  onPromptSubmit: (val) => {
+                    executeUserAction(selectedUserForAction.isBanned ? 'UNBAN' : 'BAN', val);
+                  }
+                });
+                setConfirmModalOpen(true);
+              }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
                 <span>{selectedUserForAction.isBanned ? '밴 해제' : '밴 처리'}</span>
                 <AlertTriangle size={16} className="text-amber" />
               </button>
-              <button onClick={() => { if(confirm('정말 삭제하시겠습니까?')) executeUserAction('DELETE'); }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-coral text-sm text-coral transition-colors">
+              <button onClick={() => {
+                setConfirmConfig({
+                  message: '정말 삭제하시겠습니까?',
+                  onConfirm: () => executeUserAction('DELETE')
+                });
+                setConfirmModalOpen(true);
+              }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-coral text-sm text-coral transition-colors">
                 <span>회원 영구 삭제</span>
                 <Trash2 size={16} className="text-coral" />
               </button>
@@ -921,7 +989,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">유형</label>
-                  <input type="text" value={editingCompany?.type || ''} onChange={e => setEditingCompany({...editingCompany, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="Developer, Publisher..." />
+                  <select value={editingCompany?.type || 'DEVELOPER'} onChange={e => setEditingCompany({...editingCompany, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary">
+                    <option value="DEVELOPER">개발사</option>
+                    <option value="PUBLISHER">유통사</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">국가</label>
@@ -944,6 +1015,153 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Custom Confirm / Prompt Modal ── */}
+      {confirmModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-text-primary mb-3 whitespace-pre-line">{confirmConfig.message}</h3>
+              {confirmConfig.isPrompt && (
+                <input 
+                  autoFocus
+                  type="text" 
+                  value={promptInput}
+                  onChange={e => setPromptInput(e.target.value)}
+                  placeholder={confirmConfig.promptLabel}
+                  className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
+                />
+              )}
+            </div>
+            <div className="flex justify-end gap-3 p-4 border-t border-vault-border bg-vault-bg/50">
+              <button onClick={() => setConfirmModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-text-primary">취소</button>
+              <button onClick={() => {
+                if (confirmConfig.isPrompt && confirmConfig.onPromptSubmit) {
+                  confirmConfig.onPromptSubmit(promptInput);
+                } else {
+                  confirmConfig.onConfirm();
+                }
+                setConfirmModalOpen(false);
+              }} className="px-4 py-2 bg-mint text-vault-bg rounded text-sm font-bold">확인</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Request Review Modal ── */}
+      {reviewingRequest && (
+        <div className="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
+              <h3 className="text-lg font-bold text-text-primary">
+                {reviewingRequestType === 'game' ? '게임' : reviewingRequestType === 'platform' ? '콘솔/플랫폼' : '회사'} 추가 요청 검토
+              </h3>
+              <button onClick={() => setReviewingRequest(null)} className="text-text-muted hover:text-text-primary">
+                <XCircle size={20} />
+              </button>
+            </div>
+            
+            <div className="p-4 overflow-y-auto space-y-4">
+              <div className="bg-vault-bg border border-vault-border rounded-lg p-4 mb-4">
+                <p className="text-sm font-bold text-text-primary mb-1">요청자: {reviewingRequest.requestedBy?.name || '익명'}</p>
+                <p className="text-xs text-text-secondary">요청일: {new Date(reviewingRequest.createdAt).toLocaleString()}</p>
+              </div>
+
+              {reviewingRequestType === 'game' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-text-muted mb-1">타이틀</label>
+                    <input type="text" value={reviewingRequest.title || ''} onChange={e => setReviewingRequest({...reviewingRequest, title: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-text-muted mb-1">출시연도</label>
+                      <input type="number" value={reviewingRequest.releaseYear || ''} onChange={e => setReviewingRequest({...reviewingRequest, releaseYear: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {reviewingRequestType === 'platform' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-text-muted mb-1">플랫폼명</label>
+                    <input type="text" value={reviewingRequest.name || ''} onChange={e => setReviewingRequest({...reviewingRequest, name: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                  </div>
+                </>
+              )}
+
+              {reviewingRequestType === 'company' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-text-muted mb-1">회사명</label>
+                    <input type="text" value={reviewingRequest.name || ''} onChange={e => setReviewingRequest({...reviewingRequest, name: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                  </div>
+                </>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-1">설명 / 참고자료</label>
+                <textarea rows={3} value={reviewingRequest.description || ''} onChange={e => setReviewingRequest({...reviewingRequest, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
+              </div>
+            </div>
+
+            <div className="flex justify-between gap-3 p-4 border-t border-vault-border bg-vault-bg/50">
+              <button 
+                onClick={async () => {
+                  setPromptInput('');
+                  setConfirmConfig({
+                    message: '반려 사유를 입력하세요 (선택사항)',
+                    isPrompt: true,
+                    promptLabel: '사유',
+                    onConfirm: () => {},
+                    onPromptSubmit: async (reason) => {
+                      setIsSubmitting(true);
+                      try {
+                        if (reviewingRequestType === 'game') await rejectGameRequest(reviewingRequest.id, reason);
+                        if (reviewingRequestType === 'platform') await rejectPlatformRequest(reviewingRequest.id, reason);
+                        if (reviewingRequestType === 'company') await rejectCompanyRequest(reviewingRequest.id, reason);
+                        window.location.reload();
+                      } catch(e) { alert('오류 발생'); setIsSubmitting(false); }
+                    }
+                  });
+                  setConfirmModalOpen(true);
+                }}
+                disabled={isSubmitting} 
+                className="px-4 py-2 text-coral border border-coral/30 bg-coral/10 hover:bg-coral/20 rounded text-sm font-bold"
+              >반려</button>
+              
+              <button 
+                onClick={async () => {
+                  setConfirmConfig({
+                    message: '현재 내용으로 승인하시겠습니까? (자동으로 공개 처리됩니다)',
+                    onConfirm: async () => {
+                      setIsSubmitting(true);
+                      try {
+                        if (reviewingRequestType === 'game') {
+                          await updateGame(reviewingRequest.id, reviewingRequest);
+                          await approveGameRequest(reviewingRequest.id);
+                        }
+                        if (reviewingRequestType === 'platform') {
+                          await approvePlatformRequest(reviewingRequest.id);
+                        }
+                        if (reviewingRequestType === 'company') {
+                          await updateCompany(reviewingRequest.id, reviewingRequest);
+                          await approveCompanyRequest(reviewingRequest.id);
+                        }
+                        window.location.reload();
+                      } catch(e) { alert('오류 발생'); setIsSubmitting(false); }
+                    }
+                  });
+                  setConfirmModalOpen(true);
+                }}
+                disabled={isSubmitting} 
+                className="px-4 py-2 bg-mint text-vault-bg rounded text-sm font-bold"
+              >정보 수정 및 승인</button>
+            </div>
           </div>
         </div>
       )}

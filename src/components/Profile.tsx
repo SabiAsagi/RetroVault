@@ -28,7 +28,7 @@ interface ProfileProps {
 
 export default function Profile({ collection, games, viewedUser }: ProfileProps) {
   const [copied, setCopied] = useState(false);
-  const { user } = useAuth();
+  const { user, updateProfile: updateProfileContext } = useAuth();
   const router = useRouter();
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -119,8 +119,9 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
     setIsSaving(true);
     try {
       await updateProfile(editData);
+      await updateProfileContext({ nickname: editData.nickname, avatar: editData.image });
       setIsEditing(false);
-      window.location.reload(); // Hard reload to fetch new session
+      window.location.reload();
     } catch (e: any) {
       alert(e.message || '프로필 수정 실패');
     } finally {
@@ -277,7 +278,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                 </div>
                 {!isEditing && (
                   <div className="flex items-center gap-3 text-xs text-text-muted font-medium">
-                    <span className="flex items-center gap-1"><Calendar size={12} /> 2024년 가입</span>
+                    <span className="flex items-center gap-1"><Calendar size={12} /> {(displayUser as any)?.createdAt ? new Date((displayUser as any).createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '2024년 1월 1일'} 가입</span>
                     <span className="flex items-center gap-1"><Gamepad2 size={12} /> {collectionGames.length} 게임 보유</span>
                   </div>
                 )}
@@ -539,7 +540,8 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
       </div>
 
       {/* ── 3. Profile Share Card Preview ── */}
-      <div className="space-y-6 pt-10 border-t border-vault-border/50">
+      {isOwnProfile && (
+        <div className="space-y-6 pt-10 border-t border-vault-border/50">
         <div className="flex flex-col items-center justify-center mb-6 text-center">
           <h3 className="text-2xl font-black text-text-primary flex items-center gap-2 mb-2">
             <Share2 className="text-mint" size={24} />
@@ -606,7 +608,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                     <UserIcon size={14} className="mt-0.5 opacity-70" />
                 </div>
                 <div className="text-xs text-text-muted">
-                  Joined<br/><span className="text-text-primary font-bold">2024</span>
+                  Joined<br/><span className="text-text-primary font-bold">{(displayUser as any)?.createdAt ? new Date((displayUser as any).createdAt).getFullYear() : '2024'}</span>
                 </div>
               </div>
               <div className="text-right">
@@ -622,7 +624,8 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
             <Download size={18} /> PNG로 저장하기
           </button>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Modals */}
       {dmModalOpen && (

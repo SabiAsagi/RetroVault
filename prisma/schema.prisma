@@ -38,6 +38,8 @@ model User {
   receivedMessages DirectMessage[] @relation("ReceivedMessages")
   collectionGroups CollectionGroup[]
   requestedGames Game[]           @relation("RequestedGames")
+  requestedPlatforms Platform[]   @relation("RequestedPlatforms")
+  requestedCompanies Company[]    @relation("RequestedCompanies")
   
   friendships      Friendship[]      @relation("UserFriendships")
   friendOf         Friendship[]      @relation("FriendFriendships")
@@ -128,6 +130,14 @@ model Platform {
   description     String?
   innovationPoint String?
 
+  status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
+  requestedById     String?
+  rejectReason      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+
+  requestedBy User? @relation("RequestedPlatforms", fields: [requestedById], references: [id])
+
   games Game[]
   timelineEvents TimelineEvent[]
 }
@@ -141,6 +151,14 @@ model Company {
   description String?
   foundedAt   String?
   websiteUrl  String?
+
+  status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
+  requestedById     String?
+  rejectReason      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+
+  requestedBy User? @relation("RequestedCompanies", fields: [requestedById], references: [id])
 
   developedGames Game[] @relation("DevelopedGames")
   publishedGames Game[] @relation("PublishedGames")

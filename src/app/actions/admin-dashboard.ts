@@ -150,3 +150,41 @@ export async function getGameRequests() {
   });
 }
 
+export async function getPlatformRequests() {
+  await requireAdmin();
+  return prisma.platform.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      requestedBy: {
+        select: { name: true, nickname: true, email: true }
+      }
+    }
+  });
+}
+
+export async function getCompanyRequests() {
+  await requireAdmin();
+  return prisma.company.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      requestedBy: {
+        select: { name: true, nickname: true, email: true }
+      }
+    }
+  });
+}
+
+export async function getPlatforms() {
+  await requireAdmin();
+  return prisma.platform.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      _count: {
+        select: { games: true }
+      }
+    }
+  });
+}
+
