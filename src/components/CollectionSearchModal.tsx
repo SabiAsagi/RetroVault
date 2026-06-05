@@ -37,9 +37,9 @@ export default function CollectionSearchModal({ isOpen, onClose, games, onSelect
             placeholder="아카이브에서 게임 검색..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent border-none text-white focus:outline-none text-lg"
+            className="flex-1 bg-transparent border-none text-text-primary focus:outline-none text-lg"
           />
-          <button onClick={onClose} className="text-text-muted hover:text-white p-1 transition-colors shrink-0">
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary p-1 transition-colors shrink-0">
             <X size={24} />
           </button>
         </div>
@@ -71,7 +71,7 @@ export default function CollectionSearchModal({ isOpen, onClose, games, onSelect
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-bold text-white truncate group-hover:text-mint transition-colors">{game.title}</h4>
+                      <h4 className="text-sm font-bold text-text-primary truncate group-hover:text-mint transition-colors">{game.title}</h4>
                       <p className="text-xs text-text-secondary mt-0.5">{game.platform} · {game.releaseYear}</p>
                     </div>
                     <div className="shrink-0 p-2 bg-mint/10 text-mint rounded-full opacity-0 group-hover:opacity-100 transition-opacity">

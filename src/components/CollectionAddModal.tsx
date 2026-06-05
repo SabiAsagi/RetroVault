@@ -49,10 +49,10 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div className="bg-vault-surface border border-vault-border rounded-xl p-6 max-w-sm w-full text-center">
-          <h3 className="text-xl font-bold text-white mb-2">로그인이 필요합니다</h3>
+          <h3 className="text-xl font-bold text-text-primary mb-2">로그인이 필요합니다</h3>
           <p className="text-sm text-text-muted mb-6">컬렉션에 게임을 추가하려면 먼저 로그인해주세요.</p>
           <div className="flex gap-3 justify-center">
-            <button onClick={onClose} className="px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors">취소</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors">취소</button>
             <Link href="/login" className="px-4 py-2 bg-mint text-vault-bg font-bold rounded-lg hover:bg-mint-dim transition-colors">로그인하기</Link>
           </div>
         </div>
@@ -85,8 +85,8 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-          <h3 className="text-lg font-bold text-white truncate pr-4">{initialItem ? '컬렉션 수정' : '컬렉션에 추가'}</h3>
-          <button onClick={onClose} className="text-text-muted hover:text-white transition-colors shrink-0">
+          <h3 className="text-lg font-bold text-text-primary truncate pr-4">{initialItem ? '컬렉션 수정' : '컬렉션에 추가'}</h3>
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors shrink-0">
             <X size={20} />
           </button>
         </div>
@@ -100,7 +100,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h4 className="text-sm font-bold text-white line-clamp-2">{game.title}</h4>
+            <h4 className="text-sm font-bold text-text-primary line-clamp-2">{game.title}</h4>
             <p className="text-xs text-text-secondary mt-1">{game.platform} · {game.releaseYear}</p>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.ownershipStatus} 
                 onChange={e => setFormData({...formData, ownershipStatus: e.target.value as OwnershipStatus})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="미개봉">미개봉</option>
                 <option value="전부 보유">전부 보유</option>
@@ -124,7 +124,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.playStatus} 
                 onChange={e => setFormData({...formData, playStatus: e.target.value as PlayStatus})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="미플레이">미플레이</option>
                 <option value="플레이중">플레이중</option>
@@ -143,7 +143,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 min="0"
                 value={formData.playTime} 
                 onChange={e => setFormData({...formData, playTime: parseInt(e.target.value) || 0})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               />
             </div>
             <div>
@@ -151,7 +151,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.visibility} 
                 onChange={e => setFormData({...formData, visibility: e.target.value as Visibility})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="public">공개</option>
                 <option value="friends">친구 공개</option>
@@ -166,7 +166,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.groupId} 
                 onChange={e => setFormData({ ...formData, groupId: e.target.value })}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg p-2.5 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="">지정 안 함</option>
                 {groups.map(g => (
@@ -179,7 +179,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.purchaseType} 
                 onChange={e => setFormData({...formData, purchaseType: e.target.value as PurchaseType})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="패키지">패키지</option>
                 <option value="다운로드">다운로드</option>
@@ -194,7 +194,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.region} 
                 onChange={e => setFormData({...formData, region: e.target.value as Region})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="KOR">KOR (한국)</option>
                 <option value="JPN">JPN (일본)</option>
@@ -208,7 +208,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <select 
                 value={formData.condition} 
                 onChange={e => setFormData({...formData, condition: e.target.value as Condition})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
                 <option value="Mint">Mint (최상)</option>
                 <option value="Excellent">Excellent (상)</option>
@@ -226,7 +226,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 type="date" 
                 value={formData.purchaseDate} 
                 onChange={e => setFormData({...formData, purchaseDate: e.target.value})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               />
             </div>
             <div>
@@ -235,7 +235,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 type="number" 
                 value={formData.purchasePrice} 
                 onChange={e => setFormData({...formData, purchasePrice: parseInt(e.target.value)})}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               />
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               min="0" max="5" step="0.5"
               value={formData.rating} 
               onChange={e => setFormData({...formData, rating: parseFloat(e.target.value)})}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
             />
           </div>
 
@@ -258,7 +258,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               onChange={e => setFormData({...formData, memo: e.target.value})}
               rows={3}
               placeholder="상태 특이사항, 추억 등..."
-              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint resize-none"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint resize-none"
             />
           </div>
         </form>
@@ -267,7 +267,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
           <button 
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-white transition-colors"
+            className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-text-primary transition-colors"
           >
             취소
           </button>

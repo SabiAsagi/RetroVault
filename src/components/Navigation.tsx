@@ -128,20 +128,20 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
                   className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
                 >
                   <img src={user?.avatar} alt={user?.nickname} className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border" />
-                  <span className="hidden sm:block text-xs font-bold text-white max-w-[80px] truncate">{user?.nickname}</span>
+                  <span className="hidden sm:block text-xs font-bold text-text-primary max-w-[80px] truncate">{user?.nickname}</span>
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>
 
                 {dropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
                     <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
-                      <p className="text-sm font-bold text-white truncate">{user?.nickname}</p>
+                      <p className="text-sm font-bold text-text-primary truncate">{user?.nickname}</p>
                       <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
                     </div>
-                    <button onClick={() => { setDropdownOpen(false); handleTabChange('profile'); }} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
+                    <button onClick={() => { setDropdownOpen(false); handleTabChange('profile'); }} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
                       <User size={14} /> 내 프로필
                     </button>
-                    <button onClick={() => { setDropdownOpen(false); handleTabChange('settings'); }} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
+                    <button onClick={() => { setDropdownOpen(false); handleTabChange('settings'); }} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
                       <Settings size={14} /> 설정
                     </button>
                     <div className="h-px bg-vault-border/50 my-1" />

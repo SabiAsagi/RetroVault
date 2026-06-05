@@ -168,7 +168,7 @@ export default function Stats({ games, collection }: StatsProps) {
         <div className="absolute -top-10 -right-10 p-8 opacity-5 text-neon-blue transform rotate-12">
           <BarChart3 size={200} />
         </div>
-        <h2 className="text-2xl md:text-3xl font-black text-white mb-4 relative z-10">컬렉터 리포트</h2>
+        <h2 className="text-2xl md:text-3xl font-black text-text-primary mb-4 relative z-10">컬렉터 리포트</h2>
         
         <div className="inline-block bg-mint/10 border border-mint/20 rounded-xl px-5 py-3 relative z-10 backdrop-blur-sm">
           <div className="flex items-start gap-3">
@@ -187,7 +187,7 @@ export default function Stats({ games, collection }: StatsProps) {
             <span className="text-xs font-bold text-text-muted">총 보유 게임</span>
             <Package size={16} className="text-neon-blue" />
           </div>
-          <span className="text-2xl font-black text-white">{stats.totalGames}<span className="text-sm text-text-muted font-normal ml-1">개</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats.totalGames}<span className="text-sm text-text-muted font-normal ml-1">개</span></span>
         </div>
         
         <div className="bg-vault-surface border border-vault-border rounded-xl p-4 flex flex-col justify-between hover:border-mint/50 transition-colors">
@@ -195,7 +195,7 @@ export default function Stats({ games, collection }: StatsProps) {
             <span className="text-xs font-bold text-text-muted">총 구매 금액</span>
             <DollarSign size={16} className="text-mint" />
           </div>
-          <span className="text-2xl font-black text-white">{stats.totalPurchase.toLocaleString()}<span className="text-sm text-text-muted font-normal ml-1">원</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats.totalPurchase.toLocaleString()}<span className="text-sm text-text-muted font-normal ml-1">원</span></span>
         </div>
 
         <div className="bg-vault-surface border border-vault-border rounded-xl p-4 flex flex-col justify-between hover:border-amber/50 transition-colors">
@@ -203,7 +203,7 @@ export default function Stats({ games, collection }: StatsProps) {
             <span className="text-xs font-bold text-text-muted">평균 평점</span>
             <Star size={16} className="text-amber" />
           </div>
-          <span className="text-2xl font-black text-white">{stats.avgRating}<span className="text-sm text-text-muted font-normal ml-1">/ 5.0</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats.avgRating}<span className="text-sm text-text-muted font-normal ml-1">/ 5.0</span></span>
         </div>
 
         <div className="bg-vault-surface border border-vault-border rounded-xl p-4 flex flex-col justify-between hover:border-neon-purple/50 transition-colors">
@@ -211,7 +211,7 @@ export default function Stats({ games, collection }: StatsProps) {
             <span className="text-xs font-bold text-text-muted">총 플레이 시간</span>
             <Clock size={16} className="text-neon-purple" />
           </div>
-          <span className="text-2xl font-black text-white">{stats.totalPlayTime}<span className="text-sm text-text-muted font-normal ml-1">시간</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats.totalPlayTime}<span className="text-sm text-text-muted font-normal ml-1">시간</span></span>
         </div>
       </div>
 
@@ -223,7 +223,7 @@ export default function Stats({ games, collection }: StatsProps) {
           </div>
           <div>
             <p className="text-[10px] font-bold text-text-muted uppercase mb-0.5">가장 오래된 게임</p>
-            <p className="text-sm font-bold text-white">{stats.oldestGame?.title}</p>
+            <p className="text-sm font-bold text-text-primary">{stats.oldestGame?.title}</p>
             <p className="text-xs text-text-secondary">{stats.oldestGame?.platform} ({stats.oldestGame?.releaseYear})</p>
           </div>
         </div>
@@ -234,7 +234,7 @@ export default function Stats({ games, collection }: StatsProps) {
           </div>
           <div>
             <p className="text-[10px] font-bold text-text-muted uppercase mb-0.5">가장 최근 등록</p>
-            <p className="text-sm font-bold text-white">{stats.newestAcquired?.game.title}</p>
+            <p className="text-sm font-bold text-text-primary">{stats.newestAcquired?.game.title}</p>
             <p className="text-xs text-text-secondary">{stats.newestAcquired?.item.purchaseDate || '날짜 미상'}</p>
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function Stats({ games, collection }: StatsProps) {
         
         {/* Era Distribution */}
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
             <History size={16} className="text-text-muted" /> 시대 분포
           </h3>
           <div className="h-64">
@@ -267,7 +267,7 @@ export default function Stats({ games, collection }: StatsProps) {
 
         {/* Purchase Trend */}
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
             <DollarSign size={16} className="text-mint" /> 연도별 구매 금액
           </h3>
           <div className="h-64">
@@ -299,7 +299,7 @@ export default function Stats({ games, collection }: StatsProps) {
 
         {/* Platform Ratio */}
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
             <Gamepad2 size={16} className="text-neon-blue" /> 기종 비율
           </h3>
           <div className="h-64 relative">
@@ -322,7 +322,7 @@ export default function Stats({ games, collection }: StatsProps) {
             </ResponsiveContainer>
             {stats.topPlatform && (
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-black text-white">{stats.topPlatform.value}</span>
+                <span className="text-2xl font-black text-text-primary">{stats.topPlatform.value}</span>
                 <span className="text-[10px] text-text-muted">{stats.topPlatform.name}</span>
               </div>
             )}
@@ -331,7 +331,7 @@ export default function Stats({ games, collection }: StatsProps) {
 
         {/* Genre Play Time */}
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
             <Clock size={16} className="text-neon-purple" /> 장르별 플레이 시간
           </h3>
           <div className="h-64">

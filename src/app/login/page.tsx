@@ -35,7 +35,7 @@ export default function LoginPage() {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-mint to-neon-blue mx-auto flex items-center justify-center crt-lines shadow-lg neon-mint mb-4">
             <span className="font-pixel text-[12px] text-vault-bg font-bold">RV</span>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">RetroVault 로그인</h2>
+          <h2 className="text-2xl font-bold text-text-primary mb-2">RetroVault 로그인</h2>
           <p className="text-sm text-text-muted">나만의 레트로 게임 아카이브에 오신 것을 환영합니다.</p>
         </div>
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-white focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
+              className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
               placeholder="admin@retrovault.kr"
             />
           </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-white focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
+              className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
               placeholder="비밀번호 입력"
             />
           </div>

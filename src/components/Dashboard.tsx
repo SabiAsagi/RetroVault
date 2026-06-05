@@ -48,7 +48,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
             <span className="font-pixel text-[10px] text-mint tracking-widest uppercase">Today in History</span>
           </div>
           
-          <h1 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
+          <h1 className="text-3xl md:text-5xl font-black text-text-primary leading-tight mb-4 tracking-tight">
             {historyGame ? (
               <>
                 {historyGame.releaseYear}년 오늘,
@@ -112,7 +112,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
                       <p className="text-[10px] text-text-muted">by @{col.user}</p>
                     </div>
                   </div>
-                  <button className="text-text-muted hover:text-white transition-colors">
+                  <button className="text-text-muted hover:text-text-primary transition-colors">
                     <ChevronRight size={16} />
                   </button>
                 </div>
@@ -229,7 +229,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           
           <button 
             onClick={() => onTabChange('archive')}
-            className="w-full mt-4 flex items-center justify-center gap-2 py-3.5 bg-vault-surface border border-vault-border rounded-xl text-sm font-bold text-text-secondary hover:text-white hover:border-vault-border-light hover:bg-vault-surface-light transition-all group"
+            className="w-full mt-4 flex items-center justify-center gap-2 py-3.5 bg-vault-surface border border-vault-border rounded-xl text-sm font-bold text-text-secondary hover:text-text-primary hover:border-vault-border-light hover:bg-vault-surface-light transition-all group"
           >
             아카이브 전체 탐색하기
             <ArrowRight size={16} className="text-text-muted group-hover:text-mint transition-colors group-hover:translate-x-1" />
@@ -250,7 +250,7 @@ function SectionHeader({ title, icon, subtitle, action }: {
   return (
     <div className="flex items-end justify-between mb-4 border-b border-vault-border/50 pb-2">
       <div>
-        <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-1">
+        <h2 className="text-lg font-bold text-text-primary flex items-center gap-2 mb-1">
           {icon}
           {title}
         </h2>

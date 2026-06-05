@@ -16,7 +16,7 @@ export default function Settings() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-text-muted">
         <Shield size={48} className="mb-4 opacity-50" />
-        <h2 className="text-xl font-bold text-white mb-2">로그인이 필요합니다</h2>
+        <h2 className="text-xl font-bold text-text-primary mb-2">로그인이 필요합니다</h2>
         <p className="text-sm">설정에 접근하려면 먼저 로그인해 주세요.</p>
       </div>
     );
@@ -31,7 +31,7 @@ export default function Settings() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] space-y-8">
       <div className="mb-8">
-        <h2 className="text-2xl md:text-3xl font-black text-white flex items-center gap-3 mb-2">
+        <h2 className="text-2xl md:text-3xl font-black text-text-primary flex items-center gap-3 mb-2">
           <SettingsIcon className="text-mint" size={28} />
           계정 설정
         </h2>
@@ -42,15 +42,15 @@ export default function Settings() {
         
         {/* Left Column: Settings Nav */}
         <div className="md:col-span-1 space-y-2">
-          <button className="w-full flex items-center gap-3 px-4 py-3 bg-vault-surface-light border border-vault-border text-white text-sm font-bold rounded-xl transition-colors">
+          <button className="w-full flex items-center gap-3 px-4 py-3 bg-vault-surface-light border border-vault-border text-text-primary text-sm font-bold rounded-xl transition-colors">
             <User size={18} className="text-neon-blue" />
             프로필 설정
           </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-text-muted hover:text-white hover:bg-vault-surface border border-transparent hover:border-vault-border text-sm font-medium rounded-xl transition-colors">
+          <button className="w-full flex items-center gap-3 px-4 py-3 text-text-muted hover:text-text-primary hover:bg-vault-surface border border-transparent hover:border-vault-border text-sm font-medium rounded-xl transition-colors">
             <Shield size={18} className="text-text-muted" />
             보안 및 공개
           </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-text-muted hover:text-white hover:bg-vault-surface border border-transparent hover:border-vault-border text-sm font-medium rounded-xl transition-colors">
+          <button className="w-full flex items-center gap-3 px-4 py-3 text-text-muted hover:text-text-primary hover:bg-vault-surface border border-transparent hover:border-vault-border text-sm font-medium rounded-xl transition-colors">
             <Palette size={18} className="text-text-muted" />
             디스플레이
           </button>
@@ -61,14 +61,14 @@ export default function Settings() {
           
           {/* Profile Section */}
           <section className="bg-vault-surface border border-vault-border rounded-xl p-6">
-            <h3 className="text-lg font-bold text-white mb-6 border-b border-vault-border pb-4">기본 프로필</h3>
+            <h3 className="text-lg font-bold text-text-primary mb-6 border-b border-vault-border pb-4">기본 프로필</h3>
             
             <div className="flex flex-col sm:flex-row gap-6 mb-6">
               <div className="shrink-0 flex flex-col items-center gap-3">
                 <div className="w-24 h-24 rounded-2xl bg-vault-bg border-2 border-vault-border relative group overflow-hidden">
                   <img src={avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A'} alt="Avatar" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <Camera className="text-white" size={24} />
+                    <Camera className="text-text-primary" size={24} />
                   </div>
                 </div>
                 <button className="text-[10px] font-bold text-mint uppercase tracking-wider hover:underline">이미지 변경</button>
@@ -81,7 +81,7 @@ export default function Settings() {
                     type="text" 
                     value={nickname}
                     onChange={e => setNickname(e.target.value)}
-                    className="w-full bg-vault-bg border border-vault-border rounded-lg px-4 py-2.5 text-sm text-white focus:border-mint focus:outline-none transition-colors" 
+                    className="w-full bg-vault-bg border border-vault-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:border-mint focus:outline-none transition-colors" 
                   />
                 </div>
                 <div>
@@ -111,7 +111,7 @@ export default function Settings() {
 
           {/* Connected Accounts */}
           <section className="bg-vault-surface border border-vault-border rounded-xl p-6">
-            <h3 className="text-lg font-bold text-white mb-6 border-b border-vault-border pb-4">연결된 소셜 계정</h3>
+            <h3 className="text-lg font-bold text-text-primary mb-6 border-b border-vault-border pb-4">연결된 소셜 계정</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-lg">
                 <div className="flex items-center gap-3">
@@ -119,7 +119,7 @@ export default function Settings() {
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">Google</p>
+                    <p className="text-sm font-bold text-text-primary">Google</p>
                     <p className="text-xs text-text-muted">{user.connectedAccounts.includes('google') ? user.email : '연결되지 않음'}</p>
                   </div>
                 </div>
@@ -133,10 +133,10 @@ export default function Settings() {
               <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#24292e] flex items-center justify-center shrink-0">
-                    <Github size={20} className="text-white" />
+                    <Github size={20} className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">GitHub</p>
+                    <p className="text-sm font-bold text-text-primary">GitHub</p>
                     <p className="text-xs text-text-muted">{user.connectedAccounts.includes('github') ? user.email : '연결되지 않음'}</p>
                   </div>
                 </div>
@@ -151,14 +151,14 @@ export default function Settings() {
 
           {/* Privacy & Display */}
           <section className="bg-vault-surface border border-vault-border rounded-xl p-6">
-            <h3 className="text-lg font-bold text-white mb-6 border-b border-vault-border pb-4">공개 및 디스플레이</h3>
+            <h3 className="text-lg font-bold text-text-primary mb-6 border-b border-vault-border pb-4">공개 및 디스플레이</h3>
             <div className="space-y-6">
               
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     {isPublic ? <Globe size={16} className="text-mint" /> : <EyeOff size={16} className="text-amber" />}
-                    <p className="text-sm font-bold text-white">컬렉션 공개 여부</p>
+                    <p className="text-sm font-bold text-text-primary">컬렉션 공개 여부</p>
                   </div>
                   <p className="text-xs text-text-muted">내 프로필과 컬렉션을 다른 사용자에게 공개합니다.</p>
                 </div>
@@ -176,7 +176,7 @@ export default function Settings() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Palette size={16} className="text-neon-purple" />
-                    <p className="text-sm font-bold text-white">어두운 테마</p>
+                    <p className="text-sm font-bold text-text-primary">어두운 테마</p>
                   </div>
                   <p className="text-xs text-text-muted">앱 전체에 다크 모드/레트로 모드를 적용합니다.</p>
                 </div>

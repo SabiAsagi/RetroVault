@@ -123,7 +123,7 @@ export default function Timeline({ games, timelineEvents, onSelectGame }: Timeli
       <div className="mb-6 space-y-4 shrink-0">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl font-black text-white flex items-center gap-2 mb-1">
+            <h2 className="text-xl font-black text-text-primary flex items-center gap-2 mb-1">
               <Clock size={20} className="text-neon-purple" />
               레트로 타임라인
             </h2>
@@ -135,14 +135,14 @@ export default function Timeline({ games, timelineEvents, onSelectGame }: Timeli
             <div className="flex items-center bg-vault-surface border border-vault-border rounded-lg overflow-hidden p-0.5">
               <button 
                 onClick={() => setZoomLevel('dense')}
-                className={`p-1.5 rounded transition-all flex items-center justify-center ${zoomLevel === 'dense' ? 'bg-mint/20 text-mint' : 'text-text-muted hover:text-white'}`}
+                className={`p-1.5 rounded transition-all flex items-center justify-center ${zoomLevel === 'dense' ? 'bg-mint/20 text-mint' : 'text-text-muted hover:text-text-primary'}`}
                 title="조밀하게 보기"
               >
                 <ZoomOut size={16} />
               </button>
               <button 
                 onClick={() => setZoomLevel('comfortable')}
-                className={`p-1.5 rounded transition-all flex items-center justify-center ${zoomLevel === 'comfortable' ? 'bg-mint/20 text-mint' : 'text-text-muted hover:text-white'}`}
+                className={`p-1.5 rounded transition-all flex items-center justify-center ${zoomLevel === 'comfortable' ? 'bg-mint/20 text-mint' : 'text-text-muted hover:text-text-primary'}`}
                 title="넓게 보기"
               >
                 <ZoomIn size={16} />
@@ -157,9 +157,9 @@ export default function Timeline({ games, timelineEvents, onSelectGame }: Timeli
                 onChange={e => handleJumpToYear(e.target.value)}
                 className="bg-transparent text-sm text-text-primary focus:outline-none cursor-pointer w-20 appearance-none"
               >
-                <option value="" className="bg-vault-surface text-white">이동...</option>
+                <option value="" className="bg-vault-surface text-text-primary">이동...</option>
                 {timelineData.map(d => (
-                  <option key={d.year} value={d.year} className="bg-vault-surface text-white">{d.year}년</option>
+                  <option key={d.year} value={d.year} className="bg-vault-surface text-text-primary">{d.year}년</option>
                 ))}
               </select>
             </div>
@@ -170,7 +170,7 @@ export default function Timeline({ games, timelineEvents, onSelectGame }: Timeli
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                 showFilters || hasFilters
                   ? 'bg-neon-blue/20 text-neon-blue border border-neon-blue/30'
-                  : 'bg-vault-surface text-text-secondary border border-vault-border hover:border-vault-border-light hover:text-white'
+                  : 'bg-vault-surface text-text-secondary border border-vault-border hover:border-vault-border-light hover:text-text-primary'
               }`}
             >
               <Filter size={16} />
@@ -251,7 +251,7 @@ export default function Timeline({ games, timelineEvents, onSelectGame }: Timeli
                 ${!isEmpty ? 'border-vault-border hover:border-neon-purple/50 shadow-md' : 'border-vault-border/50 bg-vault-surface/50'}
               `}>
                 <h3 className={`text-2xl font-black mb-4 flex items-center gap-2 
-                  ${!isEmpty ? 'text-white' : 'text-text-muted'}
+                  ${!isEmpty ? 'text-text-primary' : 'text-text-muted'}
                 `}>
                   {data.year}
                   {!isEmpty && <span className="h-px flex-1 bg-gradient-to-r from-vault-border to-transparent" />}

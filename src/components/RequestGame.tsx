@@ -44,7 +44,7 @@ export default function RequestGame() {
   return (
     <div className="max-w-[600px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
       <div className="mb-8 text-center">
-        <h2 className="text-2xl font-black text-white flex items-center justify-center gap-2 mb-2">
+        <h2 className="text-2xl font-black text-text-primary flex items-center justify-center gap-2 mb-2">
           <PlusCircle className="text-neon-blue" /> 새로운 게임 추가 요청
         </h2>
         <p className="text-text-secondary text-sm">찾으시는 게임이 없나요? 등록을 요청해 주시면 확인 후 추가해 드립니다.</p>
@@ -61,7 +61,7 @@ export default function RequestGame() {
               type="text" 
               value={formData.title}
               onChange={e => setFormData({ ...formData, title: e.target.value })}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-neon-blue transition-colors"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-blue transition-colors"
               placeholder="예: Super Mario Bros."
             />
           </div>
@@ -74,7 +74,7 @@ export default function RequestGame() {
                 type="text" 
                 value={formData.platform}
                 onChange={e => setFormData({ ...formData, platform: e.target.value })}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-neon-blue transition-colors"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-blue transition-colors"
                 placeholder="예: NES"
               />
             </div>
@@ -85,7 +85,7 @@ export default function RequestGame() {
                 type="number" 
                 value={formData.releaseYear}
                 onChange={e => setFormData({ ...formData, releaseYear: e.target.value })}
-                className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-neon-blue transition-colors"
+                className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-blue transition-colors"
                 placeholder="예: 1985"
               />
             </div>
@@ -97,7 +97,7 @@ export default function RequestGame() {
               type="text" 
               value={formData.developer}
               onChange={e => setFormData({ ...formData, developer: e.target.value })}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-neon-blue transition-colors"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-blue transition-colors"
               placeholder="예: Nintendo"
             />
           </div>
@@ -108,7 +108,7 @@ export default function RequestGame() {
               type="url" 
               value={formData.referenceUrl}
               onChange={e => setFormData({ ...formData, referenceUrl: e.target.value })}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-neon-blue transition-colors"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-blue transition-colors"
               placeholder="예: https://en.wikipedia.org/wiki/Super_Mario_Bros."
             />
           </div>
@@ -118,7 +118,7 @@ export default function RequestGame() {
             <textarea 
               value={formData.description}
               onChange={e => setFormData({ ...formData, description: e.target.value })}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-neon-blue resize-none h-24 transition-colors"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-blue resize-none h-24 transition-colors"
               placeholder="게임을 식별하는 데 도움이 될만한 정보를 적어주세요."
             />
           </div>

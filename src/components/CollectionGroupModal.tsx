@@ -60,10 +60,10 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div className="bg-vault-surface border border-vault-border rounded-xl p-6 w-full max-w-lg">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
             <Folder className="text-mint" size={20} /> 컬렉션 그룹 관리
           </h3>
-          <button onClick={onClose} className="text-text-muted hover:text-white">
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary">
             <X size={20} />
           </button>
         </div>
@@ -74,7 +74,7 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
             value={newGroupName} 
             onChange={e => setNewGroupName(e.target.value)} 
             placeholder="새 그룹 이름..."
-            className="flex-1 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
+            className="flex-1 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
           />
           <button 
             onClick={handleCreateGroup}
@@ -88,7 +88,7 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
           {groups.map(g => (
             <div key={g.id} className="bg-vault-bg border border-vault-border rounded-lg p-4 flex justify-between items-center group">
               <div>
-                <h4 className="font-bold text-white mb-1">{g.name}</h4>
+                <h4 className="font-bold text-text-primary mb-1">{g.name}</h4>
                 <p className="text-xs text-text-muted">{g.items?.length || 0}개의 게임 포함</p>
               </div>
               <button 

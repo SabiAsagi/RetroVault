@@ -14,7 +14,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] space-y-6">
-      <Link href="/games" className="inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-white transition-colors">
+      <Link href="/games" className="inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-text-primary transition-colors">
         <ArrowLeft size={16} /> 아카이브로 돌아가기
       </Link>
       
@@ -53,7 +53,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
                 </span>
               )}
             </div>
-            <h1 className="text-3xl font-black text-white leading-tight break-words">{game.title}</h1>
+            <h1 className="text-3xl font-black text-text-primary leading-tight break-words">{game.title}</h1>
             <p className="text-sm text-text-muted mt-2">{game.developer ? `${game.developer} / ` : ''}{game.publisher}</p>
           </div>
 
@@ -65,7 +65,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
               </div>
               <div>
                 <p className="text-xs font-bold text-text-muted">평점</p>
-                <p className="text-lg font-black text-white">{game.rating || '-'}</p>
+                <p className="text-lg font-black text-text-primary">{game.rating || '-'}</p>
               </div>
             </div>
             <div className="h-10 w-px bg-vault-border" />
@@ -75,7 +75,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
               </div>
               <div>
                 <p className="text-xs font-bold text-text-muted">인기도</p>
-                <p className="text-lg font-black text-white">{game.popularity || '-'}</p>
+                <p className="text-lg font-black text-text-primary">{game.popularity || '-'}</p>
               </div>
             </div>
           </div>
@@ -85,13 +85,13 @@ export default function GameDetailClient({ game }: { game: Game }) {
             <div className="flex gap-1 border-b border-vault-border mb-4">
               <button 
                 onClick={() => setActiveTab('info')}
-                className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'info' ? 'border-mint text-mint' : 'border-transparent text-text-muted hover:text-white'}`}
+                className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'info' ? 'border-mint text-mint' : 'border-transparent text-text-muted hover:text-text-primary'}`}
               >
                 기본 정보
               </button>
               <button 
                 onClick={() => setActiveTab('era')}
-                className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'era' ? 'border-mint text-mint' : 'border-transparent text-text-muted hover:text-white'}`}
+                className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'era' ? 'border-mint text-mint' : 'border-transparent text-text-muted hover:text-text-primary'}`}
               >
                 시대 정보
               </button>

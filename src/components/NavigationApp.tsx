@@ -23,6 +23,8 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: '#4AEDC4', group: 'main' },
   { id: 'archive', path: '/games', label: '게임 아카이브', icon: <Archive size={16} />, color: '#4EA8FF', group: 'main' },
+  { id: 'consoles', path: '/platforms', label: '콘솔 아카이브', icon: <Database size={16} />, color: '#A78BFA', group: 'main' },
+  { id: 'companies', path: '/companies', label: '회사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
   { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
   { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
   { id: 'vault', path: '/collection', label: '내 컬렉션', icon: <BookOpen size={16} />, color: '#FFB547', group: 'user' },
@@ -32,7 +34,7 @@ const navItems: NavItem[] = [
   { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
 ];
 
-const bottomTabIds = ['dashboard', 'archive', 'vault', 'achievements', 'profile'];
+const bottomTabIds = ['dashboard', 'archive', 'consoles', 'community', 'timeline'];
 
 export default function NavigationApp() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -127,7 +129,7 @@ export default function NavigationApp() {
                           <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border" />
                         )}
                         <div>
-                          <p className="text-sm font-bold text-white leading-tight">{g.title}</p>
+                          <p className="text-sm font-bold text-text-primary leading-tight">{g.title}</p>
                           <p className="text-xs text-text-secondary">{g.platform?.name}</p>
                         </div>
                       </Link>
@@ -143,7 +145,7 @@ export default function NavigationApp() {
                         <div className="w-6 h-6 rounded-md bg-mint/20 text-mint flex items-center justify-center text-xs font-bold">
                           {u.nickname?.[0] || 'U'}
                         </div>
-                        <p className="text-sm text-white">{u.nickname}</p>
+                        <p className="text-sm text-text-primary">{u.nickname}</p>
                       </Link>
                     ))}
                   </div>
@@ -154,7 +156,7 @@ export default function NavigationApp() {
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">회사</h3>
                     {searchResults.companies.map((c: any) => (
                       <div key={c.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <p className="text-sm text-white">{c.name}</p>
+                        <p className="text-sm text-text-primary">{c.name}</p>
                       </div>
                     ))}
                   </div>
@@ -165,7 +167,7 @@ export default function NavigationApp() {
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">공개 컬렉션</h3>
                     {searchResults.groups.map((grp: any) => (
                       <Link href={`/profile/${grp.userId}?group=${grp.id}`} key={grp.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <p className="text-sm text-white">{grp.name}</p>
+                        <p className="text-sm text-text-primary">{grp.name}</p>
                         <span className="text-[10px] text-text-muted">by {grp.user?.nickname}</span>
                       </Link>
                     ))}
@@ -195,19 +197,21 @@ export default function NavigationApp() {
                   <div className="w-6 h-6 rounded-md bg-mint flex items-center justify-center text-[10px] text-vault-bg font-bold">
                     {user?.name?.[0] || 'U'}
                   </div>
-                  <span className="hidden sm:block text-xs font-bold text-white max-w-[80px] truncate">{user?.name}</span>
+                  <span className="hidden sm:block text-xs font-bold text-text-primary max-w-[80px] truncate">{user?.name}</span>
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>
                 {dropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
                     <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
-                      <p className="text-sm font-bold text-white truncate">{user?.name}</p>
+                      <p className="text-sm font-bold text-text-primary truncate">{user?.name}</p>
                       <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
                     </div>
-                    <Link href={`/profile/${user.id}`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
-                      <User size={14} /> 내 프로필
-                    </Link>
-                    <Link href={`/inbox`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-white flex items-center gap-2">
+                    {navItems.filter(item => item.group === 'user').map(item => (
+                      <Link key={item.id} href={item.id === 'profile' ? `/profile/${user.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
+                        {item.icon} {item.label}
+                      </Link>
+                    ))}
+                    <Link href={`/inbox`} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
                       <Mail size={14} /> 쪽지함
                     </Link>
                     <div className="h-px bg-vault-border/50 my-1" />
@@ -222,7 +226,7 @@ export default function NavigationApp() {
         </div>
 
         <nav className="hidden lg:flex items-center gap-0 px-4 max-w-screen-2xl mx-auto border-t border-vault-border/40 overflow-x-auto">
-          {navItems.map(item => {
+          {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
             if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
             return (
@@ -266,7 +270,7 @@ export default function NavigationApp() {
         </div>
 
         <nav className="py-3 px-3 space-y-0.5 overflow-y-auto">
-          {navItems.map(item => {
+          {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
             if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
             return (
@@ -274,14 +278,12 @@ export default function NavigationApp() {
                 href={item.path}
                 key={item.id}
                 onClick={() => setSidebarOpen(false)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isActive ? 'bg-vault-surface-light text-text-primary' : 'text-text-secondary hover:bg-vault-surface-light hover:text-text-primary'
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  isActive ? 'bg-vault-surface-light text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary hover:bg-vault-surface/50'
                 }`}
               >
-                <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={isActive ? { backgroundColor: `${item.color}18`, color: item.color, border: `1px solid ${item.color}33` } : { backgroundColor: 'var(--color-vault-surface-light)', color: 'var(--color-text-muted)' }}>
-                  {item.icon}
-                </span>
-                <span className="flex-1">{item.label}</span>
+                <span style={isActive ? { color: item.color } : {}}>{item.icon}</span>
+                <span className="font-bold text-sm">{item.label}</span>
               </Link>
             );
           })}

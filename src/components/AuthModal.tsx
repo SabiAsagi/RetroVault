@@ -27,9 +27,9 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <div className="flex justify-between items-center px-6 py-4 border-b border-vault-border bg-vault-surface-light">
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-mint" size={20} />
-            <h2 className="text-lg font-black text-white">RetroVault</h2>
+            <h2 className="text-lg font-black text-text-primary">RetroVault</h2>
           </div>
-          <button onClick={onClose} className="text-text-muted hover:text-white transition-colors p-1">
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-1">
             <X size={20} />
           </button>
         </div>
@@ -37,13 +37,13 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <div className="p-6 md:p-8">
           <div className="flex gap-4 mb-8">
             <button 
-              className={`flex-1 pb-2 text-sm font-bold border-b-2 transition-colors ${mode === 'login' ? 'border-mint text-white' : 'border-transparent text-text-muted hover:text-text-secondary'}`}
+              className={`flex-1 pb-2 text-sm font-bold border-b-2 transition-colors ${mode === 'login' ? 'border-mint text-text-primary' : 'border-transparent text-text-muted hover:text-text-secondary'}`}
               onClick={() => setMode('login')}
             >
               로그인
             </button>
             <button 
-              className={`flex-1 pb-2 text-sm font-bold border-b-2 transition-colors ${mode === 'signup' ? 'border-mint text-white' : 'border-transparent text-text-muted hover:text-text-secondary'}`}
+              className={`flex-1 pb-2 text-sm font-bold border-b-2 transition-colors ${mode === 'signup' ? 'border-mint text-text-primary' : 'border-transparent text-text-muted hover:text-text-secondary'}`}
               onClick={() => setMode('signup')}
             >
               회원가입
@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <label className="block text-xs font-bold text-text-muted mb-1">닉네임</label>
                 <div className="relative">
                   <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-                  <input type="text" placeholder="예: 레트로 마스터" className="w-full bg-vault-bg border border-vault-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:border-mint focus:outline-none transition-colors" />
+                  <input type="text" placeholder="예: 레트로 마스터" className="w-full bg-vault-bg border border-vault-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary focus:border-mint focus:outline-none transition-colors" />
                 </div>
               </div>
             )}
@@ -65,7 +65,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <label className="block text-xs font-bold text-text-muted mb-1">이메일</label>
               <div className="relative">
                 <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-                <input type="email" placeholder="retro@vaultgame.io" className="w-full bg-vault-bg border border-vault-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:border-mint focus:outline-none transition-colors" />
+                <input type="email" placeholder="retro@vaultgame.io" className="w-full bg-vault-bg border border-vault-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary focus:border-mint focus:outline-none transition-colors" />
               </div>
             </div>
 
@@ -73,7 +73,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <label className="block text-xs font-bold text-text-muted mb-1">비밀번호</label>
               <div className="relative">
                 <Key size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-                <input type="password" placeholder="••••••••" className="w-full bg-vault-bg border border-vault-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:border-mint focus:outline-none transition-colors" />
+                <input type="password" placeholder="••••••••" className="w-full bg-vault-bg border border-vault-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary focus:border-mint focus:outline-none transition-colors" />
               </div>
             </div>
 
@@ -100,7 +100,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </button>
               <button 
                 onClick={() => handleDemoLogin('github')}
-                className="flex items-center justify-center gap-2 py-2.5 bg-[#24292e] text-white rounded-lg text-sm font-bold hover:bg-[#2c3238] transition-colors border border-vault-border"
+                className="flex items-center justify-center gap-2 py-2.5 bg-[#24292e] text-text-primary rounded-lg text-sm font-bold hover:bg-[#2c3238] transition-colors border border-vault-border"
               >
                 <Github size={16} />
                 GitHub

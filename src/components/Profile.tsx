@@ -1,9 +1,10 @@
 "use client";
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { 
   User as UserIcon, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
   Star, Clock, Shield, Medal, Copy, Check, Share2, History as HistoryIcon,
-  Edit2, Save, X, Download, MessageSquare, AlertTriangle
+  Edit2, Save, X, Download, MessageSquare, AlertTriangle, UserPlus, UserCheck, UserMinus,
+  LayoutGrid
 } from 'lucide-react';
 import { CollectionItem, Game } from '../types';
 import { calculateEmblems, Emblem } from '../lib/emblems';
@@ -46,6 +47,62 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
 
   const displayUser = viewedUser || user;
   const isOwnProfile = !viewedUser || viewedUser.id === user?.id;
+
+  const [friendStatus, setFriendStatus] = useState<'NONE' | 'PENDING_SENT' | 'PENDING_RECEIVED' | 'ACCEPTED'>('NONE');
+  const [friendshipId, setFriendshipId] = useState<string | null>(null);
+
+  // Fetch friendship status
+  useEffect(() => {
+    if (!isOwnProfile && displayUser && user) {
+      fetch('/api/friends')
+        .then(res => res.json())
+        .then((data: any[]) => {
+          if (Array.isArray(data)) {
+            const fs = data.find(f => (f.userId === user.id && f.friendId === displayUser.id) || (f.userId === displayUser.id && f.friendId === user.id));
+            if (fs) {
+              setFriendshipId(fs.id);
+              if (fs.status === 'ACCEPTED') setFriendStatus('ACCEPTED');
+              else if (fs.userId === user.id) setFriendStatus('PENDING_SENT');
+              else setFriendStatus('PENDING_RECEIVED');
+            }
+          }
+        });
+    }
+  }, [isOwnProfile, displayUser, user]);
+
+  const handleFriendAction = async (action: 'ADD' | 'ACCEPT' | 'REJECT' | 'REMOVE') => {
+    try {
+      if (action === 'ADD') {
+        const res = await fetch('/api/friends', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ friendId: displayUser?.id })
+        });
+        if (res.ok) setFriendStatus('PENDING_SENT');
+      } else if (friendshipId) {
+        if (action === 'ACCEPT') {
+          await fetch('/api/friends', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: friendshipId, status: 'ACCEPTED' })
+          });
+          setFriendStatus('ACCEPTED');
+        } else {
+          // REJECT or REMOVE
+          await fetch('/api/friends', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: friendshipId, status: 'REJECTED' })
+          });
+          setFriendStatus('NONE');
+          setFriendshipId(null);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      alert('요청 처리 중 오류가 발생했습니다.');
+    }
+  };
 
   // Initialize editData when user loads
   useMemo(() => {
@@ -206,11 +263,11 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                       type="text" 
                       value={editData.nickname} 
                       onChange={e => setEditData({...editData, nickname: e.target.value})}
-                      className="bg-vault-bg border border-vault-border rounded px-2 py-1 text-white text-lg font-bold focus:outline-none focus:border-mint max-w-[200px]"
+                      className="bg-vault-bg border border-vault-border rounded px-2 py-1 text-text-primary text-lg font-bold focus:outline-none focus:border-mint max-w-[200px]"
                       placeholder="닉네임"
                     />
                   ) : (
-                    <h2 className="text-2xl md:text-3xl font-black text-white truncate">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h2>
+                    <h2 className="text-2xl md:text-3xl font-black text-text-primary truncate">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h2>
                   )}
                   {repEmblem && !isEditing && (
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1 ${repEmblem.colorClass} bg-vault-surface`}>
@@ -267,7 +324,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                   </button>
                   <button 
                     onClick={() => setIsEditing(false)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-bg border border-vault-border text-text-secondary hover:text-white rounded-lg transition-colors text-sm"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-bg border border-vault-border text-text-secondary hover:text-text-primary rounded-lg transition-colors text-sm"
                   >
                     <X size={14} /> 취소
                   </button>
@@ -276,13 +333,13 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                 <>
                   <button 
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-surface-light border border-vault-border text-text-secondary hover:text-white hover:border-vault-border-light rounded-lg transition-colors text-sm"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-surface-light border border-vault-border text-text-secondary hover:text-text-primary hover:border-vault-border-light rounded-lg transition-colors text-sm"
                   >
                     <Edit2 size={14} /> 편집
                   </button>
                   <button 
                     onClick={handleCopyLink}
-                    className={`p-1.5 rounded-lg border transition-colors ${copied ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-vault-bg border-vault-border text-text-primary hover:text-white hover:border-vault-border-light'}`}
+                    className={`p-1.5 rounded-lg border transition-colors ${copied ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-vault-bg border-vault-border text-text-primary hover:text-text-primary hover:border-vault-border-light'}`}
                     title="공유 링크 복사"
                   >
                     {copied ? <Check size={16} /> : <Share2 size={16} />}
@@ -292,14 +349,40 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                 <div className="flex gap-2">
                   <button 
                     onClick={handleCopyLink}
-                    className={`p-1.5 rounded-lg border transition-colors ${copied ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-vault-bg border-vault-border text-text-primary hover:text-white hover:border-vault-border-light'}`}
+                    className={`p-1.5 rounded-lg border transition-colors ${copied ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-vault-bg border-vault-border text-text-primary hover:text-text-primary hover:border-vault-border-light'}`}
                     title="공유 링크 복사"
                   >
                     {copied ? <Check size={16} /> : <Share2 size={16} />}
                   </button>
+                  
+                  {user && (
+                    <>
+                      {friendStatus === 'NONE' && (
+                        <button onClick={() => handleFriendAction('ADD')} className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-mint hover:text-mint/80 hover:border-mint/50 transition-colors" title="친구 추가">
+                          <UserPlus size={16} />
+                        </button>
+                      )}
+                      {friendStatus === 'PENDING_SENT' && (
+                        <button className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-text-muted cursor-default" title="친구 요청 전송됨">
+                          <UserPlus size={16} className="opacity-50" />
+                        </button>
+                      )}
+                      {friendStatus === 'PENDING_RECEIVED' && (
+                        <button onClick={() => handleFriendAction('ACCEPT')} className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-mint hover:bg-mint/10 hover:border-mint/50 transition-colors" title="친구 요청 수락">
+                          <UserCheck size={16} />
+                        </button>
+                      )}
+                      {friendStatus === 'ACCEPTED' && (
+                        <button onClick={() => handleFriendAction('REMOVE')} className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-text-secondary hover:text-coral hover:border-coral/50 transition-colors" title="친구 삭제">
+                          <UserMinus size={16} />
+                        </button>
+                      )}
+                    </>
+                  )}
+
                   <button 
                     onClick={() => setDmModalOpen(true)}
-                    className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-text-primary hover:text-white hover:border-vault-border-light transition-colors"
+                    className="p-1.5 rounded-lg border bg-vault-bg border-vault-border text-text-primary hover:text-text-primary hover:border-vault-border-light transition-colors"
                     title="쪽지 보내기"
                   >
                     <MessageSquare size={16} />
@@ -322,7 +405,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               onChange={e => setEditData({...editData, bio: e.target.value})}
               rows={3}
               placeholder="자기소개를 입력하세요..."
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-mint resize-none mt-2"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-mint resize-none mt-2"
             />
           ) : (
             <p className="text-sm text-text-secondary leading-relaxed max-w-2xl mt-2 whitespace-pre-line">
@@ -336,14 +419,14 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
       {gameLife && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black text-white flex items-center gap-2">
+            <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
               <Gamepad2 className="text-neon-purple" size={20} />
               내 게임 인생 리포트 카드
             </h3>
             {isOwnProfile && (
               <button 
                 onClick={handleDownloadReport}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-surface-light hover:bg-vault-surface border border-vault-border text-text-secondary hover:text-white rounded-lg transition-colors text-xs font-bold"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-surface-light hover:bg-vault-surface border border-vault-border text-text-secondary hover:text-text-primary rounded-lg transition-colors text-xs font-bold"
               >
                 <Download size={14} /> PNG로 다운로드
               </button>
@@ -356,7 +439,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               <div className="text-[10px] font-bold text-text-muted uppercase mb-3 flex items-center gap-1.5">
                 <Star size={12} className="text-mint" /> 첫 등록 게임
               </div>
-              <p className="text-base font-bold text-white mb-1 group-hover:text-mint transition-colors">{gameLife.firstRegistered.game.title}</p>
+              <p className="text-base font-bold text-text-primary mb-1 group-hover:text-mint transition-colors">{gameLife.firstRegistered.game.title}</p>
               <p className="text-xs text-text-secondary">{gameLife.firstRegistered.game.platform}</p>
             </div>
 
@@ -364,7 +447,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               <div className="text-[10px] font-bold text-text-muted uppercase mb-3 flex items-center gap-1.5">
                 <HistoryIcon size={12} className="text-amber" /> 가장 오래 보유한 게임
               </div>
-              <p className="text-base font-bold text-white mb-1 group-hover:text-amber transition-colors">{gameLife.longestOwned.game.title}</p>
+              <p className="text-base font-bold text-text-primary mb-1 group-hover:text-amber transition-colors">{gameLife.longestOwned.game.title}</p>
               <p className="text-xs text-text-secondary">구매일: {gameLife.longestOwned.item.purchaseDate || '알 수 없음'}</p>
             </div>
 
@@ -372,7 +455,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               <div className="text-[10px] font-bold text-text-muted uppercase mb-3 flex items-center gap-1.5">
                 <Trophy size={12} className="text-neon-blue" /> 최애 플랫폼 & 장르
               </div>
-              <p className="text-base font-bold text-white mb-1 group-hover:text-neon-blue transition-colors">{gameLife.favoritePlatform}</p>
+              <p className="text-base font-bold text-text-primary mb-1 group-hover:text-neon-blue transition-colors">{gameLife.favoritePlatform}</p>
               <p className="text-xs text-text-secondary">{gameLife.favoriteGenre} 장르 선호</p>
             </div>
 
@@ -380,7 +463,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               <div className="text-[10px] font-bold text-text-muted uppercase mb-3 flex items-center gap-1.5">
                 <Clock size={12} className="text-neon-purple" /> 가장 많이 플레이한 게임
               </div>
-              <p className="text-base font-bold text-white mb-1 group-hover:text-neon-purple transition-colors">{gameLife.mostPlayed?.game.title || '기록 없음'}</p>
+              <p className="text-base font-bold text-text-primary mb-1 group-hover:text-neon-purple transition-colors">{gameLife.mostPlayed?.game.title || '기록 없음'}</p>
               <p className="text-xs text-text-secondary">{gameLife.mostPlayed?.item.playTime || 0}시간 플레이</p>
             </div>
 
@@ -397,7 +480,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                   </div>
                 )}
                 <div>
-                  <p className="text-base font-bold text-white mb-1 group-hover:text-coral transition-colors">{gameLife.highestRated?.game.title || '평가된 게임 없음'}</p>
+                  <p className="text-base font-bold text-text-primary mb-1 group-hover:text-coral transition-colors">{gameLife.highestRated?.game.title || '평가된 게임 없음'}</p>
                   <p className="text-xs text-text-secondary">
                     평점 {gameLife.highestRated?.item.rating}/5.0 · {gameLife.highestRated?.game.platform}
                   </p>
@@ -409,10 +492,56 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
         </div>
       )}
 
+      {/* ── 2.5. Collection Grid ── */}
+      <div className="space-y-4 pt-10 border-t border-vault-border/50">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
+            <LayoutGrid className="text-amber" size={20} />
+            보유 컬렉션
+          </h3>
+          <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full">
+            총 {collectionGames.length}개
+          </span>
+        </div>
+        
+        {collectionGames.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {collectionGames.map(cg => (
+              <div key={cg.item.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-mint/50 hover:shadow-lg transition-all group">
+                <div className="aspect-[3/4] bg-vault-surface-light relative">
+                  {cg.game.imageUrl ? (
+                    <img src={cg.game.imageUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-text-muted">
+                      <Gamepad2 size={32} className="opacity-20" />
+                    </div>
+                  )}
+                  {cg.item.ownershipStatus === '전부 보유' && (
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-mint text-vault-bg rounded-full flex items-center justify-center shadow-md">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-vault-bg/90 to-transparent opacity-80" />
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <p className="text-xs font-bold text-text-primary truncate">{cg.game.title}</p>
+                    <p className="text-[10px] text-text-secondary truncate">{cg.game.platform}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-vault-surface border border-vault-border rounded-xl">
+            <Gamepad2 size={32} className="mx-auto text-text-muted mb-3 opacity-30" />
+            <p className="text-sm text-text-secondary">공개된 컬렉션이 없습니다.</p>
+          </div>
+        )}
+      </div>
+
       {/* ── 3. Profile Share Card Preview ── */}
       <div className="space-y-6 pt-10 border-t border-vault-border/50">
         <div className="flex flex-col items-center justify-center mb-6 text-center">
-          <h3 className="text-2xl font-black text-white flex items-center gap-2 mb-2">
+          <h3 className="text-2xl font-black text-text-primary flex items-center gap-2 mb-2">
             <Share2 className="text-mint" size={24} />
             내 게임 인생 리포트 카드
           </h3>
@@ -446,7 +575,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
             </div>
             
             <div className="mb-8">
-              <h4 className="text-3xl font-black text-white tracking-tight mb-1">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h4>
+              <h4 className="text-3xl font-black text-text-primary tracking-tight mb-1">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h4>
               <p className="text-sm text-text-secondary">RetroVault Verified Collector</p>
             </div>
             
@@ -462,7 +591,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               <div className="bg-vault-surface/50 rounded-xl p-4 border border-vault-border/50 backdrop-blur-sm col-span-2 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Most Played</p>
-                  <p className="text-sm font-bold text-white truncate max-w-[200px]">{gameLife?.mostPlayed?.game.title || 'N/A'}</p>
+                  <p className="text-sm font-bold text-text-primary truncate max-w-[200px]">{gameLife?.mostPlayed?.game.title || 'N/A'}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Hours</p>
@@ -477,7 +606,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                     <UserIcon size={14} className="mt-0.5 opacity-70" />
                 </div>
                 <div className="text-xs text-text-muted">
-                  Joined<br/><span className="text-white font-bold">2024</span>
+                  Joined<br/><span className="text-text-primary font-bold">2024</span>
                 </div>
               </div>
               <div className="text-right">
@@ -499,15 +628,15 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
       {dmModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-vault-surface border border-vault-border rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold text-white mb-4">쪽지 보내기</h3>
+            <h3 className="text-lg font-bold text-text-primary mb-4">쪽지 보내기</h3>
             <textarea
               value={dmContent}
               onChange={e => setDmContent(e.target.value)}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-mint resize-none h-32 mb-4"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-mint resize-none h-32 mb-4"
               placeholder={`${displayUser?.nickname}님에게 보낼 메시지를 입력하세요...`}
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDmModalOpen(false)} className="px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors">취소</button>
+              <button onClick={() => setDmModalOpen(false)} className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors">취소</button>
               <button onClick={handleSendDM} className="px-4 py-2 bg-mint text-vault-bg font-bold rounded-lg hover:bg-mint-dim transition-colors">보내기</button>
             </div>
           </div>
@@ -524,12 +653,12 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
             <textarea
               value={reportReason}
               onChange={e => setReportReason(e.target.value)}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-white focus:outline-none focus:border-coral resize-none h-32 mb-4"
+              className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-coral resize-none h-32 mb-4"
               placeholder="신고 사유를 입력하세요..."
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setReportModalOpen(false)} className="px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors">취소</button>
-              <button onClick={handleReport} className="px-4 py-2 bg-coral text-white font-bold rounded-lg hover:bg-red-600 transition-colors">신고 접수</button>
+              <button onClick={() => setReportModalOpen(false)} className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors">취소</button>
+              <button onClick={handleReport} className="px-4 py-2 bg-coral text-text-primary font-bold rounded-lg hover:bg-red-600 transition-colors">신고 접수</button>
             </div>
           </div>
         </div>

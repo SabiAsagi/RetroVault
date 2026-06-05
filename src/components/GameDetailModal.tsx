@@ -84,7 +84,7 @@ export default function GameDetailModal({
         
         <div className="flex-1 space-y-4">
           <div>
-            <h2 className="text-2xl font-black text-white leading-tight mb-2">{game.title}</h2>
+            <h2 className="text-2xl font-black text-text-primary leading-tight mb-2">{game.title}</h2>
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="px-2.5 py-1 rounded bg-mint/10 text-mint text-xs font-bold border border-mint/20">{game.platform}</span>
               <span className="px-2.5 py-1 rounded bg-vault-surface-light border border-vault-border text-text-secondary text-xs">{game.releaseDate ? game.releaseDate : `${game.releaseYear}년`}</span>
@@ -111,7 +111,7 @@ export default function GameDetailModal({
                     <img src={game.developerLogoUrl} alt={game.developer} className="max-h-full max-w-full object-contain filter drop-shadow brightness-0 invert opacity-80" />
                   </div>
                 ) : null}
-                <span className="text-xs font-semibold text-white">{game.developer}</span>
+                <span className="text-xs font-semibold text-text-primary">{game.developer}</span>
               </div>
             )}
             {game.publisher && (
@@ -122,7 +122,7 @@ export default function GameDetailModal({
                     <img src={game.publisherLogoUrl} alt={game.publisher} className="max-h-full max-w-full object-contain filter drop-shadow brightness-0 invert opacity-80" />
                   </div>
                 ) : null}
-                <span className="text-xs font-semibold text-white">{game.publisher}</span>
+                <span className="text-xs font-semibold text-text-primary">{game.publisher}</span>
               </div>
             )}
           </div>
@@ -452,7 +452,7 @@ export default function GameDetailModal({
               <div className="pt-2 flex items-center justify-between border-t border-vault-border/50">
                 <button
                   onClick={() => onUpdateVisibility?.(game.id, col.visibility === 'public' ? 'private' : 'public')}
-                  className="flex items-center gap-1.5 text-xs text-text-muted hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors"
                 >
                   {col.visibility === 'public' ? <><Eye size={14} /> 공개됨</> : <><EyeOff size={14} /> 비공개</>}
                 </button>

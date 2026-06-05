@@ -30,11 +30,11 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center px-6 py-4 border-b border-vault-border bg-vault-surface-light">
-          <h2 className="text-lg font-black text-white flex items-center gap-2">
+          <h2 className="text-lg font-black text-text-primary flex items-center gap-2">
             <ExternalLink size={20} className="text-neon-blue" />
             내 컬렉션 공유
           </h2>
-          <button onClick={onClose} className="text-text-muted hover:text-white transition-colors p-1">
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-1">
             <X size={20} />
           </button>
         </div>
@@ -51,12 +51,12 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
           <div className="mb-6 relative aspect-video bg-vault-bg rounded-xl border border-vault-border overflow-hidden group">
             <img src="https://images.unsplash.com/photo-1593118247619-e2d6f056869e?q=80&w=800" alt="Shelf Preview" className="w-full h-full object-cover opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-              <h3 className="text-white font-black text-lg">{username}님의 컬렉션</h3>
+              <h3 className="text-text-primary font-black text-lg">{username}님의 컬렉션</h3>
               <p className="text-mint text-xs font-bold">RetroVault Digital Museum</p>
             </div>
             
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <button className="flex items-center gap-2 px-4 py-2 bg-vault-surface border border-vault-border text-white text-sm font-bold rounded-lg hover:text-mint hover:border-mint transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-vault-surface border border-vault-border text-text-primary text-sm font-bold rounded-lg hover:text-mint hover:border-mint transition-colors">
                 <ImageIcon size={16} /> 대표 이미지 다운로드
               </button>
             </div>
@@ -71,7 +71,7 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
                 </div>
                 <button 
                   onClick={handleCopy}
-                  className="flex items-center justify-center w-10 shrink-0 bg-vault-surface-light border border-vault-border rounded-lg text-white hover:text-mint transition-colors"
+                  className="flex items-center justify-center w-10 shrink-0 bg-vault-surface-light border border-vault-border rounded-lg text-text-primary hover:text-mint transition-colors"
                 >
                   {copied ? <Check size={16} className="text-mint" /> : <Copy size={16} />}
                 </button>
@@ -81,10 +81,10 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
             <div className="pt-4 border-t border-vault-border">
               <p className="text-xs font-bold text-text-muted mb-3 text-center">SNS 공유</p>
               <div className="flex justify-center gap-4">
-                <button className="w-10 h-10 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:-translate-y-1 transition-transform shadow-lg shadow-[#1DA1F2]/20">
+                <button className="w-10 h-10 rounded-full bg-[#1DA1F2] text-text-primary flex items-center justify-center hover:-translate-y-1 transition-transform shadow-lg shadow-[#1DA1F2]/20">
                   <Twitter size={18} />
                 </button>
-                <button className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:-translate-y-1 transition-transform shadow-lg shadow-[#1877F2]/20">
+                <button className="w-10 h-10 rounded-full bg-[#1877F2] text-text-primary flex items-center justify-center hover:-translate-y-1 transition-transform shadow-lg shadow-[#1877F2]/20">
                   <Facebook size={18} />
                 </button>
                 <button className="w-10 h-10 rounded-full bg-[#FEE500] text-[#000000] flex items-center justify-center hover:-translate-y-1 transition-transform shadow-lg shadow-[#FEE500]/20">

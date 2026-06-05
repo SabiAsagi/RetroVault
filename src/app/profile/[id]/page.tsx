@@ -21,7 +21,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
   } else {
     const profileData = await getUserProfile(id);
     if (!profileData) {
-      return <div className="p-8 text-center text-white">존재하지 않는 유저입니다.</div>;
+      return <div className="p-8 text-center text-text-primary">존재하지 않는 유저입니다.</div>;
     }
     
     // Convert prisma items to standard items for Profile component

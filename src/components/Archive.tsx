@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Game, Rarity, SortOption, Era } from '../types';
 import { Filter, Search, X, LayoutGrid, List, Monitor } from 'lucide-react';
+import Link from 'next/link';
 import GameCard from './GameCard';
 
 interface ArchiveProps {
@@ -114,11 +115,16 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-bold text-text-primary">게임 아카이브</h2>
-          <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
-            {filtered.length}개
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-text-primary">게임 아카이브</h2>
+            <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
+              {filtered.length}개
+            </span>
+          </div>
+          <Link href="/games/request" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
+            + 게임 추가 건의
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           {/* Filter toggle */}
@@ -234,7 +240,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
                 필터 초기화
               </button>
             )}
-            <a href="/games/request" className="px-4 py-2 text-sm text-white bg-neon-blue rounded-lg hover:bg-neon-blue-dim transition-colors flex items-center gap-2">
+            <a href="/games/request" className="px-4 py-2 text-sm text-text-primary bg-neon-blue rounded-lg hover:bg-neon-blue-dim transition-colors flex items-center gap-2">
               게임 추가 요청하기
             </a>
           </div>

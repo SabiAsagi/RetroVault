@@ -137,7 +137,7 @@ export default function MyVault({
             <Package className="text-mint" size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-white leading-none mb-1">내 컬렉션</h2>
+            <h2 className="text-lg font-black text-text-primary leading-none mb-1">내 컬렉션</h2>
             <p className="text-xs text-text-muted">총 {collection.length}개의 게임을 보유 중입니다</p>
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function MyVault({
                 key={v}
                 onClick={() => setVisibilityFilter(v)}
                 className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 ${
-                  visibilityFilter === v ? 'bg-vault-surface-light text-white shadow-sm' : 'text-text-muted hover:text-text-secondary'
+                  visibilityFilter === v ? 'bg-vault-surface-light text-text-primary shadow-sm' : 'text-text-muted hover:text-text-secondary'
                 }`}
               >
                 {v === 'all' ? '전체' : v === 'public' ? <><Eye size={12}/>공개</> : v === 'friends' ? <><Users size={12}/>친구</> : <><EyeOff size={12}/>비공개</>}
@@ -187,7 +187,7 @@ export default function MyVault({
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-mint/50 cursor-pointer"
+              className="bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs font-bold text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
             >
               <option value="all">전체 그룹</option>
               {groups.map(g => (
@@ -200,7 +200,7 @@ export default function MyVault({
           <select
             value={theme}
             onChange={(e) => setTheme(e.target.value as ExhibitionTheme)}
-            className="bg-vault-surface-light border border-vault-border rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-mint/50 cursor-pointer"
+            className="bg-vault-surface-light border border-vault-border rounded-lg px-3 py-2 text-sm font-bold text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
           >
             <option value="basic">🗄️ 기본 선반</option>
             <option value="glass">💎 유리 진열장</option>
@@ -213,28 +213,28 @@ export default function MyVault({
             <button
               onClick={() => setViewMode('shelf')}
               title="선반 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'shelf' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-white'}`}
+              className={`p-2 rounded-md transition-colors ${viewMode === 'shelf' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <BookOpen size={16} />
             </button>
             <button
               onClick={() => setViewMode('spine')}
               title="패키지 옆면 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'spine' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-white'}`}
+              className={`p-2 rounded-md transition-colors ${viewMode === 'spine' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <Library size={16} />
             </button>
             <button
               onClick={() => setViewMode('card')}
               title="카드 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'card' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-white'}`}
+              className={`p-2 rounded-md transition-colors ${viewMode === 'card' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode('list')}
               title="리스트 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'list' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-white'}`}
+              className={`p-2 rounded-md transition-colors ${viewMode === 'list' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <List size={16} />
             </button>
@@ -246,7 +246,7 @@ export default function MyVault({
       {collection.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 text-center bg-vault-surface border border-vault-border rounded-xl">
           <Package className="text-text-muted mb-4" size={56} />
-          <h3 className="text-white font-bold text-xl mb-2">컬렉션이 비어있습니다</h3>
+          <h3 className="text-text-primary font-bold text-xl mb-2">컬렉션이 비어있습니다</h3>
           <p className="text-text-muted text-sm mb-6">아카이브에서 게임을 검색하고 추가하여 나만의 게임 박물관을 만들어보세요.</p>
           <button 
             onClick={() => setSearchModalOpen(true)}
@@ -296,7 +296,7 @@ export default function MyVault({
                             
                             {/* Drag handle overlay on hover */}
                             <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-start pt-1">
-                              <GripVertical size={14} className="text-white/50" />
+                              <GripVertical size={14} className="text-text-primary/50" />
                             </div>
                             
                             {/* Reflection effect */}
@@ -366,7 +366,7 @@ export default function MyVault({
                             
                             {/* Drag handle overlay on hover */}
                             <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-start pt-1">
-                              <GripVertical size={12} className="text-white/50" />
+                              <GripVertical size={12} className="text-text-primary/50" />
                             </div>
                             
                             {/* Hover shine */}
@@ -433,7 +433,7 @@ export default function MyVault({
                     ${isDragOver ? 'border-mint border-2 translate-y-1' : ''}
                   `}
                 >
-                  <div className="cursor-grab active:cursor-grabbing text-text-muted hover:text-white p-1">
+                  <div className="cursor-grab active:cursor-grabbing text-text-muted hover:text-text-primary p-1">
                     <GripVertical size={16} />
                   </div>
                   
@@ -446,7 +446,7 @@ export default function MyVault({
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-white truncate group-hover:text-mint transition-colors">{game.title}</h3>
+                    <h3 className="text-sm font-bold text-text-primary truncate group-hover:text-mint transition-colors">{game.title}</h3>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className="text-[10px] text-text-secondary bg-vault-surface px-1.5 py-0.5 rounded">{game.platform}</span>
                       <span className="text-[10px] text-text-secondary">{item.ownershipStatus}</span>

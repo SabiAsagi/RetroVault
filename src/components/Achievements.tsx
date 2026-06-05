@@ -59,7 +59,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
           </div>
           
           <div className="flex-1 min-w-0">
-            <h3 className={`font-black text-sm truncate mb-1 ${state === 'unlocked' ? 'text-white' : 'text-text-primary'}`}>
+            <h3 className={`font-black text-sm truncate mb-1 ${state === 'unlocked' ? 'text-text-primary' : 'text-text-primary'}`}>
               {emblem.name}
             </h3>
             <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed mb-3">
@@ -96,7 +96,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
       <div className="mb-8">
-        <h2 className="text-2xl md:text-3xl font-black text-white flex items-center gap-3 mb-2">
+        <h2 className="text-2xl md:text-3xl font-black text-text-primary flex items-center gap-3 mb-2">
           <Trophy className="text-amber" size={28} />
           수집가 업적
         </h2>
@@ -106,7 +106,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
           <div className="bg-vault-surface border border-vault-border rounded-lg px-4 py-3 flex items-center gap-4">
             <div className="text-center">
               <p className="text-[10px] font-bold text-text-muted uppercase mb-0.5">총 업적</p>
-              <p className="text-xl font-black text-white">{emblems.length}</p>
+              <p className="text-xl font-black text-text-primary">{emblems.length}</p>
             </div>
             <div className="w-px h-8 bg-vault-border" />
             <div className="text-center">
@@ -120,7 +120,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
       <div className="space-y-10">
         {unlockedEmblems.length > 0 && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
               <CheckCircle2 size={16} className="text-mint" /> 획득한 업적
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -131,7 +131,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
 
         {inProgressEmblems.length > 0 && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-neon-blue animate-pulse" /> 진행 중인 업적
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -164,7 +164,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
             
             <button 
               onClick={() => setSelectedEmblem(null)}
-              className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors z-10 bg-black/20 p-1.5 rounded-full"
+              className="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors z-10 bg-black/20 p-1.5 rounded-full"
             >
               <X size={16} />
             </button>
@@ -178,7 +178,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
                 {selectedEmblem.isUnlocked ? getIcon(selectedEmblem.iconName, 'w-10 h-10') : <Lock size={32} />}
               </div>
               
-              <h2 className={`text-2xl font-black mb-2 ${selectedEmblem.isUnlocked ? 'text-white' : 'text-text-primary'}`}>
+              <h2 className={`text-2xl font-black mb-2 ${selectedEmblem.isUnlocked ? 'text-text-primary' : 'text-text-primary'}`}>
                 {selectedEmblem.name}
               </h2>
               
@@ -189,7 +189,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
               <div className="w-full bg-vault-bg border border-vault-border rounded-xl p-4 mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold text-text-muted">현재 진행 상황</span>
-                  <span className="text-sm font-black text-white">{selectedEmblem.currentCount} / {selectedEmblem.targetCount}</span>
+                  <span className="text-sm font-black text-text-primary">{selectedEmblem.currentCount} / {selectedEmblem.targetCount}</span>
                 </div>
                 <div className="h-2 bg-vault-surface-light rounded-full overflow-hidden">
                   <div 
@@ -213,7 +213,7 @@ export default function Achievements({ collection, games }: AchievementsProps) {
             {selectedEmblem.isUnlocked && (
               <div className="bg-vault-surface-light px-6 py-4 border-t border-vault-border flex justify-between items-center text-xs">
                 <span className="text-text-muted">프로필 장식 적용 가능</span>
-                <button className="text-neon-blue font-bold hover:text-white transition-colors flex items-center gap-1">
+                <button className="text-neon-blue font-bold hover:text-text-primary transition-colors flex items-center gap-1">
                   설정하기 <ChevronRight size={14} />
                 </button>
               </div>

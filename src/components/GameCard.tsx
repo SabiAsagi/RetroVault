@@ -48,27 +48,27 @@ export function BoxArtPlaceholder({ game }: { game: Game }) {
     >
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 px-2 py-1.5 flex items-center justify-between">
-        <span className="font-pixel text-[5px] text-white/40">{(game.platform || 'UNK').slice(0, 8)}</span>
-        <span className="font-pixel text-[5px] text-white/40">'{year}</span>
+        <span className="font-pixel text-[5px] text-text-primary/40">{(game.platform || 'UNK').slice(0, 8)}</span>
+        <span className="font-pixel text-[5px] text-text-primary/40">'{year}</span>
       </div>
 
       {/* Center content */}
       <div className="z-10 relative text-center px-3">
         {/* Genre badge */}
         <div
-          className="inline-block px-1.5 py-0.5 rounded text-[6px] font-pixel mb-2 text-white/70"
+          className="inline-block px-1.5 py-0.5 rounded text-[6px] font-pixel mb-2 text-text-primary/70"
           style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
         >
           {genre}
         </div>
 
         {/* Title */}
-        <p className="font-pixel text-[6px] leading-relaxed text-white/90 break-words line-clamp-4">
+        <p className="font-pixel text-[6px] leading-relaxed text-text-primary/90 break-words line-clamp-4">
           {game.title}
         </p>
 
         {/* Publisher */}
-        <p className="text-[8px] text-white/50 mt-2 truncate">{game.publisher}</p>
+        <p className="text-[8px] text-text-primary/50 mt-2 truncate">{game.publisher}</p>
       </div>
 
       {/* Bottom accent line */}

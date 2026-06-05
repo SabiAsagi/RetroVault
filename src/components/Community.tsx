@@ -21,7 +21,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <h2 className="text-2xl font-black text-white flex items-center gap-2">
+        <h2 className="text-2xl font-black text-text-primary flex items-center gap-2">
           <Users className="text-mint" /> 커뮤니티 탐색
         </h2>
         
@@ -32,7 +32,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
             placeholder="유저명, 컬렉션명 검색..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-vault-surface border border-vault-border rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-mint transition-colors"
+            className="w-full bg-vault-surface border border-vault-border rounded-xl pl-10 pr-4 py-2 text-sm text-text-primary focus:outline-none focus:border-mint transition-colors"
           />
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
                   <div className="flex items-center gap-3">
                     <img src={user.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} className="w-10 h-10 rounded-lg bg-vault-bg border border-vault-border object-cover" alt="avatar" />
                     <div>
-                      <h3 className="font-bold text-white group-hover:text-mint transition-colors">{user.nickname || user.name || '알 수 없는 유저'}</h3>
+                      <h3 className="font-bold text-text-primary group-hover:text-mint transition-colors">{user.nickname || user.name || '알 수 없는 유저'}</h3>
                       <p className="text-xs text-text-secondary">공개 게임 {user._count.collections}개</p>
                     </div>
                   </div>
@@ -96,9 +96,9 @@ export default function Community({ users, groups }: { users: any[], groups: any
                 <div className="p-4 border-b border-vault-border/50">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h3 className="font-bold text-white group-hover:text-mint transition-colors text-lg mb-1">{group.name}</h3>
+                      <h3 className="font-bold text-text-primary group-hover:text-mint transition-colors text-lg mb-1">{group.name}</h3>
                       <p className="text-xs text-text-muted flex items-center gap-1">
-                        by <Link href={`/profile/${group.user.id}`} className="text-text-secondary hover:text-white hover:underline">{group.user.nickname || group.user.name}</Link>
+                        by <Link href={`/profile/${group.user.id}`} className="text-text-secondary hover:text-text-primary hover:underline">{group.user.nickname || group.user.name}</Link>
                       </p>
                     </div>
                     <Link href={`/profile/${group.user.id}?group=${group.id}`} className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors">

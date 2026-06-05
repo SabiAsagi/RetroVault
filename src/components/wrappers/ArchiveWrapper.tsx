@@ -40,7 +40,7 @@ export default function ArchiveWrapper({ initialGames, initialCollection }: Prop
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="게임 검색..." 
-          className="w-full max-w-md bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-mint"
+          className="w-full max-w-md bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:border-mint"
         />
       </div>
       <Archive

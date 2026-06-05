@@ -44,6 +44,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const [editingCompany, setEditingCompany] = useState<any>(null);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
 
+  // Custom User Management Modal State
+  const [userActionModalOpen, setUserActionModalOpen] = useState(false);
+  const [selectedUserForAction, setSelectedUserForAction] = useState<any>(null);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,30 +80,34 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     setIsCompanyModalOpen(true);
   };
 
-  const handleUserAction = async (userId: string) => {
-    const action = prompt('수행할 작업을 선택하세요:\n1: 관리자 권한 부여\n2: 밴 처리/해제\n3: 회원 삭제');
+  const handleUserActionClick = (user: any) => {
+    setSelectedUserForAction(user);
+    setUserActionModalOpen(true);
+  };
+
+  const executeUserAction = async (actionType: 'ROLE' | 'BAN' | 'DELETE') => {
+    if (!selectedUserForAction) return;
     try {
-      if (action === '1') {
-        await updateUserRole(userId, 'ADMIN');
-        setLocalUsers(localUsers.map(u => u.id === userId ? { ...u, role: 'ADMIN' } : u));
+      if (actionType === 'ROLE') {
+        await updateUserRole(selectedUserForAction.id, 'ADMIN');
+        setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, role: 'ADMIN' } : u));
         alert('관리자 권한이 부여되었습니다.');
-      } else if (action === '2') {
-        const user = localUsers.find(u => u.id === userId);
-        const newStatus = !user?.isBanned;
-        await toggleUserBan(userId, newStatus);
-        setLocalUsers(localUsers.map(u => u.id === userId ? { ...u, isBanned: newStatus } : u));
+      } else if (actionType === 'BAN') {
+        const newStatus = !selectedUserForAction.isBanned;
+        await toggleUserBan(selectedUserForAction.id, newStatus);
+        setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, isBanned: newStatus } : u));
         alert(`회원이 ${newStatus ? '밴 처리' : '밴 해제'} 되었습니다.`);
-      } else if (action === '3') {
-        if (confirm('정말로 이 회원을 삭제하시겠습니까?')) {
-          await deleteUser(userId);
-          setLocalUsers(localUsers.filter(u => u.id !== userId));
-          alert('회원이 삭제되었습니다.');
-        }
+      } else if (actionType === 'DELETE') {
+        await deleteUser(selectedUserForAction.id);
+        setLocalUsers(localUsers.filter(u => u.id !== selectedUserForAction.id));
+        alert('회원이 삭제되었습니다.');
       }
+      setUserActionModalOpen(false);
     } catch (e: any) {
       alert(`오류: ${e.message || '실패'}`);
     }
   };
+
 
   function executeAction() {
     if (confirmAction === 'reset') onResetToSample?.();
@@ -109,7 +117,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const renderDashboard = () => (
     <div className="space-y-6 animate-in fade-in">
-      <h3 className="text-xl font-bold text-white mb-4">대시보드</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-4">대시보드</h3>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
@@ -117,7 +125,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             <span className="text-sm font-bold text-text-muted">총 회원</span>
             <Users size={18} className="text-mint" />
           </div>
-          <span className="text-2xl font-black text-white">{stats?.userCount || 0}<span className="text-xs text-text-muted ml-1 font-normal">명</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats?.userCount || 0}<span className="text-xs text-text-muted ml-1 font-normal">명</span></span>
           <p className="text-[10px] text-mint mt-2 flex items-center gap-1">가입된 전체 회원 수</p>
         </div>
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
@@ -125,7 +133,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             <span className="text-sm font-bold text-text-muted">등록된 게임</span>
             <Gamepad2 size={18} className="text-neon-blue" />
           </div>
-          <span className="text-2xl font-black text-white">{stats?.gameCount || 0}<span className="text-xs text-text-muted ml-1 font-normal">개</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats?.gameCount || 0}<span className="text-xs text-text-muted ml-1 font-normal">개</span></span>
           <p className="text-[10px] text-neon-blue mt-2 flex items-center gap-1">마스터 데이터</p>
         </div>
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
@@ -133,7 +141,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             <span className="text-sm font-bold text-text-muted">누적 컬렉션 아이템</span>
             <Building2 size={18} className="text-amber" />
           </div>
-          <span className="text-2xl font-black text-white">{stats?.collectionCount || 0}<span className="text-xs text-text-muted ml-1 font-normal">개</span></span>
+          <span className="text-2xl font-black text-text-primary">{stats?.collectionCount || 0}<span className="text-xs text-text-muted ml-1 font-normal">개</span></span>
           <p className="text-[10px] text-amber mt-2 flex items-center gap-1">유저 전체 합산</p>
         </div>
         <div className="bg-vault-surface border border-vault-border rounded-xl p-5">
@@ -149,8 +157,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-vault-border flex justify-between items-center bg-vault-bg">
-            <h4 className="text-sm font-bold text-white">최근 로그인 현황</h4>
-            <button className="text-[10px] text-text-muted hover:text-white">더보기</button>
+            <h4 className="text-sm font-bold text-text-primary">최근 로그인 현황</h4>
+            <button className="text-[10px] text-text-muted hover:text-text-primary">더보기</button>
           </div>
           <div className="p-0">
             <table className="w-full text-left text-sm">
@@ -173,8 +181,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
         <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-vault-border flex justify-between items-center bg-vault-bg">
-            <h4 className="text-sm font-bold text-white">최근 시스템 로그</h4>
-            <button onClick={() => setActiveTab('logs')} className="text-[10px] text-text-muted hover:text-white">전체 로그</button>
+            <h4 className="text-sm font-bold text-text-primary">최근 시스템 로그</h4>
+            <button onClick={() => setActiveTab('logs')} className="text-[10px] text-text-muted hover:text-text-primary">전체 로그</button>
           </div>
           <div className="p-0">
             <table className="w-full text-left text-sm">
@@ -199,10 +207,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const renderGames = () => (
     <div className="space-y-4 animate-in fade-in">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-white">마스터 게임 데이터</h3>
+        <h3 className="text-xl font-bold text-text-primary">마스터 게임 데이터</h3>
         <button 
           onClick={() => { setEditingGame({}); setIsGameModalOpen(true); }}
-          className="bg-neon-blue hover:bg-neon-blue/80 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2"
+          className="bg-neon-blue hover:bg-neon-blue/80 text-text-primary px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2"
         >
           <Plus size={14} /> 게임 추가
         </button>
@@ -211,7 +219,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input type="text" placeholder="게임 검색..." className="w-full bg-vault-surface border border-vault-border rounded text-sm text-white px-9 py-2 focus:outline-none focus:border-neon-blue" />
+          <input type="text" placeholder="게임 검색..." className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-blue" />
         </div>
       </div>
 
@@ -232,7 +240,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             {games.slice((gamesPage - 1) * gamesPerPage, gamesPage * gamesPerPage).map(g => (
               <tr key={g.id} className="hover:bg-vault-surface-light">
                 <td className="px-4 py-3 text-text-muted font-mono text-xs">{g.id}</td>
-                <td className="px-4 py-3 text-white font-medium">{g.title}</td>
+                <td className="px-4 py-3 text-text-primary font-medium">{g.title}</td>
                 <td className="px-4 py-3 text-text-secondary">{g.platform}</td>
                 <td className="px-4 py-3 text-text-secondary">{g.releaseYear}</td>
                 <td className="px-4 py-3 text-text-secondary">{g.developer || '-'}</td>
@@ -278,9 +286,9 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
             <span className="text-xs text-text-muted">총 {games.length}개 게임</span>
             <div className="flex gap-2">
-              <button disabled={gamesPage === 1} onClick={() => setGamesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-white disabled:opacity-50">이전</button>
-              <span className="px-3 py-1 text-xs text-white">{gamesPage} / {Math.ceil(games.length / gamesPerPage)}</span>
-              <button disabled={gamesPage >= Math.ceil(games.length / gamesPerPage)} onClick={() => setGamesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-white disabled:opacity-50">다음</button>
+              <button disabled={gamesPage === 1} onClick={() => setGamesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
+              <span className="px-3 py-1 text-xs text-text-primary">{gamesPage} / {Math.ceil(games.length / gamesPerPage)}</span>
+              <button disabled={gamesPage >= Math.ceil(games.length / gamesPerPage)} onClick={() => setGamesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
             </div>
           </div>
         )}
@@ -290,7 +298,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const renderUsers = () => (
     <div className="space-y-4 animate-in fade-in">
-      <h3 className="text-xl font-bold text-white mb-4">회원 관리</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-4">회원 관리</h3>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
@@ -306,7 +314,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <tbody className="divide-y divide-vault-border/50">
             {(localUsers || []).map(u => (
               <tr key={u.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-white font-medium">{u.name || u.nickname || '익명'}</td>
+                <td className="px-4 py-3 text-text-primary font-medium">{u.name || u.nickname || '익명'}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{u.email}</td>
                 <td className="px-4 py-3">
                   <span className={`text-[10px] px-2 py-0.5 rounded border ${u.role === 'ADMIN' ? 'bg-neon-blue/10 border-neon-blue/30 text-neon-blue' : 'bg-vault-bg border-vault-border text-text-muted'}`}>
@@ -320,7 +328,9 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => handleUserAction(u.id)} className="p-1 text-text-muted hover:text-white"><MoreVertical size={14} /></button>
+                  <button onClick={() => handleUserActionClick(u)} className="p-1.5 bg-vault-surface border border-vault-border rounded text-text-muted hover:text-text-primary transition-colors">
+                    <Settings size={14} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -332,7 +342,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const renderReports = () => (
     <div className="space-y-4 animate-in fade-in">
-      <h3 className="text-xl font-bold text-white mb-4">신고 관리</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-4">신고 관리</h3>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
@@ -348,7 +358,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <tbody className="divide-y divide-vault-border/50">
             {(reports || []).map(r => (
               <tr key={r.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-white font-medium">{r.targetType} {r.targetId}</td>
+                <td className="px-4 py-3 text-text-primary font-medium">{r.targetType} {r.targetId}</td>
                 <td className="px-4 py-3 text-coral text-xs">{r.reason}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{r.reporter?.name || '익명'}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
@@ -369,10 +379,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                         try {
                           await resolveReport(r.id, 'REJECTED', '관리자 반려 처리');
                         } catch (e) { console.error(e); }
-                      }} className="p-1.5 text-text-muted bg-vault-bg border border-vault-border rounded hover:text-white transition-colors" title="반려"><XCircle size={14} /></button>
+                      }} className="p-1.5 text-text-muted bg-vault-bg border border-vault-border rounded hover:text-text-primary transition-colors" title="반려"><XCircle size={14} /></button>
                     </>
                   ) : (
-                    <button className="p-1.5 text-text-muted hover:text-white rounded transition-colors" title="상세보기"><Eye size={14} /></button>
+                    <button className="p-1.5 text-text-muted hover:text-text-primary rounded transition-colors" title="상세보기"><Eye size={14} /></button>
                   )}
                 </td>
               </tr>
@@ -385,7 +395,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const renderLogs = () => (
     <div className="space-y-4 animate-in fade-in">
-      <h3 className="text-xl font-bold text-white mb-4">시스템 수정 로그</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-4">시스템 수정 로그</h3>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
@@ -401,7 +411,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               <tr key={l.id} className="hover:bg-vault-surface-light">
                 <td className="px-4 py-3 text-text-secondary text-xs">{new Date(l.createdAt).toLocaleString()}</td>
                 <td className="px-4 py-3 text-neon-blue text-xs font-medium">{l.admin?.name || '관리자'}</td>
-                <td className="px-4 py-3 text-white">{l.action}</td>
+                <td className="px-4 py-3 text-text-primary">{l.action}</td>
                 <td className="px-4 py-3 text-text-muted text-xs">{l.targetType} ({l.targetId})</td>
               </tr>
             ))}
@@ -414,8 +424,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const renderCompanies = () => (
     <div className="space-y-4 animate-in fade-in">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-white">회사 관리</h3>
-        <button onClick={handleAddCompany} className="bg-neon-blue hover:bg-neon-blue/80 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
+        <h3 className="text-xl font-bold text-text-primary">회사 관리</h3>
+        <button onClick={handleAddCompany} className="bg-neon-blue hover:bg-neon-blue/80 text-text-primary px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
           <Plus size={14} /> 회사 추가
         </button>
       </div>
@@ -433,7 +443,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <tbody className="divide-y divide-vault-border/50">
             {(companies || []).map(c => (
               <tr key={c.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-white font-medium">{c.name}</td>
+                <td className="px-4 py-3 text-text-primary font-medium">{c.name}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{c.type}</td>
                 <td className="px-4 py-3 text-mint font-mono text-xs">{c.gamesCount}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{c.hq}</td>
@@ -450,7 +460,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const renderSettings = () => (
     <div className="space-y-6 animate-in fade-in">
-      <h3 className="text-xl font-bold text-white mb-4">시스템 설정</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-4">시스템 설정</h3>
       
       <div className="bg-vault-surface border border-coral/30 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4 pb-3 border-b border-vault-border">
@@ -460,7 +470,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-bold text-white mb-1">샘플 데이터로 초기화</p>
+              <p className="text-sm font-bold text-text-primary mb-1">샘플 데이터로 초기화</p>
               <p className="text-xs text-text-muted">현재의 컬렉션 데이터를 모두 지우고 기본 제공되는 14개의 샘플 데이터 세트로 되돌립니다.</p>
             </div>
             <button
@@ -475,7 +485,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-bold text-white mb-1">로컬스토리지 전체 삭제</p>
+              <p className="text-sm font-bold text-text-primary mb-1">로컬스토리지 전체 삭제</p>
               <p className="text-xs text-text-muted">모든 데이터를 완전히 비웁니다. 이 작업은 되돌릴 수 없습니다.</p>
             </div>
             <button
@@ -492,7 +502,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
 
   const renderRequests = () => (
     <div className="space-y-4 animate-in fade-in">
-      <h3 className="text-xl font-bold text-white mb-4">게임 추가 요청</h3>
+      <h3 className="text-xl font-bold text-text-primary mb-4">게임 추가 요청</h3>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
@@ -506,7 +516,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <tbody className="divide-y divide-vault-border/50">
             {(gameRequests || []).map(r => (
               <tr key={r.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-white font-medium">{r.title} ({r.platform?.name})</td>
+                <td className="px-4 py-3 text-text-primary font-medium">{r.title} ({r.platform?.name})</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{r.requestedBy?.name || '익명'}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3 text-right space-x-2">
@@ -551,7 +561,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       <aside className="w-full md:w-64 shrink-0">
         <div className="bg-vault-surface border border-vault-border rounded-xl p-4 sticky top-24">
           <div className="mb-6 px-2">
-            <h2 className="text-lg font-black text-white">Admin Console</h2>
+            <h2 className="text-lg font-black text-text-primary">Admin Console</h2>
             <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">RetroVault Manager</p>
           </div>
           
@@ -574,7 +584,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as Tab)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium
-                    ${isActive ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-white hover:bg-vault-surface-light'}`}
+                    ${isActive ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary hover:bg-vault-surface-light'}`}
                 >
                   <Icon size={16} /> {tab.label}
                 </button>
@@ -596,10 +606,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         {activeTab === 'timeline' && (
         <div className="space-y-4 animate-in fade-in">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-white">타임라인 관리</h3>
+            <h3 className="text-xl font-bold text-text-primary">타임라인 관리</h3>
             <button 
               onClick={() => { setEditingTimeline({ type: 'event', year: 2000 }); setIsTimelineModalOpen(true); }}
-              className="bg-coral hover:bg-coral/80 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2"
+              className="bg-coral hover:bg-coral/80 text-text-primary px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2"
             >
               <Plus size={14} /> 이벤트 추가
             </button>
@@ -621,7 +631,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                   {timelineEvents?.map((event: TimelineEvent) => (
                     <tr key={event.id} className="hover:bg-vault-surface-light/50 transition-colors">
                       <td className="px-4 py-3 font-bold text-coral">{event.year}</td>
-                      <td className="px-4 py-3 font-medium text-white">{event.title}</td>
+                      <td className="px-4 py-3 font-medium text-text-primary">{event.title}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${event.type === 'console' ? 'bg-neon-blue/20 text-neon-blue' : event.type === 'game' ? 'bg-mint/20 text-mint' : 'bg-vault-surface-light text-text-muted'}`}>
                           {event.type}
@@ -674,7 +684,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             <div className="w-12 h-12 rounded-full bg-coral/10 border border-coral/30 flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(255,107,107,0.2)]">
               <AlertTriangle className="text-coral" size={22} />
             </div>
-            <h3 className="text-center font-bold text-white mb-2 text-lg">
+            <h3 className="text-center font-bold text-text-primary mb-2 text-lg">
               {confirmAction === 'reset' ? '샘플 데이터로 초기화할까요?' : '모든 데이터를 영구 삭제할까요?'}
             </h3>
             <p className="text-center text-sm text-text-muted mb-6">
@@ -683,10 +693,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 : '컬렉션 내 모든 기록이 삭제되며 이 작업은 되돌릴 수 없습니다.'}
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setConfirmAction(null)} className="flex-1 py-2.5 bg-vault-bg border border-vault-border text-text-primary rounded-lg text-sm hover:border-vault-border-light hover:text-white transition-colors">
+              <button onClick={() => setConfirmAction(null)} className="flex-1 py-2.5 bg-vault-bg border border-vault-border text-text-primary rounded-lg text-sm hover:border-vault-border-light hover:text-text-primary transition-colors">
                 취소
               </button>
-              <button onClick={executeAction} className="flex-1 py-2.5 bg-coral text-white rounded-lg text-sm font-bold hover:bg-coral/90 transition-colors shadow-lg">
+              <button onClick={executeAction} className="flex-1 py-2.5 bg-coral text-text-primary rounded-lg text-sm font-bold hover:bg-coral/90 transition-colors shadow-lg">
                 확인
               </button>
             </div>
@@ -699,8 +709,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-              <h3 className="text-lg font-bold text-white">{editingGame?.id ? '게임 수정' : '게임 추가'}</h3>
-              <button onClick={() => setIsGameModalOpen(false)} className="text-text-muted hover:text-white">
+              <h3 className="text-lg font-bold text-text-primary">{editingGame?.id ? '게임 수정' : '게임 추가'}</h3>
+              <button onClick={() => setIsGameModalOpen(false)} className="text-text-muted hover:text-text-primary">
                 <XCircle size={20} />
               </button>
             </div>
@@ -723,34 +733,34 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             }} className="p-4 overflow-y-auto flex-1 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">타이틀</label>
-                <input required type="text" value={editingGame?.title || ''} onChange={e => setEditingGame({...editingGame, title: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" />
+                <input required type="text" value={editingGame?.title || ''} onChange={e => setEditingGame({...editingGame, title: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">플랫폼</label>
-                  <input required type="text" value={editingGame?.platform || ''} onChange={e => setEditingGame({...editingGame, platform: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" placeholder="예: Super Famicom" />
+                  <input required type="text" value={editingGame?.platform || ''} onChange={e => setEditingGame({...editingGame, platform: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="예: Super Famicom" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">출시연도</label>
-                  <input required type="number" value={editingGame?.releaseYear || ''} onChange={e => setEditingGame({...editingGame, releaseYear: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" />
+                  <input required type="number" value={editingGame?.releaseYear || ''} onChange={e => setEditingGame({...editingGame, releaseYear: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">장르</label>
-                  <input type="text" value={editingGame?.genre || ''} onChange={e => setEditingGame({...editingGame, genre: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" />
+                  <input type="text" value={editingGame?.genre || ''} onChange={e => setEditingGame({...editingGame, genre: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">제작사</label>
-                  <input type="text" value={(editingGame as any)?.developer || ''} onChange={e => setEditingGame({...editingGame, developer: e.target.value} as any)} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" placeholder="예: Nintendo" />
+                  <input type="text" value={(editingGame as any)?.developer || ''} onChange={e => setEditingGame({...editingGame, developer: e.target.value} as any)} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="예: Nintendo" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">커버 이미지 (업로드 또는 URL)</label>
                 <div className="flex gap-2 items-center">
-                  <input type="text" value={editingGame?.imageUrl || ''} onChange={e => setEditingGame({...editingGame, imageUrl: e.target.value})} className="flex-1 bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" placeholder="https://..." />
+                  <input type="text" value={editingGame?.imageUrl || ''} onChange={e => setEditingGame({...editingGame, imageUrl: e.target.value})} className="flex-1 bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="https://..." />
                   <div className="relative overflow-hidden inline-block bg-vault-surface-light border border-vault-border rounded hover:bg-vault-border-light cursor-pointer">
-                    <button type="button" className="px-4 py-2 text-sm text-white font-bold whitespace-nowrap min-w-[100px]" disabled={uploadingImage}>
+                    <button type="button" className="px-4 py-2 text-sm text-text-primary font-bold whitespace-nowrap min-w-[100px]" disabled={uploadingImage}>
                       {uploadingImage ? '업로드 중...' : '파일 선택'}
                     </button>
                     <input 
@@ -770,12 +780,12 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
-                <textarea rows={3} value={editingGame?.description || ''} onChange={e => setEditingGame({...editingGame, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white resize-none" />
+                <textarea rows={3} value={editingGame?.description || ''} onChange={e => setEditingGame({...editingGame, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-vault-border">
-                <button type="button" onClick={() => setIsGameModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-white">취소</button>
-                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-neon-blue text-white rounded text-sm font-bold disabled:opacity-50">
+                <button type="button" onClick={() => setIsGameModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-text-primary">취소</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-neon-blue text-text-primary rounded text-sm font-bold disabled:opacity-50">
                   {isSubmitting ? '저장 중...' : '저장하기'}
                 </button>
               </div>
@@ -789,8 +799,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-              <h3 className="text-lg font-bold text-white">{editingTimeline?.id ? '이벤트 수정' : '이벤트 추가'}</h3>
-              <button onClick={() => setIsTimelineModalOpen(false)} className="text-text-muted hover:text-white">
+              <h3 className="text-lg font-bold text-text-primary">{editingTimeline?.id ? '이벤트 수정' : '이벤트 추가'}</h3>
+              <button onClick={() => setIsTimelineModalOpen(false)} className="text-text-muted hover:text-text-primary">
                 <XCircle size={20} />
               </button>
             </div>
@@ -814,20 +824,20 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">연도</label>
-                  <input required type="number" value={editingTimeline?.year || ''} onChange={e => setEditingTimeline({...editingTimeline, year: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" />
+                  <input required type="number" value={editingTimeline?.year || ''} onChange={e => setEditingTimeline({...editingTimeline, year: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">시대구분</label>
-                  <input type="text" value={editingTimeline?.era || ''} onChange={e => setEditingTimeline({...editingTimeline, era: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" placeholder="예: 4th Gen" />
+                  <input type="text" value={editingTimeline?.era || ''} onChange={e => setEditingTimeline({...editingTimeline, era: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="예: 4th Gen" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">타이틀</label>
-                <input required type="text" value={editingTimeline?.title || ''} onChange={e => setEditingTimeline({...editingTimeline, title: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white" />
+                <input required type="text" value={editingTimeline?.title || ''} onChange={e => setEditingTimeline({...editingTimeline, title: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">유형</label>
-                <select value={editingTimeline?.type || 'event'} onChange={e => setEditingTimeline({...editingTimeline, type: e.target.value as any})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white">
+                <select value={editingTimeline?.type || 'event'} onChange={e => setEditingTimeline({...editingTimeline, type: e.target.value as any})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary">
                   <option value="event">일반 이벤트</option>
                   <option value="console">콘솔 출시</option>
                   <option value="game">게임 출시</option>
@@ -835,12 +845,101 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
-                <textarea rows={3} value={editingTimeline?.description || ''} onChange={e => setEditingTimeline({...editingTimeline, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-white resize-none" />
+                <textarea rows={3} value={editingTimeline?.description || ''} onChange={e => setEditingTimeline({...editingTimeline, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-vault-border">
-                <button type="button" onClick={() => setIsTimelineModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-white">취소</button>
-                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-coral text-white rounded text-sm font-bold disabled:opacity-50">
+                <button type="button" onClick={() => setIsTimelineModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-text-primary">취소</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-coral text-text-primary rounded text-sm font-bold disabled:opacity-50">
+                  {isSubmitting ? '저장 중...' : '저장하기'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── User Action Modal ── */}
+      {userActionModalOpen && selectedUserForAction && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
+              <h3 className="text-lg font-bold text-text-primary">회원 관리: {selectedUserForAction.nickname}</h3>
+              <button onClick={() => setUserActionModalOpen(false)} className="text-text-muted hover:text-text-primary">
+                <XCircle size={20} />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <button onClick={() => executeUserAction('ROLE')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-mint text-sm text-text-primary transition-colors">
+                <span>관리자 권한 부여</span>
+                <ShieldAlert size={16} className="text-mint" />
+              </button>
+              <button onClick={() => executeUserAction('BAN')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
+                <span>{selectedUserForAction.isBanned ? '밴 해제' : '밴 처리'}</span>
+                <AlertTriangle size={16} className="text-amber" />
+              </button>
+              <button onClick={() => { if(confirm('정말 삭제하시겠습니까?')) executeUserAction('DELETE'); }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-coral text-sm text-coral transition-colors">
+                <span>회원 영구 삭제</span>
+                <Trash2 size={16} className="text-coral" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Company Form Modal ── */}
+      {isCompanyModalOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
+              <h3 className="text-lg font-bold text-text-primary">{editingCompany?.id ? '회사 수정' : '회사 추가'}</h3>
+              <button onClick={() => setIsCompanyModalOpen(false)} className="text-text-muted hover:text-text-primary">
+                <XCircle size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setIsSubmitting(true);
+              try {
+                if (editingCompany?.id) {
+                  await updateCompany(editingCompany.id, editingCompany);
+                } else {
+                  await createCompany(editingCompany);
+                }
+                window.location.reload();
+              } catch (err: any) {
+                alert(err.message || '오류 발생');
+              } finally {
+                setIsSubmitting(false);
+              }
+            }} className="p-4 overflow-y-auto flex-1 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-1">회사명</label>
+                <input required type="text" value={editingCompany?.name || ''} onChange={e => setEditingCompany({...editingCompany, name: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">유형</label>
+                  <input type="text" value={editingCompany?.type || ''} onChange={e => setEditingCompany({...editingCompany, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="Developer, Publisher..." />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">국가</label>
+                  <input type="text" value={editingCompany?.country || ''} onChange={e => setEditingCompany({...editingCompany, country: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-1">웹사이트</label>
+                <input type="text" value={editingCompany?.websiteUrl || ''} onChange={e => setEditingCompany({...editingCompany, websiteUrl: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
+                <textarea rows={3} value={editingCompany?.description || ''} onChange={e => setEditingCompany({...editingCompany, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-vault-border">
+                <button type="button" onClick={() => setIsCompanyModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-text-primary">취소</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-amber text-text-primary rounded text-sm font-bold disabled:opacity-50">
                   {isSubmitting ? '저장 중...' : '저장하기'}
                 </button>
               </div>

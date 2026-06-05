@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { CollectionItem } from "@/types";
+import { revalidatePath } from "next/cache";
 
 export async function getUserCollection(): Promise<CollectionItem[]> {
   const session = await getServerSession(authOptions);
@@ -72,4 +73,6 @@ export async function updateCollectionItem(gameId: string, data: any) {
       });
     }
   }
+
+  revalidatePath('/community');
 }
