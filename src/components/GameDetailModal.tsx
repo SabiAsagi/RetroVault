@@ -30,7 +30,7 @@ interface GameDetailModalProps {
   onUpdateVisibility?: (gameId: string, visibility: Visibility) => void;
 }
 
-const statuses: OwnershipStatus[] = ['미개봉', '패키지 보유', '단품 보유', '엔딩 완료', '플레이 중', '위시리스트', '판매 완료'];
+const statuses: OwnershipStatus[] = ['미개봉', '전부 보유', '일부 누락'];
 const conditions: Condition[] = ['Mint', 'Excellent', 'Good', 'Fair', 'Poor'];
 const regions: { value: Region; label: string }[] = [
   { value: 'KOR', label: '🇰🇷 한국판' },

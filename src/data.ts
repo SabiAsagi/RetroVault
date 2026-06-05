@@ -1090,7 +1090,7 @@ export const games: Game[] = [
 export const defaultCollectionItems: CollectionItem[] = [
   {
     id: 'c01', gameId: 'g04',
-    status: '패키지 보유', ownershipStatus: '패키지 보유',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Good', region: 'JPN',
     purchaseDate: '2020-03-15', purchasePrice: 85000,
     memo: '어릴 적 첫 게임. 박스 상태 양호. 설명서 있음.',
@@ -1099,7 +1099,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c02', gameId: 'g11',
-    status: '미개봉', ownershipStatus: '미개봉',
+    status: '미개봉' as any, ownershipStatus: '미개봉',
     purchaseType: '패키지', condition: 'Mint', region: 'JPN',
     purchaseDate: '2023-11-20', purchasePrice: 320000,
     memo: '일본판 미개봉 수집. 보존 상태 완벽. 투명 필름 유지.',
@@ -1107,7 +1107,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c03', gameId: 'g15',
-    status: '엔딩 완료', ownershipStatus: '엔딩 완료',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '다운로드', condition: 'Good', region: 'KOR',
     purchaseDate: '2019-06-01', purchasePrice: 45000,
     memo: '세 번째 클리어. 에어리스 루트는 매번 울린다.',
@@ -1116,7 +1116,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c04', gameId: 'g19',
-    status: '엔딩 완료', ownershipStatus: '엔딩 완료',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Excellent', region: 'KOR',
     purchaseDate: '2018-12-25', purchasePrice: 0,
     memo: '크리스마스 선물로 받은 추억의 게임. 포장지 보관 중.',
@@ -1125,7 +1125,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c05', gameId: 'g30',
-    status: '플레이 중', ownershipStatus: '플레이 중',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Excellent', region: 'KOR',
     purchaseDate: '2024-01-10', purchasePrice: 62000,
     memo: '코로그 씨앗 수집 중. 현재 450개. 완전 정복 도전.',
@@ -1134,7 +1134,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c06', gameId: 'g08',
-    status: '단품 보유', ownershipStatus: '단품 보유',
+    status: '일부 누락' as any, ownershipStatus: '일부 누락',
     purchaseType: '패키지', condition: 'Fair', region: 'KOR',
     purchaseDate: '2021-07-08', purchasePrice: 18000,
     memo: '카트리지만 보유. 라벨 약간 벗겨짐.',
@@ -1143,7 +1143,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c07', gameId: 'g21',
-    status: '패키지 보유', ownershipStatus: '패키지 보유',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Excellent', region: 'JPN',
     purchaseDate: '2022-09-14', purchasePrice: 180000,
     memo: '드림캐스트 컬렉션의 자랑. 설명서 포함 완품. GD-ROM 상태 양호.',
@@ -1151,7 +1151,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c08', gameId: 'g24',
-    status: '엔딩 완료', ownershipStatus: '엔딩 완료',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Good', region: 'KOR',
     purchaseDate: '2020-05-20', purchasePrice: 35000,
     memo: '아구로의 마지막 거상전은 압도적이었다. 2회차 진행 예정.',
@@ -1160,7 +1160,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c09', gameId: 'g34',
-    status: '패키지 보유', ownershipStatus: '패키지 보유',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Excellent', region: 'JPN',
     purchaseDate: '2023-04-02', purchasePrice: 580000,
     memo: '레전더리 등급! 일본판 완품. 최고의 수집품. MOTHER2 원판.',
@@ -1168,14 +1168,14 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c10', gameId: 'g17',
-    status: '위시리스트', ownershipStatus: '위시리스트',
+    status: '미개봉' as any, ownershipStatus: '미개봉',
     purchaseDate: '',
     memo: '블랙 라벨 버전을 찾고 있음. 가격 감시 중. 목표 15만원 이하.',
     rating: 0, visibility: 'private',
   },
   {
     id: 'c11', gameId: 'g13',
-    status: '플레이 중', ownershipStatus: '플레이 중',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Good', region: 'JPN',
     purchaseDate: '2024-02-14', purchasePrice: 95000,
     memo: '첫 플레이. 케프카의 매력에 빠지는 중. 오페라 씬 감동.',
@@ -1184,7 +1184,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c12', gameId: 'g31',
-    status: '엔딩 완료', ownershipStatus: '엔딩 완료',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Excellent', region: 'KOR',
     purchaseDate: '2023-08-30', purchasePrice: 38000,
     memo: '진 엔딩까지 클리어. 판테온은 포기... 언젠가 도전할 것.',
@@ -1193,7 +1193,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c13', gameId: 'g16',
-    status: '엔딩 완료', ownershipStatus: '엔딩 완료',
+    status: '전부 보유' as any, ownershipStatus: '전부 보유',
     purchaseType: '패키지', condition: 'Good', region: 'KOR',
     purchaseDate: '2022-03-10', purchasePrice: 28000,
     memo: '사이코 만티스 씬에서 충격받음. 2번 엔딩 모두 클리어.',
@@ -1202,7 +1202,7 @@ export const defaultCollectionItems: CollectionItem[] = [
   },
   {
     id: 'c14', gameId: 'g_sonic1',
-    status: '단품 보유', ownershipStatus: '단품 보유',
+    status: '일부 누락' as any, ownershipStatus: '일부 누락',
     purchaseType: '패키지', condition: 'Fair', region: 'KOR',
     purchaseDate: '2021-05-15', purchasePrice: 22000,
     memo: '메가드라이브 컬렉션 입문작. 카트리지 상태 Fair.',

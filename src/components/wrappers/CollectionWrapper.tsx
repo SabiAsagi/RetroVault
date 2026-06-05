@@ -19,8 +19,8 @@ export default function CollectionWrapper({ initialGames, initialCollection }: P
     const newItem: CollectionItem = {
       id: `temp_${Date.now()}`,
       gameId,
-      status: '위시리스트',
-      ownershipStatus: '위시리스트',
+      status: '위시리스트' as any,
+      ownershipStatus: '위시리스트' as any,
       sortIndex: collection.length,
       purchaseDate: '',
       memo: '',
@@ -28,7 +28,7 @@ export default function CollectionWrapper({ initialGames, initialCollection }: P
     };
     setCollection([...collection, newItem]);
     try {
-      await updateCollectionItem(gameId, { ownershipStatus: '위시리스트' });
+      await updateCollectionItem(gameId, { ownershipStatus: '위시리스트' as any });
     } catch (e) {
       console.error(e);
       setCollection(collection.filter(i => i.id !== newItem.id));

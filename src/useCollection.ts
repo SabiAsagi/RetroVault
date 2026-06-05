@@ -46,7 +46,7 @@ export function useCollection() {
 
   // ── CREATE ────────────────────────────────────────────────────────────────
 
-  const addToCollection = useCallback((gameId: string, status: OwnershipStatus = '위시리스트') => {
+  const addToCollection = useCallback((gameId: string, status: any = '위시리스트') => {
     setCollection(prev => {
       if (prev.some(item => item.gameId === gameId)) return prev;
       const newItem: CollectionItem = {

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, useRef } from 'react';
 import { 
-  User, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
+  User as UserIcon, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
   Star, Clock, Shield, Medal, Copy, Check, Share2, History as HistoryIcon,
   Edit2, Save, X, Download, MessageSquare, AlertTriangle
 } from 'lucide-react';
@@ -195,7 +195,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                 {isEditing ? (
                   <img src={editData.image || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <img src={displayUser?.image || displayUser?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                  <img src={(displayUser as any)?.image || (displayUser as any)?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                 )}
               </div>
               
@@ -210,7 +210,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
                       placeholder="닉네임"
                     />
                   ) : (
-                    <h2 className="text-2xl font-black text-white">{displayUser?.nickname || displayUser?.name || '레트로 마스터'}</h2>
+                    <h2 className="text-2xl md:text-3xl font-black text-white truncate">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h2>
                   )}
                   {repEmblem && !isEditing && (
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1 ${repEmblem.colorClass} bg-vault-surface`}>
@@ -423,7 +423,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
           
           <div className="p-8 relative z-10 -mt-16">
             <div className="flex justify-between items-end mb-6">
-              <img src={displayUser?.image || displayUser?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-24 h-24 rounded-2xl border-4 border-[#0a0a0c] bg-vault-bg shadow-xl object-cover" />
+              <img src={(displayUser as any)?.image || (displayUser as any)?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-24 h-24 rounded-2xl bg-vault-bg border-4 border-vault-surface object-cover shadow-2xl" />
               <div className="text-right">
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${repEmblem?.colorClass || 'text-text-muted'} bg-vault-surface border border-vault-border mb-2 shadow-lg`}>
                   {repEmblem?.name || '신입 컬렉터'}
@@ -436,7 +436,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
             </div>
             
             <div className="mb-8">
-              <h4 className="text-3xl font-black text-white tracking-tight mb-1">{displayUser?.nickname || displayUser?.name || '레트로 마스터'}</h4>
+              <h4 className="text-3xl font-black text-white tracking-tight mb-1">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h4>
               <p className="text-sm text-text-secondary">RetroVault Verified Collector</p>
             </div>
             
@@ -464,7 +464,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
             <div className="flex items-center justify-between pt-6 border-t border-vault-border/30">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-mint/20 flex items-center justify-center">
-                  <Check size={14} className="text-mint" />
+                    <UserIcon size={14} className="mt-0.5 opacity-70" />
                 </div>
                 <div className="text-xs text-text-muted">
                   Joined<br/><span className="text-white font-bold">2024</span>
@@ -472,7 +472,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
               </div>
               <div className="text-right">
                 <span className="font-pixel text-[10px] text-text-muted block mb-1">RETROVAULT.IO</span>
-                <span className="text-xs font-mono text-text-secondary block">/profile/{displayUser?.nickname?.toLowerCase() || displayUser?.name?.toLowerCase() || 'retro_master'}</span>
+                <span className="text-xs font-mono text-text-secondary block">/profile/{displayUser?.nickname?.toLowerCase() || (displayUser as any)?.name?.toLowerCase() || 'retro_master'}</span>
               </div>
             </div>
           </div>

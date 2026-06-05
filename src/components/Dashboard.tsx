@@ -19,6 +19,7 @@ interface DashboardProps {
   onTabChange: (tab: 'archive' | 'vault' | 'timeline') => void;
   onEraFilter: (era: Era) => void;
   onSelectCollection?: (id: string) => void;
+  onSelectGame?: (game: Game) => void;
 }
 
 export default function Dashboard({ games, collection, historyGame, popularCollections = [], isOwned, onAddToCollection, onSelectGame, onTabChange, onSelectCollection }: DashboardProps) {
@@ -166,7 +167,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
             {recentlyAddedGames.map((game, index) => (
               <div 
                 key={game.id} 
-                onClick={() => onSelectGame(game)}
+                onClick={() => onSelectGame?.(game)}
                 className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 hover:bg-vault-surface-light transition-colors cursor-pointer group ${
                   index !== recentlyAddedGames.length - 1 ? 'border-b border-vault-border/60' : ''
                 }`}

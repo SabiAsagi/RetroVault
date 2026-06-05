@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { Game, CollectionItem } from '@/types';
+import { Game, CollectionItem, OwnershipStatus, PlayStatus, Visibility, PurchaseType, Region, Condition } from '@/types';
 import { X, Save, Check } from 'lucide-react';
 import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
@@ -98,7 +98,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <label className="block text-xs font-bold text-text-muted mb-1.5">소장 상태</label>
               <select 
                 value={formData.ownershipStatus} 
-                onChange={e => setFormData({...formData, ownershipStatus: e.target.value})}
+                onChange={e => setFormData({...formData, ownershipStatus: e.target.value as OwnershipStatus})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="미개봉">미개봉</option>
@@ -110,7 +110,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <label className="block text-xs font-bold text-text-muted mb-1.5">플레이 상태</label>
               <select 
                 value={formData.playStatus} 
-                onChange={e => setFormData({...formData, playStatus: e.target.value})}
+                onChange={e => setFormData({...formData, playStatus: e.target.value as PlayStatus})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="미플레이">미플레이</option>
@@ -137,7 +137,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <label className="block text-xs font-bold text-text-muted mb-1.5">공개 범위</label>
               <select 
                 value={formData.visibility} 
-                onChange={e => setFormData({...formData, visibility: e.target.value})}
+                onChange={e => setFormData({...formData, visibility: e.target.value as Visibility})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="public">공개</option>
@@ -152,7 +152,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <label className="block text-xs font-bold text-text-muted mb-1.5">구매 방식</label>
               <select 
                 value={formData.purchaseType} 
-                onChange={e => setFormData({...formData, purchaseType: e.target.value})}
+                onChange={e => setFormData({...formData, purchaseType: e.target.value as PurchaseType})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="패키지">패키지</option>
@@ -167,7 +167,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <label className="block text-xs font-bold text-text-muted mb-1.5">지역판</label>
               <select 
                 value={formData.region} 
-                onChange={e => setFormData({...formData, region: e.target.value})}
+                onChange={e => setFormData({...formData, region: e.target.value as Region})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="KOR">KOR (한국)</option>
@@ -181,7 +181,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
               <label className="block text-xs font-bold text-text-muted mb-1.5">상태(컨디션)</label>
               <select 
                 value={formData.condition} 
-                onChange={e => setFormData({...formData, condition: e.target.value})}
+                onChange={e => setFormData({...formData, condition: e.target.value as Condition})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-mint"
               >
                 <option value="Mint">Mint (최상)</option>

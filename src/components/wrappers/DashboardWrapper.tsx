@@ -25,8 +25,8 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
     const newItem: CollectionItem = {
       id: `temp_${Date.now()}`,
       gameId,
-      status: '위시리스트',
-      ownershipStatus: '위시리스트',
+      status: '위시리스트' as any,
+      ownershipStatus: '위시리스트' as any,
       sortIndex: collection.length,
       purchaseDate: '',
       memo: '',
@@ -36,7 +36,7 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
 
     // Server action
     try {
-      await updateCollectionItem(gameId, { ownershipStatus: '위시리스트' });
+      await updateCollectionItem(gameId, { ownershipStatus: '위시리스트' as any });
     } catch (e) {
       console.error(e);
       // Revert if failed (simplistic approach for MVP)

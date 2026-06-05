@@ -5,7 +5,7 @@ interface GameCardProps {
   game: Game;
   isOwned: boolean;
   onAddToCollection: (gameId: string) => void;
-  onClick: (game: Game) => void;
+  onClick?: (game: Game) => void;
 }
 
 const PLATFORM_COLORS: Record<string, [string, string]> = {
@@ -90,7 +90,7 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
   return (
     <div
       className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer group"
-      onClick={() => onClick(game)}
+      onClick={() => onClick?.(game)}
     >
       {/* Cover Art */}
       <div className="relative">
