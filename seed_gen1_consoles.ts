@@ -9,7 +9,7 @@ async function run() {
   const html = await res.text();
   const $ = cheerio.load(html);
   
-  const consoles = [];
+  const consoles: any[] = [];
   // Select only the first generation console table
   $('table#genonecon tbody tr').each((i, el) => {
     if (i === 0) return; // skip header
