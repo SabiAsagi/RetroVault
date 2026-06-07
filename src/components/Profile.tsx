@@ -13,6 +13,7 @@ import { updateProfile } from '@/app/actions/profile';
 import { useRouter } from 'next/navigation';
 import { toPng } from 'html-to-image';
 import { useToast } from '../contexts/ToastContext';
+import Stats from './Stats';
 
 interface ProfileProps {
   collection: CollectionItem[];
@@ -606,7 +607,12 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
         </div>
       )}
 
-      {/* ── 3. Profile Share Card Preview ── */}
+      {/* ── 3. Collection Statistics ── */}
+      <div className="mt-8">
+        <Stats games={games} collection={collection} />
+      </div>
+
+      {/* ── 4. Profile Share Card Preview ── */}
       {isOwnProfile && (
         <div className="space-y-6 pt-10 border-t border-vault-border/50 pb-8">
         <div className="flex flex-col items-center justify-center mb-6 text-center">

@@ -48,6 +48,12 @@ export default function MyVault({
   const [groups, setGroups] = useState<any[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>('all');
   
+  // Batch Edit States
+  const [isBatchEditMode, setIsBatchEditMode] = useState(false);
+  const [selectedGameIds, setSelectedGameIds] = useState<Set<string>>(new Set());
+  const [isBatchUpdating, setIsBatchUpdating] = useState(false);
+
+  
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -90,7 +96,52 @@ export default function MyVault({
 
   // Drag and Drop Handlers
   const handleDragStart = (index: number) => {
+    if (isBatchEditMode) return;
     setDraggedIndex(index);
+  };
+
+  const handleItemClick = (item: CollectionItem, game: Game) => {
+    if (isBatchEditMode) {
+      const newSet = new Set(selectedGameIds);
+      if (newSet.has(game.id)) newSet.delete(game.id);
+      else newSet.add(game.id);
+      setSelectedGameIds(newSet);
+    } else {
+      setItemToEdit({ item, game });
+    }
+  };
+
+  const handleBatchUpdate = async () => {
+    if (selectedGameIds.size === 0) return;
+    const status = (document.getElementById('batch-status') as HTMLSelectElement).value;
+    const visibility = (document.getElementById('batch-visibility') as HTMLSelectElement).value;
+    const groupId = (document.getElementById('batch-group') as HTMLSelectElement).value;
+
+    if (!status && !visibility && !groupId) {
+      showToast('변경할 항목을 선택해주세요.', 'error');
+      return;
+    }
+
+    const updateData: any = {};
+    if (status) updateData.ownershipStatus = status as OwnershipStatus;
+    if (visibility) updateData.visibility = visibility;
+    if (groupId) updateData.groupId = groupId === 'none' ? '' : groupId;
+
+    setIsBatchUpdating(true);
+    try {
+      const { batchUpdateCollectionItems } = await import('../app/actions/collection');
+      await batchUpdateCollectionItems(Array.from(selectedGameIds), updateData);
+      
+      showToast(`${selectedGameIds.size}개 항목이 업데이트 되었습니다.`);
+      setIsBatchEditMode(false);
+      setSelectedGameIds(new Set());
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      showToast('업데이트 중 오류가 발생했습니다.', 'error');
+    } finally {
+      setIsBatchUpdating(false);
+    }
   };
 
   const handleDragEnter = (index: number) => {
@@ -185,6 +236,21 @@ export default function MyVault({
             ))}
           </div>
 
+          {/* Batch Edit Toggle */}
+          <button
+            onClick={() => {
+              setIsBatchEditMode(!isBatchEditMode);
+              if (isBatchEditMode) setSelectedGameIds(new Set());
+            }}
+            className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+              isBatchEditMode 
+                ? 'bg-mint text-vault-bg shadow-[0_0_10px_rgba(74,237,196,0.3)]' 
+                : 'bg-vault-surface-light border border-vault-border text-text-primary hover:border-mint/50'
+            }`}
+          >
+            {isBatchEditMode ? '편집 취소' : '대량 편집'}
+          </button>
+
           {/* Group Filter */}
           {groups.length > 0 && (
             <select
@@ -245,6 +311,54 @@ export default function MyVault({
         </div>
       </div>
 
+      {/* Batch Edit Toolbar */}
+      {isBatchEditMode && (
+        <div className="mb-6 p-4 bg-vault-surface border border-mint/50 rounded-xl shadow-[0_0_20px_rgba(74,237,196,0.15)] flex flex-wrap items-center justify-between gap-4 sticky top-16 z-50">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-bold text-text-primary">
+              <span className="text-mint">{selectedGameIds.size}</span>개 선택됨
+            </span>
+            <button 
+              onClick={() => {
+                if (selectedGameIds.size === displayItems.length) setSelectedGameIds(new Set());
+                else setSelectedGameIds(new Set(displayItems.map(d => d.game.id)));
+              }}
+              className="text-xs px-3 py-1.5 bg-vault-bg border border-vault-border rounded-lg hover:border-mint/50 transition-colors cursor-pointer"
+            >
+              {selectedGameIds.size === displayItems.length ? '선택 해제' : '전체 선택'}
+            </button>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2">
+            <select id="batch-status" className="bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
+              <option value="">상태 변경...</option>
+              <option value="위시리스트">위시리스트</option>
+              <option value="보유중(실물)">보유중(실물)</option>
+              <option value="보유중(디지털)">보유중(디지털)</option>
+              <option value="구독플랜">구독플랜</option>
+            </select>
+            <select id="batch-visibility" className="bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
+              <option value="">공개 설정...</option>
+              <option value="public">전체 공개</option>
+              <option value="friends">친구 공개</option>
+              <option value="private">비공개</option>
+            </select>
+            <select id="batch-group" className="bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
+              <option value="">그룹 지정...</option>
+              <option value="none">지정 안함 (그룹 해제)</option>
+              {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+            </select>
+            <button
+              onClick={handleBatchUpdate}
+              disabled={isBatchUpdating || selectedGameIds.size === 0}
+              className="px-4 py-1.5 bg-mint text-vault-bg text-xs font-bold rounded-lg hover:bg-mint-dim disabled:opacity-50 transition-colors cursor-pointer"
+            >
+              {isBatchUpdating ? '적용 중...' : '적용'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Collection Display */}
       {collection.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 text-center bg-vault-surface border border-vault-border rounded-xl">
@@ -284,7 +398,7 @@ export default function MyVault({
                           onDragEnter={() => handleDragEnter(originalIndex)}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => e.preventDefault()}
-                          onClick={() => setItemToEdit({ item, game })}
+                          onClick={() => handleItemClick(item, game)}
                           className={`relative group cursor-pointer transition-all duration-300 transform perspective-1000
                             ${isDragged ? 'opacity-50 scale-95' : 'hover:-translate-y-4 hover:scale-105 hover:z-30'}
                             ${isDragOver ? 'translate-x-4 border-l-2 border-mint pl-2' : ''}
@@ -295,6 +409,12 @@ export default function MyVault({
                               <img src={game.imageUrl} alt={game.title} className="w-full h-full object-cover" />
                             ) : (
                               <BoxArtPlaceholder game={game} />
+                            )}
+                            
+                            {isBatchEditMode && (
+                              <div className="absolute top-2 left-2 z-40 bg-vault-surface/80 rounded border border-vault-border p-0.5">
+                                <input type="checkbox" checked={selectedGameIds.has(game.id)} readOnly className="w-4 h-4 accent-mint cursor-pointer" />
+                              </div>
                             )}
                             
                             {/* Drag handle overlay on hover */}
@@ -339,7 +459,7 @@ export default function MyVault({
                           onDragEnter={() => handleDragEnter(originalIndex)}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => e.preventDefault()}
-                          onClick={() => setItemToEdit({ item, game })}
+                          onClick={() => handleItemClick(item, game)}
                           className={`relative group cursor-pointer shrink-0 transition-all duration-300
                             ${isDragged ? 'opacity-50 scale-95' : 'hover:-translate-y-2 hover:z-30'}
                             ${isDragOver ? 'translate-x-2 border-l border-mint pl-1' : ''}
@@ -366,6 +486,12 @@ export default function MyVault({
                                 {game.title.length > 22 ? game.title.slice(0, 22) + '…' : game.title}
                               </span>
                             </div>
+                            
+                            {isBatchEditMode && (
+                              <div className="absolute top-1 left-1/2 -translate-x-1/2 z-40 bg-vault-surface/80 rounded border border-vault-border p-0.5">
+                                <input type="checkbox" checked={selectedGameIds.has(game.id)} readOnly className="w-3 h-3 accent-mint cursor-pointer" />
+                              </div>
+                            )}
                             
                             {/* Drag handle overlay on hover */}
                             <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-start pt-1">
@@ -403,12 +529,17 @@ export default function MyVault({
                   onDragEnter={() => handleDragEnter(originalIndex)}
                   onDragEnd={handleDragEnd}
                   onDragOver={(e) => e.preventDefault()}
-                  className={`transition-all duration-200
+                  className={`transition-all duration-200 relative
                     ${isDragged ? 'opacity-50 scale-95' : ''}
                     ${isDragOver ? 'scale-105 border-mint border-2 rounded-xl' : ''}
                   `}
                 >
-                  <GameCard game={game} isOwned={true} onAddToCollection={onAddToCollection} onClick={() => setItemToEdit({ item, game })} />
+                  <GameCard game={game} isOwned={true} onAddToCollection={onAddToCollection} onClick={() => handleItemClick(item, game)} />
+                  {isBatchEditMode && (
+                    <div className="absolute top-2 left-2 z-40 bg-vault-surface/80 rounded border border-vault-border p-0.5 pointer-events-none">
+                      <input type="checkbox" checked={selectedGameIds.has(game.id)} readOnly className="w-4 h-4 accent-mint cursor-pointer" />
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -430,12 +561,17 @@ export default function MyVault({
                   onDragEnter={() => handleDragEnter(originalIndex)}
                   onDragEnd={handleDragEnd}
                   onDragOver={(e) => e.preventDefault()}
-                  onClick={() => setItemToEdit({ item, game })}
-                  className={`flex items-center gap-4 px-4 py-3 bg-vault-bg/80 border border-vault-border rounded-xl cursor-pointer hover:border-mint/50 transition-all group
+                  onClick={() => handleItemClick(item, game)}
+                  className={`flex items-center gap-4 px-4 py-3 bg-vault-bg/80 border border-vault-border rounded-xl cursor-pointer hover:border-mint/50 transition-all group relative
                     ${isDragged ? 'opacity-50' : ''}
                     ${isDragOver ? 'border-mint border-2 translate-y-1' : ''}
                   `}
                 >
+                  {isBatchEditMode && (
+                    <div className="mr-2">
+                      <input type="checkbox" checked={selectedGameIds.has(game.id)} readOnly className="w-4 h-4 accent-mint cursor-pointer" />
+                    </div>
+                  )}
                   <div className="cursor-grab active:cursor-grabbing text-text-muted hover:text-text-primary p-1">
                     <GripVertical size={16} />
                   </div>

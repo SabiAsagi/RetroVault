@@ -86,3 +86,52 @@ export async function updateCollectionItem(gameId: string, data: any) {
 
   revalidatePath('/community');
 }
+
+export async function batchUpdateCollectionItems(gameIds: string[], data: any) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Not logged in");
+
+  const { groupId, ...itemData } = data;
+
+  // Use Promise.all to update all items because of complex upsert/group logic
+  await Promise.all(gameIds.map(async (gameId) => {
+    const item = await prisma.collectionItem.upsert({
+      where: {
+        userId_gameId: { userId: session.user.id, gameId }
+      },
+      update: itemData,
+      create: {
+        userId: session.user.id,
+        gameId,
+        ownershipStatus: itemData.ownershipStatus || '위시리스트',
+        ...itemData
+      }
+    });
+
+    if (groupId !== undefined) {
+      if (groupId === '') {
+        await prisma.collectionGroupItem.deleteMany({
+          where: { itemId: item.id }
+        });
+      } else {
+        const group = await prisma.collectionGroup.findFirst({
+          where: { id: groupId, userId: session.user.id }
+        });
+
+        if (group) {
+          await prisma.collectionGroupItem.deleteMany({
+            where: { itemId: item.id }
+          });
+          await prisma.collectionGroupItem.create({
+            data: {
+              groupId: group.id,
+              itemId: item.id
+            }
+          });
+        }
+      }
+    }
+  }));
+
+  revalidatePath('/community');
+}
