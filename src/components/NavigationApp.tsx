@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { getGameSlug } from '@/lib/slug';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
   Trophy, User, Users, Settings, Search, Mail,
@@ -126,7 +127,7 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">게임</h3>
                     {searchResults.games.map((g: any) => (
-                      <Link href={`/games/${g.id}`} key={g.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/games/${getGameSlug(g)}`} key={g.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
                         {g.coverImageUrl ? (
                           <img src={g.coverImageUrl} className="w-8 h-10 object-cover rounded" />
                         ) : (

@@ -4,11 +4,17 @@ import { Database, Calendar, Monitor, Link as LinkIcon, Gamepad2, ArrowLeft } fr
 import Link from "next/link";
 import GameCard from "@/components/GameCard";
 
-export default async function PlatformDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+import { parsePlatformSlug } from "@/lib/slug";
+
+export default async function PlatformDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { year, name } = parsePlatformSlug(slug);
   
-  const platform = await prisma.platform.findUnique({
-    where: { id },
+  const platform = await prisma.platform.findFirst({
+    where: { 
+      name,
+      ...(year !== null ? { releaseYear: year } : {})
+    },
     include: {
       games: {
         orderBy: { releaseYear: 'asc' },

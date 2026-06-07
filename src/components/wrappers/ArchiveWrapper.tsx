@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Archive from '@/components/Archive';
 import { Game, CollectionItem } from '@/types';
+import { getGameSlug } from '@/lib/slug';
 import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 import CollectionAddModal from '@/components/CollectionAddModal';
@@ -28,7 +29,7 @@ export default function ArchiveWrapper({ initialGames, initialCollection }: Prop
   };
 
   const handleSelectGame = (game: Game) => {
-    router.push(`/games/${game.id}`);
+    router.push(`/games/${getGameSlug(game)}`);
   };
 
   return (

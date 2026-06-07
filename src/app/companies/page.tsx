@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Building2, Link as LinkIcon, Gamepad2 } from "lucide-react";
 import Link from "next/link";
+import { getCompanySlug } from "@/lib/slug";
 
 export default async function CompaniesPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   const { type } = await searchParams;
@@ -39,7 +40,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {companies.map(c => (
-          <Link href={`/companies/${c.id}`} key={c.id} className="block group">
+          <Link href={`/companies/${getCompanySlug(c)}`} key={c.id} className="block group">
             <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-amber/50 transition-colors p-5 h-full flex flex-col">
               <div className="flex items-start gap-4 mb-4">
               <div className="w-16 h-16 rounded-lg bg-vault-surface-light border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-2">

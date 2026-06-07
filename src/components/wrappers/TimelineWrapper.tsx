@@ -3,6 +3,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Timeline from '@/components/Timeline';
 import { Game, TimelineEvent, Platform } from '@/types';
+import { getGameSlug } from '@/lib/slug';
 
 interface Props {
   initialGames: Game[];
@@ -14,7 +15,7 @@ export default function TimelineWrapper({ initialGames, initialTimelineEvents, i
   const router = useRouter();
 
   const handleSelectGame = (game: Game) => {
-    router.push(`/games/${game.id}`);
+    router.push(`/games/${getGameSlug(game)}`);
   };
 
   return <Timeline games={initialGames} timelineEvents={initialTimelineEvents} platforms={initialPlatforms} onSelectGame={handleSelectGame} />;

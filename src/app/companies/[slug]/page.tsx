@@ -4,11 +4,19 @@ import { Building2, ArrowLeft, Link as LinkIcon, Gamepad2, Users } from "lucide-
 import Link from "next/link";
 import GameCard from "@/components/GameCard";
 
-export default async function CompanyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+import { parseCompanySlug } from "@/lib/slug";
+
+export default async function CompanyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { year, name } = parseCompanySlug(slug);
   
-  const company = await prisma.company.findUnique({
-    where: { id },
+  const company = await prisma.company.findFirst({
+    where: { 
+      name,
+      // If we need strict matching with year we can, but usually name is unique enough. 
+      // foundedAt is a string like '1889', so year might be a partial match if we need it. 
+      // For now, finding by name is robust enough, but let's just use name since year was just a prefix
+    },
     include: {
       developedGames: {
         orderBy: { releaseYear: 'desc' },

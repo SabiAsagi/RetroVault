@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Database, Calendar, Monitor, Link as LinkIcon, Building2 } from "lucide-react";
 import Link from "next/link";
+import { getPlatformSlug } from "@/lib/slug";
 
 export default async function PlatformsPage({ searchParams }: { searchParams: Promise<{ manufacturer?: string }> }) {
   const { manufacturer } = await searchParams;
@@ -43,7 +44,7 @@ export default async function PlatformsPage({ searchParams }: { searchParams: Pr
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {platforms.map(p => (
-          <Link href={`/platforms/${p.id}`} key={p.id} className="block group">
+          <Link href={`/platforms/${getPlatformSlug(p)}`} key={p.id} className="block group">
             <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-neon-purple/50 transition-colors">
               <div className="h-40 bg-vault-surface-light relative overflow-hidden">
               {p.imageUrl ? (

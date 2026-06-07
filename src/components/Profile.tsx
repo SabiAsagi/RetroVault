@@ -4,7 +4,7 @@ import {
   User as UserIcon, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
   Star, Clock, Shield, Medal, Copy, Check, Share2, History as HistoryIcon,
   Edit2, Save, X, Download, MessageSquare, AlertTriangle, UserPlus, UserCheck, UserMinus,
-  LayoutGrid, Heart
+  LayoutGrid, Heart, Eye
 } from 'lucide-react';
 import { CollectionItem, Game } from '../types';
 import { calculateEmblems, Emblem } from '../lib/emblems';
@@ -31,7 +31,7 @@ interface ProfileProps {
 
 export default function Profile({ collection, games, viewedUser, collectionGroups }: ProfileProps) {
   const [copied, setCopied] = useState(false);
-  const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
+  const [activeView, setActiveView] = useState<'profile' | 'collection'>('profile');
   const [currentPage, setCurrentPage] = useState(1);
   const { user, updateProfile: updateProfileContext } = useAuth();
   const router = useRouter();
@@ -265,11 +265,11 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
   const currentItems = collectionGames.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] flex flex-col-reverse md:flex-row gap-8 items-start relative">
+    <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] relative">
       
-      {/* ── 1. Left Column: Collection Grid (Gallery) ── */}
-      {!isOwnProfile && (
-      <div className={`w-full transition-all duration-500 ease-in-out ${isProfileCollapsed ? 'md:w-full' : 'md:w-3/5'}`}>
+      {/* ── 1. Collection Grid (Gallery) ── */}
+      {!isOwnProfile && activeView === 'collection' && (
+      <div className="w-full transition-all duration-500 ease-in-out">
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
@@ -278,15 +278,20 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
             </h3>
             <div className="flex items-center gap-2">
               {!isOwnProfile && collectionGroups && collectionGroups.length > 0 && (
-                <button onClick={handleLike} className="flex items-center gap-1.5 px-3 py-1 bg-coral/10 text-coral border border-coral/30 rounded-full text-xs font-bold hover:bg-coral/20 transition-colors">
-                  <Heart size={14} /> {localLikes}
-                </button>
+                <>
+                  <button onClick={handleLike} className="flex items-center gap-1.5 px-3 py-1 bg-coral/10 text-coral border border-coral/30 rounded-full text-xs font-bold hover:bg-coral/20 transition-colors">
+                    <Heart size={14} /> {localLikes}
+                  </button>
+                  <span className="flex items-center gap-1.5 px-3 py-1 bg-vault-surface-light text-text-secondary border border-vault-border rounded-full text-xs font-bold">
+                    <Eye size={14} /> {collectionGroups[0].views}
+                  </span>
+                </>
               )}
               <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full hidden sm:inline-block">
                 총 {collectionGames.length}개
               </span>
-              <button onClick={() => setIsProfileCollapsed(!isProfileCollapsed)} className="flex items-center gap-1 px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs text-text-secondary transition-colors">
-                {isProfileCollapsed ? '프로필 열기' : '프로필 접기'}
+              <button onClick={() => setActiveView('profile')} className="flex items-center gap-1 px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs text-text-secondary transition-colors">
+                프로필 보기
               </button>
             </div>
           </div>
@@ -338,12 +343,9 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
       </div>
       )}
 
-      {/* ── 2. Right Column: Profile Info ── */}
-      <div className={`w-full flex flex-col gap-6 transition-all duration-500 overflow-hidden ${
-        isOwnProfile 
-          ? 'max-w-4xl mx-auto' 
-          : (isProfileCollapsed ? 'h-0 opacity-0 md:w-0' : 'h-auto opacity-100 md:w-2/5 md:sticky md:top-24 md:max-h-[calc(100vh-6rem)] md:overflow-y-auto custom-scrollbar md:pr-2')
-      }`}>
+      {/* ── 2. Profile Info ── */}
+      {(isOwnProfile || activeView === 'profile') && (
+      <div className={`w-full flex flex-col gap-6 transition-all duration-500 max-w-4xl mx-auto`}>
       
       {/* ── Profile Header ── */}
       <div className="bg-vault-surface border border-vault-border rounded-2xl overflow-hidden relative shadow-xl">
@@ -461,7 +463,15 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                   </button>
                 </>
               ) : (
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
+                  {!isOwnProfile && (
+                    <button 
+                      onClick={() => setActiveView('collection')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-neon-purple text-vault-bg text-sm font-bold rounded-lg hover:bg-neon-purple-dim transition-colors mr-2 shadow-lg"
+                    >
+                      <LayoutGrid size={14} /> 컬렉션 보기
+                    </button>
+                  )}
                   <button 
                     onClick={handleCopyLink}
                     className={`p-1.5 rounded-lg border transition-colors ${copied ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-vault-bg border-vault-border text-text-primary hover:text-text-primary hover:border-vault-border-light'}`}
@@ -700,7 +710,8 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
         </div>
       )}
       
-      </div> {/* End of Right Column */}
+      </div>
+      )}
 
       {/* Modals */}
       {dmModalOpen && (

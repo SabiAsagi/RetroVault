@@ -2,6 +2,7 @@ import { Game, CollectionItem, Era } from '../types';
 import { Calendar, Heart, Eye, ChevronRight, Star, History, Disc, Trophy, ArrowRight } from 'lucide-react';
 import GameCard, { BoxArtPlaceholder } from './GameCard';
 import Link from 'next/link';
+import { getGameSlug } from '@/lib/slug';
 
 interface DashboardProps {
   games: Game[];
@@ -83,7 +84,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           
           <div className="flex flex-wrap gap-3">
             <Link
-              href={historyGame ? `/games/${historyGame.id}` : '/games'}
+              href={historyGame ? `/games/${getGameSlug(historyGame)}` : '/games'}
               className="flex items-center gap-2 px-5 py-2.5 bg-mint text-vault-bg text-sm font-bold rounded-lg hover:bg-mint-dim transition-all shadow-[0_0_15px_rgba(74,237,196,0.3)] hover:shadow-[0_0_25px_rgba(74,237,196,0.5)]"
             >
               <History size={16} />

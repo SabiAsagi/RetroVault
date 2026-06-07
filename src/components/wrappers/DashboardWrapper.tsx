@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Dashboard from '@/components/Dashboard';
 import { Game, CollectionItem } from '@/types';
+import { getGameSlug } from '@/lib/slug';
 import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 
@@ -55,7 +56,7 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
   };
 
   const handleSelectGame = (game: Game) => {
-    router.push(`/games/${game.id}`);
+    router.push(`/games/${getGameSlug(game)}`);
   };
 
   return (
