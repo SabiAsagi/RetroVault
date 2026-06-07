@@ -7,8 +7,9 @@ import { authOptions } from "@/lib/auth";
 import LoginRequired from "@/components/LoginRequired";
 import { redirect } from "next/navigation";
 
-export default async function ProfilePage({ params }: { params: Promise<{ nickname: string }> }) {
+export default async function ProfilePage({ params, searchParams }: { params: Promise<{ nickname: string }>, searchParams: Promise<{ group?: string }> }) {
   const { nickname: rawNickname } = await params;
+  const { group: groupId } = await searchParams;
   const decodedNickname = decodeURIComponent(rawNickname);
   const session = await getServerSession(authOptions);
   
@@ -52,8 +53,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ nickna
   if (isOwnProfile) {
     // For own profile, we might want to show private items as well, so we fetch their full collection
     const fullCollection = await getUserCollection();
-    return <Profile games={games} collection={fullCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} />;
+    return <Profile games={games} collection={fullCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} initialGroupId={groupId} />;
   }
 
-  return <Profile games={games} collection={publicCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} />;
+  return <Profile games={games} collection={publicCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} initialGroupId={groupId} />;
 }

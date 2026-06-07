@@ -77,7 +77,6 @@ export async function getDashboardData() {
       }) as any)
     })),
     ...usersWithPublicItems
-      .filter(u => !popularGroups.some(g => g.userId === u.id))
       .map(u => ({
         id: u.nickname || u.name || u.id,
         user: u.nickname || u.name || 'User',

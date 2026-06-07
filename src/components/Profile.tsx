@@ -27,11 +27,13 @@ interface ProfileProps {
     image: string;
   };
   collectionGroups?: any[];
+  initialGroupId?: string;
 }
 
-export default function Profile({ collection, games, viewedUser, collectionGroups }: ProfileProps) {
+export default function Profile({ collection, games, viewedUser, collectionGroups, initialGroupId }: ProfileProps) {
   const [copied, setCopied] = useState(false);
   const [activeView, setActiveView] = useState<'profile' | 'collection'>('collection');
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId || null);
   const [currentPage, setCurrentPage] = useState(1);
   const { user, updateProfile: updateProfileContext } = useAuth();
   const router = useRouter();
@@ -136,10 +138,20 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
   };
 
   const collectionGames = useMemo(() => {
-    return collection
+    let base = collection
       .map(c => ({ item: c, game: games.find(g => g.id === c.gameId) }))
       .filter((cg): cg is { item: CollectionItem; game: NonNullable<typeof cg.game> } => !!cg.game);
-  }, [collection, games]);
+      
+    if (activeGroupId && collectionGroups) {
+      const group = collectionGroups.find(g => g.id === activeGroupId);
+      if (group && group.items) {
+        const groupItemIds = new Set(group.items.map((i: any) => i.itemId));
+        base = base.filter(cg => groupItemIds.has(cg.item.id));
+      }
+    }
+    
+    return base;
+  }, [collection, games, activeGroupId, collectionGroups]);
 
   const emblems = calculateEmblems(collection, games);
   const unlockedEmblems = emblems.filter(e => e.isUnlocked);
@@ -280,10 +292,20 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
               <LayoutGrid className="text-amber" size={20} />
-              {displayUser?.nickname || (displayUser as any)?.name || '유저'}님의 컬렉션
+              {activeGroupId && collectionGroups 
+                ? collectionGroups.find(g => g.id === activeGroupId)?.name 
+                : `${displayUser?.nickname || (displayUser as any)?.name || '유저'}님의 컬렉션`}
             </h3>
             <div className="flex items-center gap-2">
-              {!isOwnProfile && (
+              {activeGroupId && (
+                <button 
+                  onClick={() => setActiveGroupId(null)} 
+                  className="flex items-center gap-1 px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs text-text-secondary transition-colors"
+                >
+                  전체 컬렉션
+                </button>
+              )}
+              {!isOwnProfile && !activeGroupId && (
                 <button 
                   onClick={handleLike} 
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${

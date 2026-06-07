@@ -68,7 +68,7 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
       isOwned={isOwned}
       onAddToCollection={handleAddToCollection}
       onSelectGame={handleSelectGame}
-      onSelectCollection={(id) => router.push(`/profile/${id}`)}
+      onSelectCollection={(id, groupId) => router.push(`/profile/${id}${groupId ? `?group=${groupId}` : ''}`)}
       onTabChange={handleTabChange as any}
       onEraFilter={() => {}}
     />

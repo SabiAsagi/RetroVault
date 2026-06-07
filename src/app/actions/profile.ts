@@ -42,6 +42,8 @@ export async function getUserProfile(userId: string) {
       image: true,
       role: true,
       createdAt: true,
+      profileLikes: true,
+      profileViews: true,
     }
   });
 
@@ -57,7 +59,8 @@ export async function getUserProfile(userId: string) {
 
   const publicGroups = await prisma.collectionGroup.findMany({
     where: { userId, isPublic: true },
-    orderBy: { likes: 'desc' }
+    orderBy: { likes: 'desc' },
+    include: { items: true }
   });
 
   return { user, collection: publicCollection, collectionGroups: publicGroups };
@@ -81,6 +84,8 @@ export async function getUserProfileByNickname(nickname: string) {
       image: true,
       role: true,
       createdAt: true,
+      profileLikes: true,
+      profileViews: true,
     }
   });
 
@@ -96,7 +101,8 @@ export async function getUserProfileByNickname(nickname: string) {
 
   const publicGroups = await prisma.collectionGroup.findMany({
     where: { userId: user.id, isPublic: true },
-    orderBy: { likes: 'desc' }
+    orderBy: { likes: 'desc' },
+    include: { items: true }
   });
 
   return { user, collection: publicCollection, collectionGroups: publicGroups };

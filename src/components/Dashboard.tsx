@@ -21,7 +21,7 @@ interface DashboardProps {
   onAddToCollection: (gameId: string) => void;
   onTabChange: (tab: 'archive' | 'vault' | 'timeline') => void;
   onEraFilter: (era: Era) => void;
-  onSelectCollection?: (id: string) => void;
+  onSelectCollection?: (id: string, groupId?: string) => void;
   onSelectGame?: (game: Game) => void;
 }
 
@@ -112,7 +112,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
                 onClick={() => {
                   const viewUrl = col.type === 'user' ? `/api/users/${col.id}/view` : `/api/collection-groups/${col.id}/view`;
                   fetch(viewUrl, { method: 'POST' }).catch(console.error);
-                  if (onSelectCollection) onSelectCollection(col.user);
+                  if (onSelectCollection) onSelectCollection(col.user, col.type === 'group' ? col.id : undefined);
                   else onTabChange('vault');
                 }} 
                 className="glass-panel border border-vault-border rounded-xl p-4 hover:border-vault-border-light transition-all cursor-pointer group"
