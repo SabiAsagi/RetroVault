@@ -270,7 +270,7 @@ export default function MyVault({
               const rowItems = displayItems.slice(rowIndex * 10, (rowIndex + 1) * 10);
               return (
                 <div key={rowIndex} className="relative">
-                  <div className="flex flex-wrap gap-4 sm:gap-6 px-4 md:px-8 pb-1 min-h-[180px] items-end justify-start">
+                  <div className="grid grid-cols-10 gap-2 sm:gap-4 lg:gap-6 px-4 md:px-8 pb-1 min-h-[120px] sm:min-h-[180px] items-end">
                     {rowItems.map((data, localIdx) => {
                       const { item, game, originalIndex } = data;
                       const isDragged = draggedIndex === originalIndex;
@@ -290,7 +290,7 @@ export default function MyVault({
                             ${isDragOver ? 'translate-x-4 border-l-2 border-mint pl-2' : ''}
                           `}
                         >
-                          <div className="w-20 sm:w-24 md:w-28 aspect-[3/4] rounded-md overflow-hidden shadow-[5px_5px_15px_rgba(0,0,0,0.5)] border border-vault-border/50 bg-vault-bg relative group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-all">
+                          <div className="w-full aspect-[3/4] rounded-md overflow-hidden shadow-[5px_5px_15px_rgba(0,0,0,0.5)] border border-vault-border/50 bg-vault-bg relative group-hover:-translate-y-2 group-hover:scale-[1.1] group-hover:z-30 group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-all duration-300 origin-bottom">
                             {game.imageUrl ? (
                               <img src={game.imageUrl} alt={game.title} className="w-full h-full object-cover" />
                             ) : (
