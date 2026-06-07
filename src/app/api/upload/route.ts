@@ -35,8 +35,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Filename is required' }, { status: 400 });
   }
 
-  if (!request.body) {
-    return NextResponse.json({ error: 'File body is required' }, { status: 400 });
+  if (!request.body && !request.bodyUsed) {
+    // Vercel blob will read the request directly, just ensure it's not empty if possible
   }
 
   const contentType = request.headers.get('content-type') || undefined;
@@ -51,7 +51,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     const pathname = `uploads/${session.user.id}/${Date.now()}-${sanitizeFilename(filename)}`;
-    const blob = await put(pathname, request.body, {
+    const blob = await put(pathname, request, {
       access: 'public',
       addRandomSuffix: true,
       allowOverwrite: false,
