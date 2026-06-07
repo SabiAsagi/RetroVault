@@ -43,14 +43,19 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   
   const [gamesPage, setGamesPage] = useState(1);
   const gamesPerPage = 10;
+  const [gamesSearch, setGamesSearch] = useState('');
   
   const [editingCompany, setEditingCompany] = useState<any>(null);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [companiesPage, setCompaniesPage] = useState(1);
+  const companiesPerPage = 10;
+  const [companiesSearch, setCompaniesSearch] = useState('');
 
   const [editingPlatform, setEditingPlatform] = useState<any>(null);
   const [isPlatformModalOpen, setIsPlatformModalOpen] = useState(false);
   const [platformsPage, setPlatformsPage] = useState(1);
   const platformsPerPage = 10;
+  const [platformsSearch, setPlatformsSearch] = useState('');
 
   // Custom User Management Modal State
   const [userActionModalOpen, setUserActionModalOpen] = useState(false);
@@ -242,10 +247,16 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input type="text" placeholder="게임 검색..." className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-blue" />
+          <input type="text" placeholder="게임 검색..." value={gamesSearch} onChange={e => {setGamesSearch(e.target.value); setGamesPage(1);}} className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-blue" />
         </div>
       </div>
 
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input type="text" placeholder="회사 검색..." value={companiesSearch} onChange={e => {setCompaniesSearch(e.target.value); setCompaniesPage(1);}} className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-blue" />
+        </div>
+      </div>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
@@ -260,7 +271,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             </tr>
           </thead>
           <tbody className="divide-y divide-vault-border/50">
-            {games.slice((gamesPage - 1) * gamesPerPage, gamesPage * gamesPerPage).map(g => (
+            {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).slice((gamesPage - 1) * gamesPerPage, gamesPage * gamesPerPage).map(g => (
               <tr key={g.id} className="hover:bg-vault-surface-light">
                 <td className="px-4 py-3 text-text-muted font-mono text-xs">{g.id}</td>
                 <td className="px-4 py-3 text-text-primary font-medium">{g.title}</td>
@@ -305,13 +316,13 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           </tbody>
         </table>
         
-        {games.length > 0 && (
+        {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length > 0 && (
           <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
-            <span className="text-xs text-text-muted">총 {games.length}개 게임</span>
+            <span className="text-xs text-text-muted">총 {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length}개 게임</span>
             <div className="flex gap-2">
               <button disabled={gamesPage === 1} onClick={() => setGamesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
-              <span className="px-3 py-1 text-xs text-text-primary">{gamesPage} / {Math.ceil(games.length / gamesPerPage)}</span>
-              <button disabled={gamesPage >= Math.ceil(games.length / gamesPerPage)} onClick={() => setGamesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
+              <span className="px-3 py-1 text-xs text-text-primary">{gamesPage} / {Math.ceil(games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length / gamesPerPage)}</span>
+              <button disabled={gamesPage >= Math.ceil(games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length / gamesPerPage)} onClick={() => setGamesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
             </div>
           </div>
         )}
@@ -326,6 +337,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
             <tr>
+              <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">이름</th>
               <th className="px-4 py-3">이메일</th>
               <th className="px-4 py-3">권한</th>
@@ -518,6 +530,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
             <tr>
+              <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">회사명</th>
               <th className="px-4 py-3">구분</th>
               <th className="px-4 py-3">등록 게임 수</th>
@@ -526,8 +539,12 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             </tr>
           </thead>
           <tbody className="divide-y divide-vault-border/50">
-            {(companies || []).map(c => (
+            {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length === 0 && (
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-text-muted">등록된 회사가 없습니다.</td></tr>
+            )}
+            {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).slice((companiesPage - 1) * companiesPerPage, companiesPage * companiesPerPage).map(c => (
               <tr key={c.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-muted font-mono text-xs">{c.id}</td>
                 <td className="px-4 py-3 text-text-primary font-medium">{c.name}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{c.type}</td>
                 <td className="px-4 py-3 text-mint font-mono text-xs">{c.gamesCount}</td>
@@ -546,6 +563,17 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             ))}
           </tbody>
         </table>
+        
+        {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length > 0 && (
+          <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
+            <span className="text-xs text-text-muted">총 {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length}개 회사</span>
+            <div className="flex gap-2">
+              <button disabled={companiesPage === 1} onClick={() => setCompaniesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
+              <span className="px-3 py-1 text-xs text-text-primary">{companiesPage} / {Math.ceil((companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length / companiesPerPage)}</span>
+              <button disabled={companiesPage >= Math.ceil((companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length / companiesPerPage)} onClick={() => setCompaniesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -609,7 +637,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input type="text" placeholder="플랫폼 검색..." className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-purple" />
+          <input type="text" placeholder="플랫폼 검색..." value={platformsSearch} onChange={e => {setPlatformsSearch(e.target.value); setPlatformsPage(1);}} className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-purple" />
         </div>
       </div>
 
@@ -625,8 +653,9 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             </tr>
           </thead>
           <tbody className="divide-y divide-vault-border/50">
-            {(platforms || []).slice((platformsPage - 1) * platformsPerPage, platformsPage * platformsPerPage).map(p => (
+            {(platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).slice((platformsPage - 1) * platformsPerPage, platformsPage * platformsPerPage).map(p => (
               <tr key={p.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-muted font-mono text-xs">{p.id}</td>
                 <td className="px-4 py-3 text-text-primary font-medium">{p.name}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{p.manufacturer || '-'}</td>
                 <td className="px-4 py-3 text-neon-purple font-mono text-xs">{p.generation}세대</td>
@@ -647,19 +676,19 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </td>
               </tr>
             ))}
-            {(!platforms || platforms.length === 0) && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-text-muted">등록된 플랫폼이 없습니다.</td></tr>
+            {(!platforms || platforms.filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length === 0) && (
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-text-muted">등록된 플랫폼이 없습니다.</td></tr>
             )}
           </tbody>
         </table>
         
-        {(platforms || []).length > 0 && (
+        {(platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length > 0 && (
           <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
-            <span className="text-xs text-text-muted">총 {(platforms || []).length}개 플랫폼</span>
+            <span className="text-xs text-text-muted">총 {(platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length}개 플랫폼</span>
             <div className="flex gap-2">
               <button disabled={platformsPage === 1} onClick={() => setPlatformsPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
-              <span className="px-3 py-1 text-xs text-text-primary">{platformsPage} / {Math.ceil((platforms || []).length / platformsPerPage)}</span>
-              <button disabled={platformsPage >= Math.ceil((platforms || []).length / platformsPerPage)} onClick={() => setPlatformsPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
+              <span className="px-3 py-1 text-xs text-text-primary">{platformsPage} / {Math.ceil((platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length / platformsPerPage)}</span>
+              <button disabled={platformsPage >= Math.ceil((platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length / platformsPerPage)} onClick={() => setPlatformsPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
             </div>
           </div>
         )}
@@ -1105,6 +1134,13 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </div>
               </div>
               <div>
+                <label className="block text-xs font-bold text-text-muted mb-1">로고 업로드</label>
+                <div className="flex items-center gap-3">
+                  {editingCompany?.logoUrl && <img src={editingCompany.logoUrl} className="h-10 w-10 object-cover rounded bg-vault-surface border border-vault-border" />}
+                  <input type="file" accept="image/*" disabled={uploadingImage} onChange={(e) => handleImageUpload(e, (url) => setEditingCompany({...editingCompany, logoUrl: url}))} className="text-xs text-text-primary file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-vault-surface file:text-amber hover:file:bg-vault-surface-light disabled:opacity-50" />
+                </div>
+              </div>
+              <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">웹사이트</label>
                 <input type="text" value={editingCompany?.websiteUrl || ''} onChange={e => setEditingCompany({...editingCompany, websiteUrl: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
               </div>
@@ -1319,8 +1355,11 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                   <input type="text" value={editingPlatform?.type || 'HOME'} onChange={e => setEditingPlatform({...editingPlatform, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">이미지 URL</label>
-                  <input type="text" value={editingPlatform?.imageUrl || ''} onChange={e => setEditingPlatform({...editingPlatform, imageUrl: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                  <label className="block text-xs font-bold text-text-muted mb-1">이미지 업로드</label>
+                  <div className="flex items-center gap-3">
+                    {editingPlatform?.imageUrl && <img src={editingPlatform.imageUrl} className="h-10 w-10 object-cover rounded bg-vault-surface border border-vault-border" />}
+                    <input type="file" accept="image/*" disabled={uploadingImage} onChange={(e) => handleImageUpload(e, (url) => setEditingPlatform({...editingPlatform, imageUrl: url}))} className="text-xs text-text-primary file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-vault-surface file:text-neon-purple hover:file:bg-vault-surface-light disabled:opacity-50" />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">제조 국가</label>
