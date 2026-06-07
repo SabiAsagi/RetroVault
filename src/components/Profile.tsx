@@ -31,7 +31,7 @@ interface ProfileProps {
 
 export default function Profile({ collection, games, viewedUser, collectionGroups }: ProfileProps) {
   const [copied, setCopied] = useState(false);
-  const [activeView, setActiveView] = useState<'profile' | 'collection'>('profile');
+  const [activeView, setActiveView] = useState<'profile' | 'collection'>('collection');
   const [currentPage, setCurrentPage] = useState(1);
   const { user, updateProfile: updateProfileContext } = useAuth();
   const router = useRouter();
@@ -274,7 +274,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
               <LayoutGrid className="text-amber" size={20} />
-              보유 컬렉션
+              {displayUser?.nickname || (displayUser as any)?.name || '유저'}님의 컬렉션
             </h3>
             <div className="flex items-center gap-2">
               {!isOwnProfile && collectionGroups && collectionGroups.length > 0 && (

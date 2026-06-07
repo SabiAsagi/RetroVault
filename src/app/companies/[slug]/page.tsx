@@ -42,7 +42,9 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
     .map((g: any) => ({
       ...g,
       platform: g.platform?.name || 'Unknown',
-      imageUrl: g.coverImageUrl || ''
+      imageUrl: g.coverImageUrl || '',
+      era: g.releaseYear ? `${Math.floor(g.releaseYear / 10) * 10}s` : 'Unknown',
+      rarity: 'Common'
     }));
 
   return (

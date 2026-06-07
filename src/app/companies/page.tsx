@@ -7,7 +7,6 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
   const { type } = await searchParams;
 
   const companies = await prisma.company.findMany({
-    where: type && type !== 'all' ? { type } : undefined,
     orderBy: { name: 'asc' },
     include: {
       _count: { select: { developedGames: true, publishedGames: true } }
@@ -28,10 +27,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-vault-surface border border-vault-border rounded-xl p-4">
         <div className="flex flex-wrap gap-2 flex-1">
-          <Link href="/companies" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${!type || type === 'all' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>전체</Link>
-          <Link href="/companies?type=DEVELOPER" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'DEVELOPER' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>개발사</Link>
-          <Link href="/companies?type=PUBLISHER" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'PUBLISHER' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>유통사</Link>
-          <Link href="/companies?type=BOTH" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'BOTH' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>개발/유통</Link>
+          <span className="px-3 py-1 rounded-lg text-sm font-bold bg-amber text-vault-bg border border-amber">전체</span>
         </div>
         <a href="/request" className="px-4 py-2 text-sm text-vault-bg bg-amber rounded-lg hover:bg-amber/80 transition-colors flex items-center gap-2 font-bold whitespace-nowrap shrink-0">
           제작사 추가 요청하기
@@ -73,14 +69,14 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
             
             <div className="flex items-center justify-between text-xs pt-4 border-t border-vault-border/50">
               <div className="flex gap-3 text-text-muted">
-                <span className="flex items-center gap-1" title="개발한 게임 수">
+                <Link href={`/games?developer=${encodeURIComponent(c.name)}`} className="flex items-center gap-1 hover:text-amber transition-colors" title="개발한 게임 수">
                   <Gamepad2 size={14} className="text-amber" /> 
                   개발: <span className="font-bold text-text-primary">{c._count.developedGames}</span>
-                </span>
-                <span className="flex items-center gap-1" title="퍼블리싱한 게임 수">
+                </Link>
+                <Link href={`/games?publisher=${encodeURIComponent(c.name)}`} className="flex items-center gap-1 hover:text-amber/70 transition-colors" title="퍼블리싱한 게임 수">
                   <Building2 size={14} className="text-amber/70" /> 
                   퍼블: <span className="font-bold text-text-primary">{c._count.publishedGames}</span>
-                </span>
+                </Link>
               </div>
             </div>
             </div>
