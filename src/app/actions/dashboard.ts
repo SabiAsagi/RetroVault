@@ -26,11 +26,9 @@ export async function getDashboardData() {
     isRandom = true;
   }
 
-  // Get most popular collection groups
-  const popularGroups = await prisma.collectionGroup.findMany({
+  // Get most popular collection groups (sorted by likes + views)
+  const allGroups = await prisma.collectionGroup.findMany({
     where: { isPublic: true },
-    orderBy: { likes: 'desc' },
-    take: 3,
     include: {
       user: true,
       items: {
@@ -47,6 +45,10 @@ export async function getDashboardData() {
       }
     }
   });
+
+  const popularGroups = allGroups
+    .sort((a, b) => (b.likes + b.views) - (a.likes + a.views))
+    .slice(0, 12);
 
   const popularCollections = popularGroups.map(group => ({
     id: group.id,

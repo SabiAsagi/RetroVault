@@ -100,7 +100,11 @@ export default function Community({ users, groups }: { users: any[], groups: any
                         by <Link href={`/profile/${group.user.nickname || group.user.name || group.user.id}`} className="text-text-secondary hover:text-text-primary hover:underline">{group.user.nickname || group.user.name}</Link>
                       </p>
                     </div>
-                    <Link href={`/profile/${group.user.nickname || group.user.name || group.user.id}?group=${group.id}`} className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors">
+                    <Link 
+                      href={`/profile/${group.user.nickname || group.user.name || group.user.id}?group=${group.id}`} 
+                      onClick={() => fetch(`/api/collection-groups/${group.id}/view`, { method: 'POST' }).catch(console.error)}
+                      className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors"
+                    >
                       컬렉션 보기
                     </Link>
                   </div>

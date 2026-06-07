@@ -364,7 +364,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                       type="file" 
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
 
@@ -373,16 +373,23 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                           return;
                         }
 
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          const base64Str = event.target?.result as string;
-                          setEditData(prev => ({...prev, image: base64Str}));
-                          showToast('사진이 적용되었습니다. 잊지말고 아래 저장 버튼을 눌러주세요!');
-                        };
-                        reader.onerror = () => {
-                          showToast('파일을 읽는 중 오류가 발생했습니다.', 'error');
-                        };
-                        reader.readAsDataURL(file);
+                        try {
+                          showToast('사진을 업로드 중입니다...', 'info');
+                          const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+                            method: 'POST',
+                            body: file,
+                          });
+                          
+                          if (!response.ok) {
+                            throw new Error('Upload failed');
+                          }
+                          
+                          const blob = await response.json();
+                          setEditData(prev => ({...prev, image: blob.url}));
+                          showToast('사진이 업로드되었습니다. 잊지말고 아래 저장 버튼을 눌러주세요!');
+                        } catch (error) {
+                          showToast('사진 업로드에 실패했습니다.', 'error');
+                        }
                       }}
                     />
                   </label>
