@@ -77,44 +77,46 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
               <div className="bg-vault-bg border border-vault-border rounded-xl p-4 space-y-3 text-sm">
                 <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2 mb-3">콘솔 정보</h3>
                 
-                <div className="flex justify-between">
-                  <span className="text-text-muted">출시년도</span>
-                  <span className="text-text-primary font-bold">{platform.releaseYear === 0 ? '[출시 연도 불명]' : `${platform.releaseYear}년`}</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted shrink-0 w-28">출시년도</span>
+                  <span className="text-text-primary font-bold text-right break-words">{platform.releaseYear === 0 ? '[출시 연도 불명]' : `${platform.releaseYear}년`}</span>
                 </div>
                 
-                <div className="flex justify-between">
-                  <span className="text-text-muted">제조 국가</span>
-                  <span className="text-text-primary font-bold">{platform.country || '제조 국가 불명'}</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted shrink-0 w-28">제조 국가</span>
+                  <span className="text-text-primary font-bold text-right break-words">{platform.country || '제조 국가 불명'}</span>
                 </div>
 
-                <div className="flex justify-between">
-                  <span className="text-text-muted">기기 스펙</span>
-                  <span className="text-text-primary font-bold">{platform.specs || '기기 스펙 불명'}</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted shrink-0 w-28">기기 스펙</span>
+                  <span className="text-text-primary font-bold text-right break-words">{platform.specs || '기기 스펙 불명'}</span>
                 </div>
 
-                <div className="flex justify-between">
-                  <span className="text-text-muted">보조 기기</span>
-                  <span className="text-text-primary font-bold">{platform.additionalInput || '보조 기기 불명'}</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted shrink-0 w-28">보조 기기</span>
+                  <span className="text-text-primary font-bold text-right break-words">{platform.additionalInput || '보조 기기 불명'}</span>
                 </div>
 
-                <div className="flex justify-between">
-                  <span className="text-text-muted">내장 게임 수</span>
-                  <span className="text-text-primary font-bold">{platform.gamesCount || '내장 게임 수 불명'}</span>
+                {(platform.generation === null || platform.generation === 1) && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-text-muted shrink-0 w-28">내장 게임 수</span>
+                    <span className="text-text-primary font-bold text-right break-words">{platform.gamesCount || '내장 게임 수 불명'}</span>
+                  </div>
+                )}
+                
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted shrink-0 w-28">출시가격</span>
+                  <span className="text-text-primary font-bold text-right break-words">{platform.launchPrice || '출시 가격 불명'}</span>
                 </div>
                 
-                <div className="flex justify-between">
-                  <span className="text-text-muted">출시가격</span>
-                  <span className="text-text-primary font-bold">{platform.launchPrice || '출시 가격 불명'}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-text-muted">총 판매량</span>
-                  <span className="text-text-primary font-bold">{platform.totalSales || '총 판매량 불명'}</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted shrink-0 w-28">총 판매량</span>
+                  <span className="text-text-primary font-bold text-right break-words">{platform.totalSales || '총 판매량 불명'}</span>
                 </div>
 
                 {platform.discontinued !== null && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">상태</span>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-text-muted shrink-0 w-28">상태</span>
                     <span className={`font-bold ${platform.discontinued ? 'text-coral' : 'text-mint'}`}>
                       {platform.discontinued ? '단종됨' : '생산중'}
                     </span>
