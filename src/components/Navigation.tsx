@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
   Trophy, User, Settings, Search,
-  Database, X, Menu, LogIn, ChevronDown,
+  Database, X, Menu, LogIn, ChevronDown, Bell
 } from 'lucide-react';
 import { Tab } from '../types';
 import { ThemeToggle } from './ThemeToggle';
@@ -42,7 +42,40 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      fetch('/api/notifications')
+        .then(res => res.json())
+        .then(data => {
+          if (data.notifications) {
+            setNotifications(data.notifications);
+            setUnreadCount(data.unreadCount);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [isAuthenticated]);
+
+  const handleMarkAllAsRead = async () => {
+    await fetch('/api/notifications', { method: 'PATCH' });
+    setUnreadCount(0);
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  };
+
+  const handleNotificationClick = async (id: string, link: string | null) => {
+    await fetch(`/api/notifications?id=${id}`, { method: 'PATCH' });
+    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+    setNotificationsOpen(false);
+    if (link) {
+      window.location.href = link;
+    }
+  };
 
   const handleTabChange = (tab: Tab) => {
     onTabChange(tab);
@@ -111,6 +144,56 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
 
             <ThemeToggle />
 
+            {/* Notifications */}
+            {isAuthenticated && (
+              <div className="relative">
+                <button
+                  onClick={() => { setNotificationsOpen(!notificationsOpen); setDropdownOpen(false); }}
+                  className="relative p-2 rounded-lg text-text-muted hover:bg-vault-surface-light hover:text-text-primary transition-colors cursor-pointer"
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1.5 w-2 h-2 bg-coral rounded-full shadow-[0_0_8px_rgba(255,107,107,0.8)]" />
+                  )}
+                </button>
+
+                {notificationsOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-72 md:w-80 bg-vault-surface border border-vault-border rounded-xl shadow-2xl z-50 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-vault-border/50 bg-vault-surface-light">
+                      <h3 className="text-sm font-bold text-text-primary">알림</h3>
+                      {unreadCount > 0 && (
+                        <button onClick={handleMarkAllAsRead} className="text-xs text-mint hover:text-mint-dim transition-colors">
+                          모두 읽음표시
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                      {notifications.length === 0 ? (
+                        <div className="px-4 py-8 text-center text-sm text-text-muted">
+                          새로운 알림이 없습니다.
+                        </div>
+                      ) : (
+                        notifications.map(n => (
+                          <div 
+                            key={n.id} 
+                            onClick={() => handleNotificationClick(n.id, n.link)}
+                            className={`px-4 py-3 border-b border-vault-border/30 hover:bg-vault-surface-light cursor-pointer transition-colors ${!n.isRead ? 'bg-mint/5' : ''}`}
+                          >
+                            <p className={`text-sm ${!n.isRead ? 'text-text-primary font-medium' : 'text-text-secondary'}`}>
+                              {n.message}
+                            </p>
+                            <p className="text-[10px] text-text-muted mt-1">
+                              {new Date(n.createdAt).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Login / User Info */}
             {!isAuthenticated ? (
               <button
@@ -124,7 +207,7 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
             ) : (
               <div className="relative">
                 <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  onClick={() => { setDropdownOpen(!dropdownOpen); setNotificationsOpen(false); }}
                   className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
                 >
                   <img src={user?.avatar} alt={user?.nickname} className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border" />

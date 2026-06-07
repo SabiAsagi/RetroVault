@@ -43,6 +43,7 @@ model User {
   
   friendships      Friendship[]      @relation("UserFriendships")
   friendOf         Friendship[]      @relation("FriendFriendships")
+  notifications    Notification[]    @relation("UserNotifications")
 }
 
 model Account {
@@ -334,4 +335,16 @@ model Friendship {
   friend    User     @relation("FriendFriendships", fields: [friendId], references: [id], onDelete: Cascade)
 
   @@unique([userId, friendId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // FRIEND_REQUEST, FRIEND_ACCEPT, NEW_DM, SYSTEM
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?  // Optional link to navigate when clicked
+  createdAt DateTime @default(now())
+
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -50,6 +50,15 @@ export async function POST(request: Request) {
       }
     });
 
+    await prisma.notification.create({
+      data: {
+        userId: receiverId,
+        type: 'NEW_DM',
+        message: `${(session.user as any).nickname || session.user.name || '알 수 없는 유저'}님이 새로운 쪽지를 보냈습니다.`,
+        link: '/profile' // Or wherever the DM UI is
+      }
+    });
+
     return NextResponse.json(dm);
   } catch (error) {
     console.error('DM Error:', error);

@@ -51,6 +51,15 @@ export async function POST(request: Request) {
     }
   });
 
+  await prisma.notification.create({
+    data: {
+      userId: friendId,
+      type: 'FRIEND_REQUEST',
+      message: `${(session.user as any).nickname || session.user.name || '알 수 없는 유저'}님이 친구 요청을 보냈습니다.`,
+      link: `/profile/${session.user.id}`
+    }
+  });
+
   return NextResponse.json(friendship);
 }
 
@@ -72,6 +81,16 @@ export async function PUT(request: Request) {
       where: { id },
       data: { status: 'ACCEPTED' }
     });
+
+    await prisma.notification.create({
+      data: {
+        userId: friendship.userId,
+        type: 'FRIEND_ACCEPT',
+        message: `${(session.user as any).nickname || session.user.name || '알 수 없는 유저'}님이 친구 요청을 수락했습니다.`,
+        link: `/profile/${session.user.id}`
+      }
+    });
+
     return NextResponse.json(updated);
   } else if (status === 'REJECTED') {
     await prisma.friendship.delete({ where: { id } });
