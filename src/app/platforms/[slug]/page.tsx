@@ -79,8 +79,36 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
                 
                 <div className="flex justify-between">
                   <span className="text-text-muted">출시년도</span>
-                  <span className="text-text-primary font-bold">{platform.releaseYear}년</span>
+                  <span className="text-text-primary font-bold">{platform.releaseYear === 0 ? '[출시 연도 불명]' : `${platform.releaseYear}년`}</span>
                 </div>
+                
+                {platform.country && (
+                  <div className="flex justify-between">
+                    <span className="text-text-muted">제조 국가</span>
+                    <span className="text-text-primary font-bold">{platform.country}</span>
+                  </div>
+                )}
+
+                {platform.specs && (
+                  <div className="flex justify-between">
+                    <span className="text-text-muted">기기 스펙</span>
+                    <span className="text-text-primary font-bold">{platform.specs}</span>
+                  </div>
+                )}
+
+                {platform.additionalInput && (
+                  <div className="flex justify-between">
+                    <span className="text-text-muted">보조 기기</span>
+                    <span className="text-text-primary font-bold">{platform.additionalInput}</span>
+                  </div>
+                )}
+
+                {platform.gamesCount && (
+                  <div className="flex justify-between">
+                    <span className="text-text-muted">내장 게임 수</span>
+                    <span className="text-text-primary font-bold">{platform.gamesCount}</span>
+                  </div>
+                )}
                 
                 {platform.launchPrice && (
                   <div className="flex justify-between">
@@ -110,23 +138,25 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 border-b border-vault-border pb-4">
-          <Gamepad2 className="text-neon-purple" size={24} />
-          <h2 className="text-2xl font-black text-text-primary">발매된 게임</h2>
-          <span className="ml-2 px-2 py-1 bg-vault-surface border border-vault-border rounded-md text-xs font-bold text-text-muted">
-            {mappedGames.length}
-          </span>
-        </div>
-
-        {mappedGames.length > 0 ? (
-          <GameGrid games={mappedGames} />
-        ) : (
-          <div className="py-20 text-center bg-vault-surface border border-vault-border rounded-xl">
-            <p className="text-text-muted">등록된 게임이 없습니다.</p>
+      {platform.generation !== 1 && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 border-b border-vault-border pb-4">
+            <Gamepad2 className="text-neon-purple" size={24} />
+            <h2 className="text-2xl font-black text-text-primary">발매된 게임</h2>
+            <span className="ml-2 px-2 py-1 bg-vault-surface border border-vault-border rounded-md text-xs font-bold text-text-muted">
+              {mappedGames.length}
+            </span>
           </div>
-        )}
-      </div>
+
+          {mappedGames.length > 0 ? (
+            <GameGrid games={mappedGames} />
+          ) : (
+            <div className="py-20 text-center bg-vault-surface border border-vault-border rounded-xl">
+              <p className="text-text-muted">등록된 게임이 없습니다.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

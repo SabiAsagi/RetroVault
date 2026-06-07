@@ -55,55 +55,95 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden mb-8 p-6 md:p-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-vault-surface-light border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-4">
-            {company.logoUrl ? (
-              <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
-            ) : (
-              <Building2 size={64} className="text-text-muted opacity-50" />
-            )}
-          </div>
-          
-          <div className="flex-1 min-w-0 w-full space-y-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-amber/20 border border-amber/30 text-amber rounded text-xs font-bold">
-                  {company.type}
-                </span>
-                {company.country && (
-                  <span className="px-2 py-1 bg-vault-bg border border-vault-border text-text-secondary rounded text-xs font-bold flex items-center gap-1">
-                    {company.country}
-                  </span>
+          <div className="flex-1 min-w-0 w-full space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-vault-surface-light border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-2">
+                {company.logoUrl ? (
+                  <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
+                ) : (
+                  <Building2 size={48} className="text-text-muted opacity-50" />
                 )}
               </div>
-              <h1 className="text-4xl font-black text-text-primary mb-2">{company.name}</h1>
-              {company.websiteUrl && (
-                <a href={company.websiteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-neon-blue hover:text-neon-blue/80 transition-colors">
-                  <LinkIcon size={14} /> 공식 웹사이트
-                </a>
-              )}
+              <div>
+                <h1 className="text-4xl font-black text-text-primary mb-3">{company.name}</h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-3 py-1 bg-amber/20 border border-amber/30 text-amber rounded-full text-xs font-bold">
+                    {company.type}
+                  </span>
+                  {company.country && (
+                    <span className="px-3 py-1 bg-vault-bg border border-vault-border text-text-secondary rounded-full text-xs font-bold">
+                      {company.country}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            
-            <p className="text-text-primary leading-relaxed whitespace-pre-wrap max-w-3xl">
-              {company.description || '상세 정보가 없습니다.'}
-            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-vault-border/50">
+            <div>
+              <h3 className="text-sm font-bold text-text-muted mb-2 uppercase tracking-wider">소개</h3>
+              <p className="text-text-primary leading-relaxed whitespace-pre-wrap max-w-3xl">
+                {company.description || '상세 정보가 없습니다.'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="w-full md:w-80 shrink-0 space-y-4">
+            <div className="bg-vault-bg border border-vault-border rounded-xl p-5 space-y-4 text-sm">
+              <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2 mb-4">회사 정보</h3>
+              
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">회사명</span>
+                <span className="text-text-primary font-bold text-right">{company.name}</span>
+              </div>
+              
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">구분</span>
+                <span className="text-text-primary font-bold text-right">{company.type}</span>
+              </div>
+              
+              {company.country && (
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-text-muted shrink-0">소재지</span>
+                  <span className="text-text-primary font-bold text-right">{company.country}</span>
+                </div>
+              )}
+              
+              {company.foundedAt && (
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-text-muted shrink-0">설립일</span>
+                  <span className="text-text-primary font-bold text-right">
+                    {company.foundedAt instanceof Date ? company.foundedAt.toLocaleDateString() : String(company.foundedAt)}
+                  </span>
+                </div>
+              )}
+              
               {company.keyFigures && (
-                <div>
-                  <h4 className="text-xs font-bold text-text-muted mb-1 flex items-center gap-1"><Users size={12}/> 주요 인물</h4>
-                  <p className="text-sm text-text-primary">{company.keyFigures}</p>
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-text-muted shrink-0">주요 인물</span>
+                  <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.keyFigures}</span>
                 </div>
               )}
+
               {company.flagshipFranchises && (
-                <div>
-                  <h4 className="text-xs font-bold text-text-muted mb-1 flex items-center gap-1"><Gamepad2 size={12}/> 대표작</h4>
-                  <p className="text-sm text-text-primary">{company.flagshipFranchises}</p>
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-text-muted shrink-0">대표작</span>
+                  <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.flagshipFranchises}</span>
                 </div>
               )}
+
               {company.companyStatus && (
-                <div>
-                  <h4 className="text-xs font-bold text-text-muted mb-1">현재 상태</h4>
-                  <p className="text-sm text-text-primary">{company.companyStatus}</p>
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-text-muted shrink-0">현재 상태</span>
+                  <span className="text-text-primary font-bold text-right">{company.companyStatus}</span>
+                </div>
+              )}
+
+              {company.websiteUrl && (
+                <div className="flex justify-between items-center gap-4 pt-3 border-t border-vault-border/50">
+                  <span className="text-text-muted shrink-0">웹사이트</span>
+                  <a href={company.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-neon-blue font-bold text-right break-all hover:underline flex items-center gap-1">
+                    <LinkIcon size={12} /> 공식 홈페이지
+                  </a>
                 </div>
               )}
             </div>

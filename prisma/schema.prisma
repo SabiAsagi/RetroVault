@@ -137,6 +137,11 @@ model Platform {
   totalSales      String?
   discontinued    Boolean?
 
+  country         String?
+  specs           String?
+  additionalInput String?
+  gamesCount      String?
+
   status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
   requestedById     String?
   rejectReason      String?
