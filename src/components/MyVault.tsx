@@ -290,7 +290,7 @@ export default function MyVault({
                             ${isDragOver ? 'translate-x-4 border-l-2 border-mint pl-2' : ''}
                           `}
                         >
-                          <div className="w-16 sm:w-20 md:w-24 aspect-[3/4] rounded-md overflow-hidden shadow-[5px_5px_15px_rgba(0,0,0,0.5)] border border-vault-border/50 bg-vault-bg relative group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-all">
+                          <div className="w-20 sm:w-24 md:w-28 aspect-[3/4] rounded-md overflow-hidden shadow-[5px_5px_15px_rgba(0,0,0,0.5)] border border-vault-border/50 bg-vault-bg relative group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-all">
                             {game.imageUrl ? (
                               <img src={game.imageUrl} alt={game.title} className="w-full h-full object-cover" />
                             ) : (
