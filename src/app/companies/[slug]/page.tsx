@@ -112,7 +112,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 <div className="flex justify-between items-start gap-4">
                   <span className="text-text-muted shrink-0">설립일</span>
                   <span className="text-text-primary font-bold text-right">
-                    {company.foundedAt instanceof Date ? company.foundedAt.toLocaleDateString() : String(company.foundedAt)}
+                    {company.foundedAt}
                   </span>
                 </div>
               )}
