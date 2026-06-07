@@ -458,14 +458,15 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                           });
                           
                           if (!response.ok) {
-                            throw new Error('Upload failed');
+                            const errData = await response.json().catch(() => ({}));
+                            throw new Error(errData.error || 'Upload failed');
                           }
                           
                           const blob = await response.json();
                           setEditData(prev => ({...prev, image: blob.url}));
                           showToast('사진이 업로드되었습니다. 잊지말고 아래 저장 버튼을 눌러주세요!');
-                        } catch (error) {
-                          showToast('사진 업로드에 실패했습니다.', 'error');
+                        } catch (error: any) {
+                          showToast(`업로드 실패: ${error.message}`, 'error');
                         }
                       }}
                     />

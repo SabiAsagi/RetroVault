@@ -64,14 +64,15 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Upload failed');
       }
 
       const blob = await response.json();
       setter(blob.url);
-    } catch (error) {
-      console.error(error);
-      alert('이미지 업로드에 실패했습니다.');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      alert(`업로드 실패: ${error.message}`);
     } finally {
       setUploadingImage(false);
     }
