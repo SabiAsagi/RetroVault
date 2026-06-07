@@ -14,6 +14,7 @@ interface DashboardProps {
     title: string;
     likes: number;
     views: number;
+    type?: 'group' | 'user';
     games: Game[];
   }[];
   isOwned: (gameId: string) => boolean;
@@ -109,7 +110,8 @@ export default function Dashboard({ games, collection, historyGame, popularColle
               <div 
                 key={col.id} 
                 onClick={() => {
-                  fetch(`/api/collection-groups/${col.id}/view`, { method: 'POST' }).catch(console.error);
+                  const viewUrl = col.type === 'user' ? `/api/users/${col.id}/view` : `/api/collection-groups/${col.id}/view`;
+                  fetch(viewUrl, { method: 'POST' }).catch(console.error);
                   if (onSelectCollection) onSelectCollection(col.user);
                   else onTabChange('vault');
                 }} 

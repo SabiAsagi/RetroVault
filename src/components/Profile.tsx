@@ -243,20 +243,26 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
     }
   };
 
-  const [localLikes, setLocalLikes] = useState(collectionGroups?.[0]?.likes || 0);
+  const [localLikes, setLocalLikes] = useState((viewedUser as any)?.profileLikes || 0);
+  const [liked, setLiked] = useState(false);
+
+  useEffect(() => {
+    // view increment for user profile
+    if (viewedUser && viewedUser.id && !isOwnProfile) {
+      fetch(`/api/users/${viewedUser.id}/view`, { method: 'POST' }).catch(console.error);
+    }
+  }, [viewedUser, isOwnProfile]);
 
   const handleLike = async () => {
-    if (!collectionGroups || collectionGroups.length === 0) return showToast('공개된 컬렉션이 없습니다.', 'error');
-    const mainGroupId = collectionGroups[0].id;
+    if (!viewedUser || liked) return;
     try {
-      const res = await fetch(`/api/collection-groups/${mainGroupId}/like`, { method: 'POST' });
+      const res = await fetch(`/api/users/${viewedUser.id}/like`, { method: 'POST' });
       if (res.ok) {
         setLocalLikes((prev: number) => prev + 1);
-      } else {
-        showToast('로그인이 필요합니다.', 'error');
+        setLiked(true);
       }
-    } catch (e) {
-      showToast('오류가 발생했습니다.', 'error');
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -277,16 +283,23 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
               {displayUser?.nickname || (displayUser as any)?.name || '유저'}님의 컬렉션
             </h3>
             <div className="flex items-center gap-2">
-              {!isOwnProfile && collectionGroups && collectionGroups.length > 0 && (
-                <>
-                  <button onClick={handleLike} className="flex items-center gap-1.5 px-3 py-1 bg-coral/10 text-coral border border-coral/30 rounded-full text-xs font-bold hover:bg-coral/20 transition-colors">
-                    <Heart size={14} /> {localLikes}
-                  </button>
-                  <span className="flex items-center gap-1.5 px-3 py-1 bg-vault-surface-light text-text-secondary border border-vault-border rounded-full text-xs font-bold">
-                    <Eye size={14} /> {collectionGroups[0].views}
-                  </span>
-                </>
+              {!isOwnProfile && (
+                <button 
+                  onClick={handleLike} 
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
+                    liked 
+                      ? 'bg-coral text-vault-bg border-coral' 
+                      : 'bg-vault-surface border-vault-border text-text-secondary hover:text-coral hover:border-coral/50'
+                  }`}
+                >
+                  <Heart size={14} className={liked ? 'fill-current' : ''} />
+                  {localLikes}
+                </button>
               )}
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-vault-surface border border-vault-border text-xs font-bold text-text-secondary">
+                <Eye size={14} className="text-neon-blue" />
+                {viewedUser ? (viewedUser as any).profileViews || 0 : 0}
+              </span>
               <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full hidden sm:inline-block">
                 총 {collectionGames.length}개
               </span>

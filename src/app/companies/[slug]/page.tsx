@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Building2, ArrowLeft, Link as LinkIcon, Gamepad2, Users } from "lucide-react";
 import Link from "next/link";
-import GameCard from "@/components/GameCard";
+import GameGrid from "@/components/GameGrid";
 
 import { parseCompanySlug } from "@/lib/slug";
 
@@ -121,16 +121,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {uniqueGames.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {uniqueGames.map((game: any) => (
-              <GameCard 
-                key={game.id} 
-                game={game} 
-                isOwned={false} 
-                onAddToCollection={() => {}} 
-              />
-            ))}
-          </div>
+          <GameGrid games={uniqueGames} />
         ) : (
           <div className="py-20 text-center bg-vault-surface border border-vault-border rounded-xl">
             <p className="text-text-muted">등록된 게임이 없습니다.</p>

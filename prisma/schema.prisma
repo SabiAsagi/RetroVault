@@ -24,6 +24,8 @@ model User {
   visibility    String    @default("PUBLIC") // PUBLIC, FRIENDS, PRIVATE
   theme         String    @default("dark")
   isBanned      Boolean   @default(false)
+  profileLikes  Int       @default(0)
+  profileViews  Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

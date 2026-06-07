@@ -69,6 +69,7 @@ export async function getDashboardData() {
       title: group.name,
       likes: group.likes,
       views: group.views,
+      type: 'group', // mark as group
       games: group.items.map(i => ({
         ...i.item.game,
         imageUrl: i.item.game.coverImageUrl || '',
@@ -81,8 +82,9 @@ export async function getDashboardData() {
         id: u.nickname || u.name || u.id,
         user: u.nickname || u.name || 'User',
         title: `${u.nickname || u.name}님의 기본 컬렉션`,
-        likes: 0,
-        views: 0,
+        likes: (u as any).profileLikes || 0,
+        views: (u as any).profileViews || 0,
+        type: 'user', // mark as user profile collection
         games: u.collections.map(c => ({
           ...c.game,
           imageUrl: c.game.coverImageUrl || '',
