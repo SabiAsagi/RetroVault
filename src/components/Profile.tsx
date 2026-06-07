@@ -111,14 +111,14 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
 
   // Initialize editData when user loads
   useMemo(() => {
-    if (isOwnProfile && user && !isEditing) {
+    if (isOwnProfile && displayUser && !isEditing) {
       setEditData({
-        nickname: user.nickname || '',
-        bio: user.bio || '',
-        image: user.avatar || ''
+        nickname: displayUser.nickname || (displayUser as any).name || '',
+        bio: displayUser.bio || '',
+        image: (displayUser as any).image || (displayUser as any).avatar || ''
       });
     }
-  }, [user, isEditing]);
+  }, [displayUser, isOwnProfile, isEditing]);
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
@@ -364,7 +364,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                       type="file" 
                       accept="image/*"
                       className="hidden"
-                      onChange={async (e) => {
+                        onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
                         setIsSaving(true);
@@ -373,12 +373,15 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                             method: 'POST',
                             body: file,
                           });
-                          const newBlob = (await response.json()) as any;
+                          const newBlob = await response.json();
                           if (newBlob.url) {
-                            setEditData({...editData, image: newBlob.url});
+                            setEditData(prev => ({...prev, image: newBlob.url}));
+                            showToast('사진이 업로드되었습니다. 아래 저장 버튼을 눌러주세요.');
+                          } else {
+                            showToast(newBlob.error || '업로드 실패: 서버 오류', 'error');
                           }
                         } catch (err) {
-                          showToast('업로드 실패', 'error');
+                          showToast('업로드 중 네트워크 오류가 발생했습니다.', 'error');
                         } finally {
                           setIsSaving(false);
                         }
