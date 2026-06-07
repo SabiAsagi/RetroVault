@@ -10,3 +10,10 @@ export async function getTimelineEvents() {
   });
   return events;
 }
+
+export async function getPlatformsForTimeline() {
+  return await prisma.platform.findMany({
+    where: { status: 'APPROVED' },
+    orderBy: { releaseYear: 'asc' }
+  });
+}

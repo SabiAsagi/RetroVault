@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Game, Platform, TimelineEvent } from '../types';
-import { platforms } from '../data';
 import { BoxArtPlaceholder } from './GameCard';
 import { 
   Calendar, Search, Filter, Monitor, Zap, Disc, Clock, 
@@ -10,6 +9,7 @@ import {
 interface TimelineProps {
   games: Game[];
   timelineEvents: TimelineEvent[];
+  platforms: Platform[];
   onSelectGame: (game: Game) => void;
 }
 
@@ -20,7 +20,7 @@ interface YearData {
   events: string[];
 }
 
-export default function Timeline({ games, timelineEvents, onSelectGame }: TimelineProps) {
+export default function Timeline({ games, timelineEvents, platforms, onSelectGame }: TimelineProps) {
   const [zoomLevel, setZoomLevel] = useState<'dense' | 'comfortable'>('comfortable');
   const [jumpYear, setJumpYear] = useState<string>('');
   

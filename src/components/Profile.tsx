@@ -364,27 +364,25 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                       type="file" 
                       accept="image/*"
                       className="hidden"
-                        onChange={async (e) => {
+                      onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        setIsSaving(true);
-                        try {
-                          const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-                            method: 'POST',
-                            body: file,
-                          });
-                          const newBlob = await response.json();
-                          if (newBlob.url) {
-                            setEditData(prev => ({...prev, image: newBlob.url}));
-                            showToast('사진이 업로드되었습니다. 아래 저장 버튼을 눌러주세요.');
-                          } else {
-                            showToast(newBlob.error || '업로드 실패: 서버 오류', 'error');
-                          }
-                        } catch (err) {
-                          showToast('업로드 중 네트워크 오류가 발생했습니다.', 'error');
-                        } finally {
-                          setIsSaving(false);
+
+                        if (file.size > 2 * 1024 * 1024) {
+                          showToast('사진은 2MB 이하여야 합니다.', 'error');
+                          return;
                         }
+
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const base64Str = event.target?.result as string;
+                          setEditData(prev => ({...prev, image: base64Str}));
+                          showToast('사진이 적용되었습니다. 잊지말고 아래 저장 버튼을 눌러주세요!');
+                        };
+                        reader.onerror = () => {
+                          showToast('파일을 읽는 중 오류가 발생했습니다.', 'error');
+                        };
+                        reader.readAsDataURL(file);
                       }}
                     />
                   </label>
