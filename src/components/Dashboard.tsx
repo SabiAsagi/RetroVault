@@ -15,6 +15,7 @@ interface DashboardProps {
     likes: number;
     views: number;
     type?: 'group' | 'user';
+    userImage?: string | null;
     games: Game[];
   }[];
   isOwned: (gameId: string) => boolean;
@@ -120,8 +121,12 @@ export default function Dashboard({ games, collection, historyGame, popularColle
                 {/* User Info */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-vault-border to-vault-surface-light flex items-center justify-center border border-vault-border text-xs font-bold text-text-muted">
-                      {col.user.charAt(0).toUpperCase()}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-vault-border to-vault-surface-light flex items-center justify-center border border-vault-border text-xs font-bold text-text-muted overflow-hidden shrink-0">
+                      {col.userImage ? (
+                        <img src={col.userImage} alt={col.user} className="w-full h-full object-cover" />
+                      ) : (
+                        col.user.charAt(0).toUpperCase()
+                      )}
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-text-primary group-hover:text-mint transition-colors">{col.title}</h4>

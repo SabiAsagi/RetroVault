@@ -66,6 +66,7 @@ export async function getDashboardData() {
     ...popularGroups.map(group => ({
       id: group.id, // Group ID!
       user: group.user.nickname || group.user.name || 'User',
+      userImage: group.user.image || null,
       title: group.name,
       likes: group.likes,
       views: group.views,
@@ -80,6 +81,7 @@ export async function getDashboardData() {
       .map(u => ({
         id: u.nickname || u.name || u.id,
         user: u.nickname || u.name || 'User',
+        userImage: u.image || null,
         title: `${u.nickname || u.name}님의 기본 컬렉션`,
         likes: (u as any).profileLikes || 0,
         views: (u as any).profileViews || 0,
