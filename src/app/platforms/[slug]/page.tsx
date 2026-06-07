@@ -82,47 +82,35 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
                   <span className="text-text-primary font-bold">{platform.releaseYear === 0 ? '[출시 연도 불명]' : `${platform.releaseYear}년`}</span>
                 </div>
                 
-                {platform.country && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">제조 국가</span>
-                    <span className="text-text-primary font-bold">{platform.country}</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-text-muted">제조 국가</span>
+                  <span className="text-text-primary font-bold">{platform.country || '제조 국가 불명'}</span>
+                </div>
 
-                {platform.specs && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">기기 스펙</span>
-                    <span className="text-text-primary font-bold">{platform.specs}</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-text-muted">기기 스펙</span>
+                  <span className="text-text-primary font-bold">{platform.specs || '기기 스펙 불명'}</span>
+                </div>
 
-                {platform.additionalInput && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">보조 기기</span>
-                    <span className="text-text-primary font-bold">{platform.additionalInput}</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-text-muted">보조 기기</span>
+                  <span className="text-text-primary font-bold">{platform.additionalInput || '보조 기기 불명'}</span>
+                </div>
 
-                {platform.gamesCount && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">내장 게임 수</span>
-                    <span className="text-text-primary font-bold">{platform.gamesCount}</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-text-muted">내장 게임 수</span>
+                  <span className="text-text-primary font-bold">{platform.gamesCount || '내장 게임 수 불명'}</span>
+                </div>
                 
-                {platform.launchPrice && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">출시가격</span>
-                    <span className="text-text-primary font-bold">{platform.launchPrice}</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-text-muted">출시가격</span>
+                  <span className="text-text-primary font-bold">{platform.launchPrice || '출시 가격 불명'}</span>
+                </div>
                 
-                {platform.totalSales && (
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">총 판매량</span>
-                    <span className="text-text-primary font-bold">{platform.totalSales}</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-text-muted">총 판매량</span>
+                  <span className="text-text-primary font-bold">{platform.totalSales || '총 판매량 불명'}</span>
+                </div>
 
                 {platform.discontinued !== null && (
                   <div className="flex justify-between">
