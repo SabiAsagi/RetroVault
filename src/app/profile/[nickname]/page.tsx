@@ -15,7 +15,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ nickna
 
   const games = await getGamesFromDB();
 
-  if (nickname === "me" || nickname === session?.user?.nickname || nickname === session?.user?.id) {
+  if (nickname === "me" || nickname === (session?.user as any)?.nickname || nickname === session?.user?.id) {
     const collection = await getUserCollection();
     return <Profile games={games} collection={collection} />;
   } else {

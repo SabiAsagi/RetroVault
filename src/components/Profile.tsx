@@ -248,7 +248,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
     try {
       const res = await fetch(`/api/collection-groups/${mainGroupId}/like`, { method: 'POST' });
       if (res.ok) {
-        setLocalLikes(prev => prev + 1);
+        setLocalLikes((prev: number) => prev + 1);
       } else {
         alert('로그인이 필요합니다.');
       }

@@ -482,10 +482,6 @@ export default function MyVault({
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
         games={games}
-        onUpdateStatus={onUpdateStatus}
-        onUpdateMemo={onUpdateMemo}
-        onUpdateRating={onUpdateRating}
-        onUpdateVisibility={onUpdateVisibility}
         onSelectGame={(game) => {
           setSearchModalOpen(false);
           setGameToAdd(game);
