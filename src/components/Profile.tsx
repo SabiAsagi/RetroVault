@@ -258,27 +258,61 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
   const [localLikes, setLocalLikes] = useState((viewedUser as any)?.profileLikes || 0);
   const [localViews, setLocalViews] = useState((viewedUser as any)?.profileViews || 0);
   const [liked, setLiked] = useState(false);
+  
+  const [groupLiked, setGroupLiked] = useState<Record<string, boolean>>({});
+  const [groupLikesMap, setGroupLikesMap] = useState<Record<string, number>>({});
+  const [groupViewsMap, setGroupViewsMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    // view increment for user profile
-    if (viewedUser && viewedUser.id && !isOwnProfile) {
+    // view increment for user profile (only when NOT viewing a specific group)
+    if (viewedUser && viewedUser.id && !isOwnProfile && !activeGroupId) {
+      if (localStorage.getItem(`liked_user_${viewedUser.id}`)) setLiked(true);
+      
       fetch(`/api/users/${viewedUser.id}/view`, { method: 'POST' })
         .then(res => res.ok ? res.json() : null)
         .then(data => { if (data?.views) setLocalViews(data.views); })
         .catch(console.error);
     }
-  }, [viewedUser, isOwnProfile]);
+  }, [viewedUser, isOwnProfile, activeGroupId]);
+
+  useEffect(() => {
+    // view increment for group collection
+    if (activeGroupId && !isOwnProfile) {
+      if (localStorage.getItem(`liked_group_${activeGroupId}`)) {
+        setGroupLiked(prev => ({ ...prev, [activeGroupId]: true }));
+      }
+      
+      fetch(`/api/collection-groups/${activeGroupId}/view`, { method: 'POST' })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => { 
+          if (data?.views) setGroupViewsMap(prev => ({ ...prev, [activeGroupId]: data.views })); 
+        })
+        .catch(console.error);
+    }
+  }, [activeGroupId, isOwnProfile]);
 
   const handleLike = async () => {
-    if (!viewedUser || liked) return;
-    try {
-      const res = await fetch(`/api/users/${viewedUser.id}/like`, { method: 'POST' });
-      if (res.ok) {
-        setLocalLikes((prev: number) => prev + 1);
-        setLiked(true);
-      }
-    } catch (err) {
-      console.error(err);
+    if (activeGroupId) {
+      if (groupLiked[activeGroupId]) return;
+      try {
+        const res = await fetch(`/api/collection-groups/${activeGroupId}/like`, { method: 'POST' });
+        if (res.ok) {
+          const activeGroup = collectionGroups?.find(g => g.id === activeGroupId);
+          setGroupLikesMap(prev => ({ ...prev, [activeGroupId]: (prev[activeGroupId] ?? activeGroup?.likes ?? 0) + 1 }));
+          setGroupLiked(prev => ({ ...prev, [activeGroupId]: true }));
+          localStorage.setItem(`liked_group_${activeGroupId}`, 'true');
+        }
+      } catch (err) { console.error(err); }
+    } else {
+      if (!viewedUser || liked) return;
+      try {
+        const res = await fetch(`/api/users/${viewedUser.id}/like`, { method: 'POST' });
+        if (res.ok) {
+          setLocalLikes((prev: number) => prev + 1);
+          setLiked(true);
+          localStorage.setItem(`liked_user_${viewedUser.id}`, 'true');
+        }
+      } catch (err) { console.error(err); }
     }
   };
 
@@ -313,18 +347,18 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                 <button 
                   onClick={handleLike} 
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                    liked 
+                    (activeGroupId ? groupLiked[activeGroupId] : liked)
                       ? 'bg-coral text-vault-bg border-coral' 
                       : 'bg-vault-surface border-vault-border text-text-secondary hover:text-coral hover:border-coral/50'
                   }`}
                 >
-                  <Heart size={14} className={liked ? 'fill-current' : ''} />
-                  {localLikes}
+                  <Heart size={14} className={(activeGroupId ? groupLiked[activeGroupId] : liked) ? 'fill-current' : ''} />
+                  {activeGroupId ? (groupLikesMap[activeGroupId] ?? collectionGroups?.find(g => g.id === activeGroupId)?.likes ?? 0) : localLikes}
                 </button>
               )}
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-vault-surface border border-vault-border text-xs font-bold text-text-secondary">
                 <Eye size={14} className="text-neon-blue" />
-                {localViews}
+                {activeGroupId ? (groupViewsMap[activeGroupId] ?? collectionGroups?.find(g => g.id === activeGroupId)?.views ?? 0) : localViews}
               </span>
               <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full hidden sm:inline-block">
                 총 {collectionGames.length}개

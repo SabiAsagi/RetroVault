@@ -64,7 +64,7 @@ export async function getDashboardData() {
 
   const popularCollections = [
     ...popularGroups.map(group => ({
-      id: group.user.nickname || group.user.name || group.user.id, // Must be user identifier to route to profile
+      id: group.id, // Group ID!
       user: group.user.nickname || group.user.name || 'User',
       title: group.name,
       likes: group.likes,

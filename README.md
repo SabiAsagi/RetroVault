@@ -1,62 +1,118 @@
-# RetroVault - 실서비스 MVP
+# RetroVault
 
-RetroVault는 레트로 게임 콜렉터를 위한 디지털 아카이브 플랫폼입니다.
-단순 프로토타입을 넘어 실제 데이터베이스 연동, 인증, 권한, 관리자 기능을 포함하는 MVP로 업그레이드 되었습니다.
+RetroVault는 레트로 게임, 플랫폼, 제작사, 유저 컬렉션을 관리하는 Next.js 기반 아카이브 앱입니다.
 
 ## 기술 스택
-- **Framework**: Next.js (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS, Lucide Icons
-- **Database**: Prisma ORM, SQLite (로컬 MVP용) / PostgreSQL (프로덕션 배포용)
-- **Authentication**: NextAuth.js (Email Credentials, OAuth)
 
-## 배포 아키텍처 및 도메인 라우팅 설정
-실제 운영 시 Vercel 등 Next.js 호스팅 환경에 배포하며, 도메인 라우팅을 지원합니다.
-- `retrovault.kr` (운영)
-- `admin.retrovault.kr` (관리자 전용 - `next.config.mjs`의 rewrites 및 middleware 설정 참조)
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Prisma ORM
+- Vercel Postgres / Neon: 기본 데이터와 유저 데이터 저장
+- Vercel Blob: 업로드 이미지 저장
+- NextAuth: 이메일 로그인 및 OAuth 로그인
 
-## 환경 변수 설정
-최초 프로젝트 설정 시 `.env.example` 파일을 복사하여 `.env` 파일을 생성하세요.
+## Vercel 배포 구조
+
+RetroVault는 Vercel 배포를 기준으로 구성되어 있습니다.
+
+- 앱 호스팅: Vercel
+- 관계형 데이터베이스: Vercel Postgres / Neon
+- 이미지 업로드 저장소: Vercel Blob
+- 기본 카탈로그 데이터: Prisma seed로 Neon에 저장
+- 유저 업로드 이미지: Vercel Blob에 파일 저장 후, 공개 Blob URL을 Neon DB에 저장
+
+## 환경 변수
+
+로컬에서는 `.env.example`을 복사해 `.env`를 만들고, Vercel 프로젝트 설정에도 같은 값을 넣어주세요.
+
+필수:
+
 ```bash
-cp .env.example .env
+POSTGRES_PRISMA_URL="postgresql://..."
+POSTGRES_URL_NON_POOLING="postgresql://..."
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="replace-with-a-long-random-secret"
 ```
-필수 환경 변수:
-- `DATABASE_URL`: Prisma 데이터베이스 연결 (예: `file:./dev.db`)
-- `NEXTAUTH_URL`: 로컬의 경우 `http://localhost:3000`
-- `NEXTAUTH_SECRET`: 무작위 문자열 (예: `openssl rand -base64 32`)
 
-## 실행 방법
+운영 배포에서는 `NEXTAUTH_URL`을 실제 도메인으로 설정합니다.
 
-1. **의존성 설치**
-   ```bash
-   npm install
-   ```
+```bash
+NEXTAUTH_URL="https://retrovault.kr"
+```
 
-2. **데이터베이스 마이그레이션 (SQLite)**
-   ```bash
-   npx prisma db push
-   ```
+선택:
 
-3. **초기 관리자 계정 및 더미 데이터 시딩**
-   ```bash
-   npx tsx prisma/seed.ts
-   ```
-   이 명령은 플랫폼, 샘플 게임 데이터, 그리고 다음 계정을 생성합니다:
-   - Admin: `admin@retrovault.kr` / `admin1234`
-   - Demo: `demo@retrovault.kr` / `demo1234`
+```bash
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+ADMIN_INITIAL_EMAIL="admin@retrovault.kr"
+ADMIN_INITIAL_PASSWORD="change-this-password"
+SEED_DEMO_USERS="false"
+```
 
-4. **개발 서버 실행**
-   ```bash
-   npm run dev
-   ```
+## 로컬 실행
 
-## 핵심 기능 (MVP)
-- **인증 시스템**: 회원가입 및 이메일 로그인, Middleware 기반의 페이지 보호
-- **컬렉션 관리**: 유저별 소장 게임(컬렉션) 추가/수정, 상태 관리
-- **마스터 데이터**: 관리자(Admin) 전용 페이지 제공 및 데이터베이스 관리
-- **App Router 전환**: React SPA에서 Next.js App Router 구조로 마이그레이션
+```bash
+npm install
+npm run db:setup
+npm run dev
+```
 
-## 추후 개발 과제
-- RAWG / IGDB 외부 API 연동하여 마스터 데이터 자동 수집
-- Supabase Storage 연동하여 유저 게임 표지 이미지 업로드 기능
-- 바코드 스캔 기능을 통한 컬렉션 자동 인식 기능
+`npm run db:setup`은 스키마 적용과 기본 데이터 입력을 함께 실행합니다.
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+## Vercel / Neon 초기 설정
+
+1. GitHub 저장소를 Vercel에 연결합니다.
+2. Vercel Postgres / Neon 연동을 추가합니다.
+3. Vercel Blob 연동을 추가합니다.
+4. Vercel 환경 변수에 아래 값이 있는지 확인합니다.
+   `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`, `BLOB_READ_WRITE_TOKEN`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`
+5. 앱을 배포합니다.
+6. 첫 배포 후 Neon DB에 스키마와 기본 데이터를 한 번 넣습니다.
+
+```bash
+npm run db:setup
+```
+
+이미 스키마가 있고 기본 카탈로그 데이터만 다시 넣고 싶다면 아래 명령만 실행합니다.
+
+```bash
+npm run db:seed
+```
+
+## Seed 동작
+
+seed 스크립트는 `src/data-extended.ts`에 있는 플랫폼/게임 데이터를 사용합니다.
+
+기본으로 생성되는 데이터:
+
+- 플랫폼
+- 제작사
+- 게임
+- 타임라인 이벤트
+- `ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD`가 있을 때 관리자 계정
+
+데모 유저는 기본으로 만들지 않습니다. 필요하면 아래처럼 설정합니다.
+
+```bash
+SEED_DEMO_USERS="true"
+```
+
+## 이미지 업로드
+
+이미지는 아래 API를 통해 업로드됩니다.
+
+```text
+/api/upload
+```
+
+업로드는 로그인된 사용자만 가능하며, 파일은 Vercel Blob에 저장됩니다. 앱 DB에는 Blob에서 반환한 공개 URL이 저장됩니다.
