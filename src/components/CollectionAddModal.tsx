@@ -33,7 +33,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
     purchasePrice: initialItem?.purchasePrice || 0,
     memo: initialItem?.memo || '',
     rating: initialItem?.rating || 0,
-    groupId: '',
+    groupId: initialItem?.groupId || '',
   });
 
   useEffect(() => {
