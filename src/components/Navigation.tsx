@@ -210,7 +210,7 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
                   onClick={() => { setDropdownOpen(!dropdownOpen); setNotificationsOpen(false); }}
                   className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
                 >
-                  <img src={user?.avatar} alt={user?.nickname} className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border" />
+                  <img src={user?.avatar || (user as any)?.picture || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user?.id || 'RetroMaster'}&backgroundColor=1A1A1A`} alt={user?.nickname} className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border object-cover" />
                   <span className="hidden sm:block text-xs font-bold text-text-primary max-w-[80px] truncate">{user?.nickname}</span>
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>

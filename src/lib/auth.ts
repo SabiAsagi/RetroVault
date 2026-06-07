@@ -77,6 +77,7 @@ export const authOptions: NextAuthOptions = {
         }
         if (session.image) token.picture = session.image;
       }
+      console.log("JWT Token length:", JSON.stringify(token).length);
       return token;
     }
   }

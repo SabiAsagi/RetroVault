@@ -694,7 +694,12 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
 
       {/* ── 3. Collection Statistics ── */}
       <div className="mt-8">
-        <Stats games={games} collection={collection} />
+        <Stats 
+          games={games} 
+          collection={collection} 
+          nickname={displayUser?.nickname || (displayUser as any)?.name} 
+          isOwnProfile={isOwnProfile} 
+        />
       </div>
 
       {/* ── 4. Profile Share Card Preview ── */}

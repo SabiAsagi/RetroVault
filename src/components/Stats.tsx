@@ -13,11 +13,13 @@ import {
 interface StatsProps {
   games: Game[];
   collection: CollectionItem[];
+  nickname?: string;
+  isOwnProfile?: boolean;
 }
 
 const CHART_COLORS = ['#4AEDC4', '#FFB547', '#FF6B6B', '#4EA8FF', '#A78BFA', '#FF9F7F', '#67E8F9', '#FCD34D'];
 
-export default function Stats({ games, collection }: StatsProps) {
+export default function Stats({ games, collection, nickname, isOwnProfile = true }: StatsProps) {
   if (collection.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-6 h-[calc(100vh-64px)] flex items-center justify-center">
@@ -135,7 +137,8 @@ export default function Stats({ games, collection }: StatsProps) {
 
     const eraName = topEra.name.replace('Gen', '세대').replace('th', '').replace('rd', '').replace('nd', '').replace('st', '');
     
-    let summary = `당신은 "${eraName} ${topGenre.name} 매니아" 입니다. `;
+    const prefix = isOwnProfile ? '당신은' : `${nickname || '유저'}님은`;
+    let summary = `${prefix} "${eraName} ${topGenre.name} 매니아" 입니다. `;
     
     if (isPortableLover) {
       summary += `특히 휴대용 콘솔 중심의 컬렉션을 선호하며, `;
