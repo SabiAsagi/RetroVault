@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 
 import { logAdminAction } from "./admin-dashboard";
 
@@ -60,6 +61,31 @@ export async function deleteCompany(id: string) {
 }
 
 // ── USER ACTIONS ──
+export async function updateUserProfileFromAdmin(userId: string, data: any) {
+  const adminId = await requireAdmin();
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role !== "ADMIN") {
+    throw new Error("Only ADMIN can edit users.");
+  }
+
+  const updateData: any = {
+    nickname: data.nickname,
+    email: data.email,
+  };
+  
+  if (data.password) {
+    updateData.password = await bcrypt.hash(data.password, 10);
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: updateData
+  });
+  
+  await logAdminAction(adminId, "UPDATE", "USER_PROFILE", userId);
+  revalidatePath('/admin');
+  return updated;
+}
 export async function updateUserRole(userId: string, role: string) {
   const adminId = await requireAdmin();
   // Only ADMIN can change roles to ADMIN or MANAGER

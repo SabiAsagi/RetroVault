@@ -8,7 +8,7 @@ import {
 import { CollectionItem, Game, TimelineEvent } from '../types';
 import { createGame, updateGame, deleteGame, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from '@/app/actions/admin';
 import { resolveReport } from '@/app/actions/admin-dashboard';
-import { createCompany, updateCompany, deleteCompany, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest, approvePlatformRequest, rejectPlatformRequest, approveCompanyRequest, rejectCompanyRequest } from '@/app/actions/admin-extensions';
+import { createCompany, updateCompany, deleteCompany, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest, approvePlatformRequest, rejectPlatformRequest, approveCompanyRequest, rejectCompanyRequest, updateUserProfileFromAdmin } from '@/app/actions/admin-extensions';
 
 interface AdminProps {
   collection: CollectionItem[];
@@ -910,48 +910,85 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       {/* ── User Action Modal ── */}
       {userActionModalOpen && selectedUserForAction && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-              <h3 className="text-lg font-bold text-text-primary">회원 관리: {selectedUserForAction.nickname}</h3>
+              <h3 className="text-lg font-bold text-text-primary">회원 관리: {selectedUserForAction.nickname || selectedUserForAction.name}</h3>
               <button onClick={() => setUserActionModalOpen(false)} className="text-text-muted hover:text-text-primary">
                 <XCircle size={20} />
               </button>
             </div>
-            <div className="p-4 space-y-3">
-              <button onClick={() => executeUserAction('MAKE_MANAGER')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-mint text-sm text-text-primary transition-colors">
-                <span>중간관리자 권한 부여</span>
-                <ShieldAlert size={16} className="text-mint" />
-              </button>
-              <button onClick={() => executeUserAction('MAKE_USER')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
-                <span>일반 유저로 강등</span>
-                <Shield size={16} className="text-amber" />
-              </button>
-              <button onClick={() => {
-                setPromptInput('');
-                setConfirmConfig({
-                  message: selectedUserForAction.isBanned ? '밴 해제 사유를 입력하세요' : '밴 사유를 입력하세요',
-                  isPrompt: true,
-                  promptLabel: '사유',
-                  onConfirm: () => {},
-                  onPromptSubmit: (val) => {
-                    executeUserAction(selectedUserForAction.isBanned ? 'UNBAN' : 'BAN', val);
+            
+            <div className="p-4 overflow-y-auto space-y-6">
+              {/* User Info Edit Form */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-mint border-b border-vault-border pb-2">기본 정보 수정</h4>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">닉네임</label>
+                  <input type="text" value={selectedUserForAction.nickname || ''} onChange={e => setSelectedUserForAction({...selectedUserForAction, nickname: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">이메일</label>
+                  <input type="email" value={selectedUserForAction.email || ''} onChange={e => setSelectedUserForAction({...selectedUserForAction, email: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">비밀번호 변경 (변경할 경우만 입력)</label>
+                  <input type="password" value={selectedUserForAction.newPassword || ''} onChange={e => setSelectedUserForAction({...selectedUserForAction, newPassword: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="새 비밀번호 입력" />
+                </div>
+                <button onClick={async () => {
+                  try {
+                    await updateUserProfileFromAdmin(selectedUserForAction.id, {
+                      nickname: selectedUserForAction.nickname,
+                      email: selectedUserForAction.email,
+                      password: selectedUserForAction.newPassword
+                    });
+                    setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, nickname: selectedUserForAction.nickname, email: selectedUserForAction.email } : u));
+                    alert('회원 정보가 성공적으로 수정되었습니다.');
+                  } catch (e: any) {
+                    alert(`수정 실패: ${e.message}`);
                   }
-                });
-                setConfirmModalOpen(true);
-              }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
-                <span>{selectedUserForAction.isBanned ? '밴 해제' : '밴 처리'}</span>
-                <AlertTriangle size={16} className="text-amber" />
-              </button>
-              <button onClick={() => {
-                setConfirmConfig({
-                  message: '정말 삭제하시겠습니까?',
-                  onConfirm: () => executeUserAction('DELETE')
-                });
-                setConfirmModalOpen(true);
-              }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-coral text-sm text-coral transition-colors">
-                <span>회원 영구 삭제</span>
-                <Trash2 size={16} className="text-coral" />
-              </button>
+                }} className="w-full bg-mint hover:bg-mint-dim text-vault-bg text-sm font-bold py-2.5 rounded-lg transition-colors">
+                  정보 저장
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-3 pt-4 border-t border-vault-border">
+                <h4 className="text-sm font-bold text-coral border-b border-vault-border pb-2">권한 및 제재 관리</h4>
+                <button onClick={() => executeUserAction('MAKE_MANAGER')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-mint text-sm text-text-primary transition-colors">
+                  <span>중간관리자 권한 부여</span>
+                  <ShieldAlert size={16} className="text-mint" />
+                </button>
+                <button onClick={() => executeUserAction('MAKE_USER')} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
+                  <span>일반 유저로 강등</span>
+                  <Shield size={16} className="text-amber" />
+                </button>
+                <button onClick={() => {
+                  setPromptInput('');
+                  setConfirmConfig({
+                    message: selectedUserForAction.isBanned ? '밴 해제 사유를 입력하세요' : '밴 사유를 입력하세요',
+                    isPrompt: true,
+                    promptLabel: '사유',
+                    onConfirm: () => {},
+                    onPromptSubmit: (val) => {
+                      executeUserAction(selectedUserForAction.isBanned ? 'UNBAN' : 'BAN', val);
+                    }
+                  });
+                  setConfirmModalOpen(true);
+                }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-amber text-sm text-text-primary transition-colors">
+                  <span>{selectedUserForAction.isBanned ? '밴 해제' : '밴 처리'}</span>
+                  <AlertTriangle size={16} className="text-amber" />
+                </button>
+                <button onClick={() => {
+                  setConfirmConfig({
+                    message: '정말 삭제하시겠습니까?',
+                    onConfirm: () => executeUserAction('DELETE')
+                  });
+                  setConfirmModalOpen(true);
+                }} className="w-full flex items-center justify-between p-3 bg-vault-bg border border-vault-border rounded-lg hover:border-coral text-sm text-coral transition-colors">
+                  <span>회원 영구 삭제</span>
+                  <Trash2 size={16} className="text-coral" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
