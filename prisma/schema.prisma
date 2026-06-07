@@ -197,7 +197,7 @@ model CollectionItem {
   playTime        Int?     // hours
   playStatus      String?  @default("UNPLAYED") // UNPLAYED, PLAYING, COMPLETED, DROPPED, REPLAYING
   rating          Int?     @default(0)
-  visibility      String?  @default("PUBLIC")
+  visibility      String?  @default("public")
   sortOrder       Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
