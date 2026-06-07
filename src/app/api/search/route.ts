@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    let results = [];
+    let results: any[] = [];
 
     if (type === 'game') {
       const games = await prisma.game.findMany({
