@@ -14,7 +14,7 @@ export default async function CommunityPage() {
         include: {
           game: true
         },
-        take: 5
+        take: 6
       },
       _count: {
         select: { collections: { where: { visibility: 'public' } } }
@@ -35,7 +35,7 @@ export default async function CommunityPage() {
             include: { game: true }
           }
         },
-        take: 5
+        take: 6
       },
       _count: { select: { items: true } }
     },

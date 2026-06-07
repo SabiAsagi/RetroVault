@@ -265,12 +265,12 @@ export default function MyVault({
           
           {viewMode === 'shelf' && (
             <div className="space-y-12 relative z-20">
-              {/* Split items into rows of 6 for shelves */}
-              {Array.from({ length: Math.ceil(displayItems.length / 6) }).map((_, rowIndex) => {
-              const rowItems = displayItems.slice(rowIndex * 6, (rowIndex + 1) * 6);
+              {/* Split items into rows of 10 for shelves */}
+              {Array.from({ length: Math.ceil(displayItems.length / 10) }).map((_, rowIndex) => {
+              const rowItems = displayItems.slice(rowIndex * 10, (rowIndex + 1) * 10);
               return (
                 <div key={rowIndex} className="relative">
-                  <div className="flex gap-4 sm:gap-6 px-4 md:px-8 pb-1 min-h-[180px] items-end">
+                  <div className="flex flex-wrap gap-4 sm:gap-6 px-4 md:px-8 pb-1 min-h-[180px] items-end justify-start">
                     {rowItems.map((data, localIdx) => {
                       const { item, game, originalIndex } = data;
                       const isDragged = draggedIndex === originalIndex;
@@ -290,7 +290,7 @@ export default function MyVault({
                             ${isDragOver ? 'translate-x-4 border-l-2 border-mint pl-2' : ''}
                           `}
                         >
-                          <div className="w-24 sm:w-32 aspect-[3/4] rounded-md overflow-hidden shadow-[5px_5px_15px_rgba(0,0,0,0.5)] border border-vault-border/50 bg-vault-bg relative group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-all">
+                          <div className="w-16 sm:w-20 md:w-24 aspect-[3/4] rounded-md overflow-hidden shadow-[5px_5px_15px_rgba(0,0,0,0.5)] border border-vault-border/50 bg-vault-bg relative group-hover:shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-all">
                             {game.imageUrl ? (
                               <img src={game.imageUrl} alt={game.title} className="w-full h-full object-cover" />
                             ) : (

@@ -411,9 +411,9 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                   )}
                 </div>
                 {!isEditing && (
-                  <div className="flex items-center gap-3 text-xs text-text-muted font-medium">
-                    <span className="flex items-center gap-1"><Calendar size={12} /> {(displayUser as any)?.createdAt ? new Date((displayUser as any).createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '2024년 1월 1일'} 가입</span>
-                    <span className="flex items-center gap-1"><Gamepad2 size={12} /> {collectionGames.length} 게임 보유</span>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-text-muted font-medium">
+                    <span className="flex items-center gap-1 whitespace-nowrap"><Calendar size={12} className="shrink-0" /> {(displayUser as any)?.createdAt ? new Date((displayUser as any).createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '2024년 1월 1일'} 가입</span>
+                    <span className="flex items-center gap-1 whitespace-nowrap"><Gamepad2 size={12} className="shrink-0" /> {collectionGames.length} 게임 보유</span>
                   </div>
                 )}
               </div>
