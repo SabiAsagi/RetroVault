@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Game, Rarity, SortOption, Era } from '../types';
 import { Filter, Search, X, LayoutGrid, List, Monitor } from 'lucide-react';
 import Link from 'next/link';
@@ -50,16 +51,16 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   const allCountries = useMemo(() => [...new Set(games.map(g => g.country).filter(Boolean))].sort(), [games]);
   const allDevelopers = useMemo(() => [...new Set(games.map(g => g.developer).filter(Boolean))].sort(), [games]);
 
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [showFilters, setShowFilters] = useState(false);
-  const [platformFilter, setPlatformFilter] = useState('');
-  const [genreFilter, setGenreFilter] = useState('');
-  const [rarityFilter, setRarityFilter] = useState('');
-  const [eraFilter, setEraFilter] = useState<string>(initialEra || '');
-  const [countryFilter, setCountryFilter] = useState('');
-  const [developerFilter, setDeveloperFilter] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('popularity');
-  const [activePlatformTab, setActivePlatformTab] = useState('');
+  const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
+  const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', false);
+  const [platformFilter, setPlatformFilter] = useSessionStorage('archive-platform', '');
+  const [genreFilter, setGenreFilter] = useSessionStorage('archive-genre', '');
+  const [rarityFilter, setRarityFilter] = useSessionStorage('archive-rarity', '');
+  const [eraFilter, setEraFilter] = useSessionStorage<string>('archive-era', initialEra || '');
+  const [countryFilter, setCountryFilter] = useSessionStorage('archive-country', '');
+  const [developerFilter, setDeveloperFilter] = useSessionStorage('archive-developer', '');
+  const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
+  const [activePlatformTab, setActivePlatformTab] = useSessionStorage('archive-tab', '');
 
   useEffect(() => {
     if (initialEra) { setEraFilter(initialEra); setShowFilters(true); }

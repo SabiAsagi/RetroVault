@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Database, Calendar, Monitor, Filter, X, LayoutGrid, List, Search, Gamepad2 } from "lucide-react";
 import Link from "next/link";
 
@@ -33,15 +34,15 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function PlatformsPage() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useSessionStorage("platforms-search", "");
 
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [showFilters, setShowFilters] = useState(false);
-  const [manufacturerFilter, setManufacturerFilter] = useState('');
-  const [generationFilter, setGenerationFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('year-asc');
-  const [activeManufacturerTab, setActiveManufacturerTab] = useState('');
+  const [viewMode, setViewMode] = useSessionStorage<ViewMode>('platforms-view', 'grid');
+  const [showFilters, setShowFilters] = useSessionStorage('platforms-filters-open', false);
+  const [manufacturerFilter, setManufacturerFilter] = useSessionStorage('platforms-manufacturer', '');
+  const [generationFilter, setGenerationFilter] = useSessionStorage('platforms-gen', '');
+  const [typeFilter, setTypeFilter] = useSessionStorage('platforms-type', '');
+  const [sortBy, setSortBy] = useSessionStorage<SortOption>('platforms-sort', 'year-asc');
+  const [activeManufacturerTab, setActiveManufacturerTab] = useSessionStorage('platforms-tab', '');
 
   useEffect(() => {
     fetch('/api/platforms-list')

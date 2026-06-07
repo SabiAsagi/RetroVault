@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Building2, Filter, X, LayoutGrid, List, Search, Gamepad2, Globe } from "lucide-react";
 import Link from "next/link";
 
@@ -32,15 +33,15 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useSessionStorage("companies-search", "");
 
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [showFilters, setShowFilters] = useState(false);
-  const [typeFilter, setTypeFilter] = useState('');
-  const [countryFilter, setCountryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('name-asc');
-  const [activeTypeTab, setActiveTypeTab] = useState('');
+  const [viewMode, setViewMode] = useSessionStorage<ViewMode>('companies-view', 'grid');
+  const [showFilters, setShowFilters] = useSessionStorage('companies-filters-open', false);
+  const [typeFilter, setTypeFilter] = useSessionStorage('companies-type', '');
+  const [countryFilter, setCountryFilter] = useSessionStorage('companies-country', '');
+  const [statusFilter, setStatusFilter] = useSessionStorage('companies-status', '');
+  const [sortBy, setSortBy] = useSessionStorage<SortOption>('companies-sort', 'name-asc');
+  const [activeTypeTab, setActiveTypeTab] = useSessionStorage('companies-tab', '');
 
   useEffect(() => {
     fetch('/api/companies-list')

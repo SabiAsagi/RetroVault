@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import Archive from '@/components/Archive';
 import { Game, CollectionItem } from '@/types';
 import { getGameSlug } from '@/lib/slug';
@@ -14,7 +15,7 @@ interface Props {
 
 export default function ArchiveWrapper({ initialGames, initialCollection }: Props) {
   const [collection, setCollection] = useState<CollectionItem[]>(initialCollection);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useSessionStorage("archive-search", "");
   const [gameToAdd, setGameToAdd] = useState<Game | null>(null);
   const router = useRouter();
 

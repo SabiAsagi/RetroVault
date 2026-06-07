@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { 
   LayoutDashboard, Gamepad2, Building2, Users, AlertOctagon, History, 
   Settings, RefreshCw, Trash2, Search, Edit, Eye, MoreVertical, Plus,
@@ -30,7 +31,7 @@ interface AdminProps {
 type Tab = 'dashboard' | 'games' | 'requests' | 'companies' | 'platforms' | 'users' | 'reports' | 'logs' | 'settings' | 'timeline';
 
 export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, platforms, gameRequests, platformRequests, companyRequests, onResetToSample, onClearAll }: AdminProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [activeTab, setActiveTab] = useSessionStorage<Tab>('admin-tab', 'dashboard');
   const [confirmAction, setConfirmAction] = useState<'reset' | 'clear' | null>(null);
 
   const [editingGame, setEditingGame] = useState<Partial<Game> | null>(null);
@@ -41,21 +42,21 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const [isTimelineModalOpen, setIsTimelineModalOpen] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   
-  const [gamesPage, setGamesPage] = useState(1);
+  const [gamesPage, setGamesPage] = useSessionStorage('admin-games-page', 1);
   const gamesPerPage = 10;
-  const [gamesSearch, setGamesSearch] = useState('');
+  const [gamesSearch, setGamesSearch] = useSessionStorage('admin-games-search', '');
   
   const [editingCompany, setEditingCompany] = useState<any>(null);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
-  const [companiesPage, setCompaniesPage] = useState(1);
+  const [companiesPage, setCompaniesPage] = useSessionStorage('admin-companies-page', 1);
   const companiesPerPage = 10;
-  const [companiesSearch, setCompaniesSearch] = useState('');
+  const [companiesSearch, setCompaniesSearch] = useSessionStorage('admin-companies-search', '');
 
   const [editingPlatform, setEditingPlatform] = useState<any>(null);
   const [isPlatformModalOpen, setIsPlatformModalOpen] = useState(false);
-  const [platformsPage, setPlatformsPage] = useState(1);
+  const [platformsPage, setPlatformsPage] = useSessionStorage('admin-platforms-page', 1);
   const platformsPerPage = 10;
-  const [platformsSearch, setPlatformsSearch] = useState('');
+  const [platformsSearch, setPlatformsSearch] = useSessionStorage('admin-platforms-search', '');
 
   // Custom User Management Modal State
   const [userActionModalOpen, setUserActionModalOpen] = useState(false);
