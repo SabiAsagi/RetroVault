@@ -127,7 +127,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
     setIsSaving(true);
     try {
       await updateProfile(editData);
-      await updateProfileContext({ nickname: editData.nickname, avatar: editData.image });
+      await updateProfileContext({ nickname: editData.nickname, avatar: editData.image, image: editData.image });
       setIsEditing(false);
       window.location.reload();
     } catch (e: any) {

@@ -75,7 +75,9 @@ export const authOptions: NextAuthOptions = {
           token.name = session.nickname;
           token.nickname = session.nickname;
         }
-        if (session.image) token.picture = session.image;
+        if (session.image || session.avatar) {
+          token.picture = session.image || session.avatar;
+        }
       }
       console.log("JWT Token length:", JSON.stringify(token).length);
       return token;
