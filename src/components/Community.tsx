@@ -61,7 +61,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
               <div key={user.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-vault-border-light transition-colors group">
                 <div className="p-4 border-b border-vault-border/50 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <img src={user.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} className="w-10 h-10 rounded-lg bg-vault-bg border border-vault-border object-cover" alt="avatar" />
+                    <img src={user.image || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} className="w-10 h-10 rounded-lg bg-vault-bg border border-vault-border object-cover" alt="avatar" />
                     <div>
                       <h3 className="font-bold text-text-primary group-hover:text-mint transition-colors">{user.nickname || user.name || '알 수 없는 유저'}</h3>
                       <p className="text-xs text-text-secondary">공개 게임 {user._count.collections}개</p>
@@ -74,7 +74,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
                   <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
                     {user.collections.map((c: any) => (
                       <div key={c.id} className="w-12 h-16 shrink-0 rounded overflow-hidden shadow">
-                        {c.game.imageUrl ? <img src={c.game.imageUrl} className="w-full h-full object-cover" /> : <BoxArtPlaceholder game={c.game} />}
+                        {c.game.coverImageUrl ? <img src={c.game.coverImageUrl} className="w-full h-full object-cover" /> : <BoxArtPlaceholder game={c.game} />}
                       </div>
                     ))}
                   </div>
@@ -111,7 +111,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
                   <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
                     {group.items.map((i: any) => (
                       <div key={i.id} className="w-12 h-16 shrink-0 rounded overflow-hidden shadow">
-                        {i.item.game.imageUrl ? <img src={i.item.game.imageUrl} className="w-full h-full object-cover" /> : <BoxArtPlaceholder game={i.item.game} />}
+                        {i.item.game.coverImageUrl ? <img src={i.item.game.coverImageUrl} className="w-full h-full object-cover" /> : <BoxArtPlaceholder game={i.item.game} />}
                       </div>
                     ))}
                   </div>
