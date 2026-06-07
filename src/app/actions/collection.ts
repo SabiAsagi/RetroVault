@@ -11,7 +11,8 @@ export async function getUserCollection(): Promise<CollectionItem[]> {
 
   const items = await prisma.collectionItem.findMany({
     where: { userId: session.user.id },
-    orderBy: { sortOrder: 'asc' }
+    orderBy: { sortOrder: 'asc' },
+    include: { groups: true }
   });
 
   return items.map(item => ({
@@ -31,7 +32,8 @@ export async function getUserCollection(): Promise<CollectionItem[]> {
     playStatus: item.playStatus as any || '미플레이',
     rating: item.rating || 0,
     visibility: item.visibility as any || 'public',
-    sortIndex: item.sortOrder
+    sortIndex: item.sortOrder,
+    groupId: item.groups?.[0]?.groupId || ''
   }));
 }
 
@@ -61,6 +63,10 @@ export async function updateCollectionItem(gameId: string, data: any) {
     });
 
     if (group) {
+      // Remove from old groups first
+      await prisma.collectionGroupItem.deleteMany({
+        where: { itemId: item.id }
+      });
       await prisma.collectionGroupItem.upsert({
         where: {
           groupId_itemId: { groupId: group.id, itemId: item.id }
@@ -72,6 +78,10 @@ export async function updateCollectionItem(gameId: string, data: any) {
         }
       });
     }
+  } else {
+    await prisma.collectionGroupItem.deleteMany({
+      where: { itemId: item.id }
+    });
   }
 
   revalidatePath('/community');

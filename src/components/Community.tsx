@@ -22,7 +22,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <h2 className="text-2xl font-black text-text-primary flex items-center gap-2">
-          <Users className="text-mint" /> 커뮤니티 탐색
+          <Users className="text-mint" /> 유저 컬렉션 탐색
         </h2>
         
         <div className="relative max-w-sm w-full">

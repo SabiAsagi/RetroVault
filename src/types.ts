@@ -147,6 +147,7 @@ export interface CollectionItem {
   visibility?: Visibility;
   sortIndex?: number;
   currentPrice?: number;
+  groupId?: string;
 }
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
