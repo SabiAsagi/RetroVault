@@ -11,7 +11,8 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:setup": "prisma db push && tsx prisma/seed.ts"
+    "db:setup": "prisma db push && tsx prisma/seed.ts",
+    "db:consoles": "tsx prisma/seed_wiki_consoles.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
