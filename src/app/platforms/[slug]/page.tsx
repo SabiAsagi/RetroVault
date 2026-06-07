@@ -128,6 +128,26 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
         </div>
       </div>
 
+      {platform.variants && JSON.parse(platform.variants).length > 0 && (
+        <div className="space-y-4 mb-8">
+          <div className="flex items-center gap-2 border-b border-vault-border pb-4">
+            <Monitor className="text-mint" size={24} />
+            <h2 className="text-2xl font-black text-text-primary">파생 모델 및 다른 버전</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {JSON.parse(platform.variants).map((variant: string, index: number) => (
+              <div 
+                key={index} 
+                className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-text-primary font-bold shadow-sm flex items-center gap-2 hover:border-mint transition-colors cursor-default"
+              >
+                <Monitor size={16} className="text-text-muted" />
+                {variant}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {platform.generation !== 1 && (
         <div className="space-y-6">
           <div className="flex items-center gap-2 border-b border-vault-border pb-4">
