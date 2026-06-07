@@ -147,9 +147,7 @@ export default function NavigationApp() {
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
                     {searchResults.users.map((u: any) => (
                       <Link href={`/profile/${u.nickname || u.id}`} key={u.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <div className="w-6 h-6 rounded-md bg-mint/20 text-mint flex items-center justify-center text-xs font-bold">
-                          {u.nickname?.[0] || 'U'}
-                        </div>
+                        <img src={u.image || u.avatar || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.id || 'User'}&backgroundColor=1A1A1A`} alt={u.nickname} className="w-6 h-6 rounded-md object-cover border border-vault-border" />
                         <p className="text-sm text-text-primary">{u.nickname}</p>
                       </Link>
                     ))}
@@ -199,9 +197,7 @@ export default function NavigationApp() {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-md bg-mint flex items-center justify-center text-[10px] text-vault-bg font-bold">
-                    {user?.name?.[0] || 'U'}
-                  </div>
+                  <img src={user?.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${(user as any)?.id || 'RetroMaster'}&backgroundColor=1A1A1A`} alt={user?.name || 'User'} className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border object-cover" />
                   <span className="hidden sm:block text-xs font-bold text-text-primary max-w-[80px] truncate">{user?.name}</span>
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>
