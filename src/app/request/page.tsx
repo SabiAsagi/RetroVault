@@ -3,6 +3,8 @@ import { authOptions } from "@/lib/auth";
 import LoginRequired from "@/components/LoginRequired";
 import RequestItem from "@/components/RequestItem";
 
+import { Suspense } from 'react';
+
 export default async function RequestPage() {
   const session = await getServerSession(authOptions);
   
@@ -10,5 +12,9 @@ export default async function RequestPage() {
     return <LoginRequired />;
   }
 
-  return <RequestItem />;
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-text-muted">Loading...</div>}>
+      <RequestItem />
+    </Suspense>
+  );
 }

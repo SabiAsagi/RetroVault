@@ -108,7 +108,7 @@ export default function PlatformsPage() {
               {filtered.length}개
             </span>
           </div>
-          <Link href="/request" className="text-xs px-3 py-1.5 bg-neon-purple/10 text-neon-purple font-bold border border-neon-purple/30 rounded-lg hover:bg-neon-purple/20 transition-colors">
+          <Link href="/request?tab=platform" className="text-xs px-3 py-1.5 bg-neon-purple/10 text-neon-purple font-bold border border-neon-purple/30 rounded-lg hover:bg-neon-purple/20 transition-colors">
             + 콘솔 추가 건의
           </Link>
         </div>

@@ -59,6 +59,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     try {
       const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
         method: 'POST',
+        headers: { 'Content-Type': file.type },
         body: file,
       });
 

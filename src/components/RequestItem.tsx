@@ -4,10 +4,15 @@ import { PlusCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/contexts/ToastContext';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function RequestItem() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showToast } = useToast();
-  const [requestType, setRequestType] = useState<'game' | 'platform' | 'company'>('game');
+  
+  const initialTab = (searchParams?.get('tab') as 'game' | 'platform' | 'company') || 'game';
+  const [requestType, setRequestType] = useState<'game' | 'platform' | 'company'>(initialTab);
   
   const [formData, setFormData] = useState({
     title: '', platform: '', releaseYear: '', developer: '', referenceUrl: '', description: '',
@@ -50,8 +55,8 @@ export default function RequestItem() {
 
       <div className="flex bg-vault-surface border border-vault-border rounded-lg p-1 mb-6">
         <button onClick={() => setRequestType('game')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'game' ? 'bg-neon-blue text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>게임</button>
-        <button onClick={() => setRequestType('platform')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔/플랫폼</button>
-        <button onClick={() => setRequestType('company')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'company' ? 'bg-amber text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>회사</button>
+        <button onClick={() => setRequestType('platform')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔</button>
+        <button onClick={() => setRequestType('company')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'company' ? 'bg-amber text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>제작사</button>
       </div>
 
       <div className="bg-vault-surface border border-vault-border rounded-xl p-6 shadow-xl">

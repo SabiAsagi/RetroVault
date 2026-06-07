@@ -110,7 +110,7 @@ export default function CompaniesPage() {
               {filtered.length}개
             </span>
           </div>
-          <Link href="/request" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
+          <Link href="/request?tab=company" className="text-xs px-3 py-1.5 bg-neon-blue/10 text-neon-blue font-bold border border-neon-blue/30 rounded-lg hover:bg-neon-blue/20 transition-colors">
             + 제작사 추가 건의
           </Link>
         </div>

@@ -395,15 +395,6 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
               </button>
             );
           })}
-          {/* More button */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            id="bottom-tab-more"
-            className="flex-1 flex flex-col items-center justify-center gap-0.5 cursor-pointer text-text-muted"
-          >
-            <Menu size={19} />
-            <span className="text-[9px] font-medium">더보기</span>
-          </button>
         </div>
       </nav>
 

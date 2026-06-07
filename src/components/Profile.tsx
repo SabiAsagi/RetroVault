@@ -453,6 +453,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                           showToast('사진을 업로드 중입니다...', 'info');
                           const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
                             method: 'POST',
+                            headers: { 'Content-Type': file.type },
                             body: file,
                           });
                           
