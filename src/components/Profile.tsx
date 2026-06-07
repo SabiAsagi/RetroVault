@@ -267,6 +267,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] flex flex-col-reverse md:flex-row gap-8 items-start relative">
       
       {/* ── 1. Left Column: Collection Grid (Gallery) ── */}
+      {!isOwnProfile && (
       <div className={`w-full transition-all duration-500 ease-in-out ${isProfileCollapsed ? 'md:w-full' : 'md:w-3/5'}`}>
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
@@ -334,10 +335,13 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
           )}
         </div>
       </div>
+      )}
 
       {/* ── 2. Right Column: Profile Info ── */}
       <div className={`w-full flex flex-col gap-6 transition-all duration-500 overflow-hidden ${
-        isProfileCollapsed ? 'h-0 opacity-0 md:w-0' : 'h-auto opacity-100 md:w-2/5 md:sticky md:top-24 md:max-h-[calc(100vh-6rem)] md:overflow-y-auto custom-scrollbar md:pr-2'
+        isOwnProfile 
+          ? 'max-w-4xl mx-auto' 
+          : (isProfileCollapsed ? 'h-0 opacity-0 md:w-0' : 'h-auto opacity-100 md:w-2/5 md:sticky md:top-24 md:max-h-[calc(100vh-6rem)] md:overflow-y-auto custom-scrollbar md:pr-2')
       }`}>
       
       {/* ── Profile Header ── */}
