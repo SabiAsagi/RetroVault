@@ -8,18 +8,19 @@ import LoginRequired from "@/components/LoginRequired";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage({ params }: { params: Promise<{ nickname: string }> }) {
-  const { nickname } = await params;
+  const { nickname: rawNickname } = await params;
+  const decodedNickname = decodeURIComponent(rawNickname);
   const session = await getServerSession(authOptions);
   
-  if (!session?.user && nickname === "me") return <LoginRequired />;
+  if (!session?.user && decodedNickname === "me") return <LoginRequired />;
 
   const games = await getGamesFromDB();
 
-  if (nickname === "me" || nickname === (session?.user as any)?.nickname || nickname === session?.user?.id) {
+  if (decodedNickname === "me" || decodedNickname === (session?.user as any)?.nickname || decodedNickname === session?.user?.name || decodedNickname === session?.user?.id) {
     const collection = await getUserCollection();
     return <Profile games={games} collection={collection} />;
   } else {
-    const profileData = await getUserProfileByNickname(nickname);
+    const profileData = await getUserProfileByNickname(decodedNickname);
     if (!profileData) {
       return <div className="p-8 text-center text-text-primary">존재하지 않는 유저입니다.</div>;
     }
