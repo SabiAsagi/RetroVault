@@ -1,28 +1,35 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { LogIn } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
 
-    if (res?.error) {
-      setError("아이디 또는 비밀번호를 확인해주세요.");
-    } else {
-      router.push("/");
-      router.refresh();
+      if (res?.error) {
+        setError("아이디 또는 비밀번호를 확인해주세요.");
+      } else if (res?.ok) {
+        router.push("/");
+        router.refresh();
+      } else {
+        setError("로그인 응답이 없습니다. 잠시 후 다시 시도해주세요.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(`로그인 중 오류가 발생했습니다: ${err.message || '알 수 없는 오류'}`);
     }
   };
 
@@ -59,14 +66,23 @@ export default function LoginPage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-text-secondary mb-1">비밀번호</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
-              placeholder="비밀번호 입력"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-vault-surface border border-vault-border rounded-lg pl-4 pr-10 py-2 text-text-primary focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
+                placeholder="비밀번호 입력"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
 
           <button
