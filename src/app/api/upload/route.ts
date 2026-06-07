@@ -50,8 +50,13 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
+    const arrayBuffer = await request.arrayBuffer();
+    if (arrayBuffer.byteLength === 0) {
+      throw new Error("Empty file");
+    }
+    
     const pathname = `uploads/${session.user.id}/${Date.now()}-${sanitizeFilename(filename)}`;
-    const blob = await put(pathname, request, {
+    const blob = await put(pathname, arrayBuffer, {
       access: 'public',
       addRandomSuffix: true,
       allowOverwrite: false,

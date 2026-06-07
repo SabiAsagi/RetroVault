@@ -198,7 +198,7 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
             {!isAuthenticated ? (
               <button
                 id="login-btn"
-                onClick={() => setLoginOpen(true)}
+                onClick={() => window.location.href = '/login'}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mint text-vault-bg text-xs font-bold hover:bg-mint-dim transition-colors"
               >
                 <LogIn size={13} />
@@ -359,7 +359,7 @@ export default function Navigation({ activeTab, onTabChange, searchQuery, onSear
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-vault-border bg-vault-surface/80">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { setLoginOpen(true); setSidebarOpen(false); }}
+              onClick={() => { window.location.href = '/login'; setSidebarOpen(false); }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mint text-vault-bg text-xs font-bold hover:bg-mint-dim transition-colors"
             >
               <LogIn size={13} />
