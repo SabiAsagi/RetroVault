@@ -1,3 +1,4 @@
+"use client";
 import { Game, Rarity } from '../types';
 import { Plus, Check, Star } from 'lucide-react';
 
