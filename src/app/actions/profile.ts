@@ -68,6 +68,7 @@ export async function getUserProfileByNickname(nickname: string) {
     where: {
       OR: [
         { nickname: nickname },
+        { name: nickname }, // Fallback to name if missing nickname
         { id: nickname } // Fallback for 'me' or legacy id links
       ]
     },

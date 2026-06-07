@@ -67,7 +67,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
                       <p className="text-xs text-text-secondary">공개 게임 {user._count.collections}개</p>
                     </div>
                   </div>
-                  <Link href={`/profile/${user.nickname || user.id}`} className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors">
+                  <Link href={`/profile/${user.nickname || user.name || user.id}`} className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors">
                     프로필 보기                 </Link>
                 </div>
                 <div className="p-4 bg-vault-bg/50">
@@ -97,10 +97,10 @@ export default function Community({ users, groups }: { users: any[], groups: any
                     <div>
                       <h3 className="font-bold text-text-primary group-hover:text-mint transition-colors text-lg mb-1">{group.name}</h3>
                       <p className="text-xs text-text-muted flex items-center gap-1">
-                        by <Link href={`/profile/${group.user.nickname || group.user.id}`} className="text-text-secondary hover:text-text-primary hover:underline">{group.user.nickname || group.user.name}</Link>
+                        by <Link href={`/profile/${group.user.nickname || group.user.name || group.user.id}`} className="text-text-secondary hover:text-text-primary hover:underline">{group.user.nickname || group.user.name}</Link>
                       </p>
                     </div>
-                    <Link href={`/profile/${group.user.nickname || group.user.id}?group=${group.id}`} className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors">
+                    <Link href={`/profile/${group.user.nickname || group.user.name || group.user.id}?group=${group.id}`} className="px-3 py-1 bg-vault-bg hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs font-bold text-text-primary transition-colors">
                       컬렉션 보기
                     </Link>
                   </div>

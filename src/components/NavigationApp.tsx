@@ -211,7 +211,7 @@ export default function NavigationApp() {
                       <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
                     </div>
                     {navItems.filter(item => item.group === 'user').map(item => (
-                      <Link key={item.id} href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
+                      <Link key={item.id} href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
                         {item.icon} {item.label}
                       </Link>
                     ))}
@@ -276,7 +276,7 @@ export default function NavigationApp() {
             if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
             return (
               <Link
-                href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.id}` : item.path}
+                href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path}
                 key={item.id}
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${

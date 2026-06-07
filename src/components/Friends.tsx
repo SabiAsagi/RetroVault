@@ -135,9 +135,9 @@ export default function Friends() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {friends.map(f => (
               <div key={f.id} className="bg-vault-surface border border-vault-border rounded-xl p-4 flex items-center justify-between hover:border-vault-border-light transition-colors">
-                <Link href={`/profile/${f.nickname || f.id}`} className="flex items-center gap-3 hover:opacity-80">
+                <Link href={`/profile/${f.nickname || f.name || f.id}`} className="flex items-center gap-3 hover:opacity-80">
                   <img src={f.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${f.id}&backgroundColor=1A1A1A`} alt="Avatar" className="w-10 h-10 rounded-lg object-cover bg-vault-bg border border-vault-border" />
-                  <span className="font-bold text-text-primary">{f.nickname || '알 수 없는 유저'}</span>
+                  <span className="font-bold text-text-primary">{f.nickname || f.name || '알 수 없는 유저'}</span>
                 </Link>
                 <div className="flex items-center gap-2">
                   <button onClick={() => { setDmReceiverId(f.id); setDmModalOpen(true); }} className="p-2 text-neon-blue bg-neon-blue/10 hover:bg-neon-blue/20 rounded-lg transition-colors" title="쪽지 보내기">
@@ -163,9 +163,9 @@ export default function Friends() {
           <div className="space-y-3">
             {requests.map(r => (
               <div key={r.id} className="bg-vault-surface border border-vault-border rounded-xl p-4 flex items-center justify-between">
-                <Link href={`/profile/${r.user.nickname || r.user.id}`} className="flex items-center gap-3 hover:opacity-80">
+                <Link href={`/profile/${r.user.nickname || r.user.name || r.user.id}`} className="flex items-center gap-3 hover:opacity-80">
                   <img src={r.user.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${r.user.id}&backgroundColor=1A1A1A`} alt="Avatar" className="w-10 h-10 rounded-lg object-cover bg-vault-bg border border-vault-border" />
-                  <span className="font-bold text-text-primary">{r.user.nickname || '알 수 없는 유저'}</span>
+                  <span className="font-bold text-text-primary">{r.user.nickname || r.user.name || '알 수 없는 유저'}</span>
                 </Link>
                 <div className="flex items-center gap-2">
                   <button onClick={async () => {
@@ -193,9 +193,9 @@ export default function Friends() {
               return (
                 <div key={msg.id} onClick={() => markAsRead(msg.id)} className={`bg-vault-surface border rounded-xl p-4 transition-all cursor-pointer ${isUnread ? 'border-neon-blue shadow-[0_0_10px_rgba(74,168,255,0.1)]' : 'border-vault-border hover:border-vault-border-light'}`}>
                   <div className="flex justify-between items-start mb-2">
-                    <Link href={`/profile/${targetUser.nickname || targetUser.id}`} className="flex items-center gap-2 hover:text-neon-blue transition-colors">
+                    <Link href={`/profile/${targetUser.nickname || (targetUser as any).name || targetUser.id}`} className="flex items-center gap-2 hover:text-neon-blue transition-colors">
                       <img src={targetUser.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${targetUser.id}&backgroundColor=1A1A1A`} alt="Avatar" className="w-8 h-8 rounded-md bg-vault-bg border border-vault-border object-cover" />
-                      <span className="font-bold text-text-primary text-sm">{targetUser.nickname || '알 수 없는 유저'}</span>
+                      <span className="font-bold text-text-primary text-sm">{targetUser.nickname || (targetUser as any).name || '알 수 없는 유저'}</span>
                     </Link>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-text-muted">{new Date(msg.createdAt).toLocaleString()}</span>
