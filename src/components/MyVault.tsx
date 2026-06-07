@@ -15,9 +15,10 @@ interface MyVaultProps {
   onAddToCollection: (gameId: string) => void;
   onSelectGame: (game: Game) => void;
   onUpdateStatus: (gameId: string, status: OwnershipStatus) => void;
-  onUpdateMemo: (gameId: string, memo: string) => void;
-  onUpdateRating: (gameId: string, rating: number) => void;
-  onReorder?: (sourceIndex: number, destIndex: number) => void;
+  onUpdateMemo?: (gameId: string, memo: string) => void;
+  onUpdateRating?: (gameId: string, rating: number) => void;
+  onUpdateVisibility?: (gameId: string, visibility: any) => void;
+  onReorder?: (sourceIndex: number, destinationIndex: number) => void;
 }
 
 type ExhibitionTheme = 'basic' | 'glass' | 'crt' | 'shop';
@@ -37,7 +38,7 @@ const platformColors: Record<string, { bg: string; spine: string; text: string }
 
 export default function MyVault({ 
   games, collection, isOwned, onAddToCollection, onSelectGame, 
-  onUpdateStatus, onUpdateMemo, onUpdateRating, onReorder 
+  onUpdateStatus, onUpdateMemo, onUpdateRating, onUpdateVisibility, onReorder 
 }: MyVaultProps) {
   const [viewMode, setViewMode] = useState<VaultViewMode>('shelf');
   const [theme, setTheme] = useState<ExhibitionTheme>('basic');
@@ -481,6 +482,10 @@ export default function MyVault({
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
         games={games}
+        onUpdateStatus={onUpdateStatus}
+        onUpdateMemo={onUpdateMemo}
+        onUpdateRating={onUpdateRating}
+        onUpdateVisibility={onUpdateVisibility}
         onSelectGame={(game) => {
           setSearchModalOpen(false);
           setGameToAdd(game);

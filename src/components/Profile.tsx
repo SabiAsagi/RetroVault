@@ -4,7 +4,7 @@ import {
   User as UserIcon, Link as LinkIcon, Calendar, Trophy, Gamepad2, 
   Star, Clock, Shield, Medal, Copy, Check, Share2, History as HistoryIcon,
   Edit2, Save, X, Download, MessageSquare, AlertTriangle, UserPlus, UserCheck, UserMinus,
-  LayoutGrid
+  LayoutGrid, Heart
 } from 'lucide-react';
 import { CollectionItem, Game } from '../types';
 import { calculateEmblems, Emblem } from '../lib/emblems';
@@ -24,10 +24,13 @@ interface ProfileProps {
     bio: string;
     image: string;
   };
+  collectionGroups?: any[];
 }
 
-export default function Profile({ collection, games, viewedUser }: ProfileProps) {
+export default function Profile({ collection, games, viewedUser, collectionGroups }: ProfileProps) {
   const [copied, setCopied] = useState(false);
+  const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { user, updateProfile: updateProfileContext } = useAuth();
   const router = useRouter();
   const reportRef = useRef<HTMLDivElement>(null);
@@ -237,10 +240,105 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
     }
   };
 
+  const [localLikes, setLocalLikes] = useState(collectionGroups?.[0]?.likes || 0);
+
+  const handleLike = async () => {
+    if (!collectionGroups || collectionGroups.length === 0) return alert('공개된 컬렉션이 없습니다.');
+    const mainGroupId = collectionGroups[0].id;
+    try {
+      const res = await fetch(`/api/collection-groups/${mainGroupId}/like`, { method: 'POST' });
+      if (res.ok) {
+        setLocalLikes(prev => prev + 1);
+      } else {
+        alert('로그인이 필요합니다.');
+      }
+    } catch (e) {
+      alert('오류가 발생했습니다.');
+    }
+  };
+
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(collectionGames.length / itemsPerPage);
+  const currentItems = collectionGames.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <div className="max-w-[1000px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] space-y-8">
+    <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] flex flex-col-reverse md:flex-row gap-8 items-start relative">
       
-      {/* ── 1. Profile Header ── */}
+      {/* ── 1. Left Column: Collection Grid (Gallery) ── */}
+      <div className={`w-full transition-all duration-500 ease-in-out ${isProfileCollapsed ? 'md:w-full' : 'md:w-3/5'}`}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
+              <LayoutGrid className="text-amber" size={20} />
+              보유 컬렉션
+            </h3>
+            <div className="flex items-center gap-2">
+              {!isOwnProfile && collectionGroups && collectionGroups.length > 0 && (
+                <button onClick={handleLike} className="flex items-center gap-1.5 px-3 py-1 bg-coral/10 text-coral border border-coral/30 rounded-full text-xs font-bold hover:bg-coral/20 transition-colors">
+                  <Heart size={14} /> {localLikes}
+                </button>
+              )}
+              <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full hidden sm:inline-block">
+                총 {collectionGames.length}개
+              </span>
+              <button onClick={() => setIsProfileCollapsed(!isProfileCollapsed)} className="flex items-center gap-1 px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-xs text-text-secondary transition-colors">
+                {isProfileCollapsed ? '프로필 열기' : '프로필 접기'}
+              </button>
+            </div>
+          </div>
+          
+          {currentItems.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {currentItems.map(cg => (
+                  <div key={cg.item.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-mint/50 hover:shadow-lg transition-all group">
+                    <div className="aspect-[3/4] bg-vault-surface-light relative">
+                      {cg.game.imageUrl ? (
+                        <img src={cg.game.imageUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-text-muted">
+                          <Gamepad2 size={32} className="opacity-20" />
+                        </div>
+                      )}
+                      {cg.item.ownershipStatus === '전부 보유' && (
+                        <div className="absolute top-2 right-2 w-5 h-5 bg-mint text-vault-bg rounded-full flex items-center justify-center shadow-md">
+                          <Check size={12} strokeWidth={3} />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-vault-bg/90 to-transparent opacity-80" />
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <p className="text-xs font-bold text-text-primary truncate">{cg.game.title}</p>
+                        <p className="text-[10px] text-text-secondary truncate">{cg.game.platform}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8 pb-4">
+                  <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 bg-vault-surface border border-vault-border text-text-primary rounded disabled:opacity-50 text-sm">이전</button>
+                  <span className="text-sm text-text-muted">{currentPage} / {totalPages}</span>
+                  <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 bg-vault-surface border border-vault-border text-text-primary rounded disabled:opacity-50 text-sm">다음</button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-12 bg-vault-surface border border-vault-border rounded-xl">
+              <Gamepad2 size={32} className="mx-auto text-text-muted mb-3 opacity-30" />
+              <p className="text-sm text-text-secondary">공개된 컬렉션이 없습니다.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── 2. Right Column: Profile Info ── */}
+      <div className={`w-full flex flex-col gap-6 transition-all duration-500 overflow-hidden ${
+        isProfileCollapsed ? 'h-0 opacity-0 md:w-0' : 'h-auto opacity-100 md:w-2/5 md:sticky md:top-24'
+      }`}>
+      
+      {/* ── Profile Header ── */}
       <div className="bg-vault-surface border border-vault-border rounded-2xl overflow-hidden relative shadow-xl">
         {/* Banner */}
         <div className={`h-32 relative ${repEmblem ? repEmblem.colorClass.split(' ')[0].replace('text-', 'bg-') : 'bg-vault-surface-light'} opacity-20 crt-lines`} />
@@ -422,7 +520,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
               <Gamepad2 className="text-neon-purple" size={20} />
-              내 게임 인생 리포트 카드
+              {isOwnProfile ? '내 게임 인생 리포트 카드' : `${displayUser?.nickname || '유저'}님의 게임 인생 리포트 카드`}
             </h3>
             {isOwnProfile && (
               <button 
@@ -493,50 +591,6 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
         </div>
       )}
 
-      {/* ── 2.5. Collection Grid ── */}
-      <div className="space-y-4 pt-10 border-t border-vault-border/50">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-black text-text-primary flex items-center gap-2">
-            <LayoutGrid className="text-amber" size={20} />
-            보유 컬렉션
-          </h3>
-          <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full">
-            총 {collectionGames.length}개
-          </span>
-        </div>
-        
-        {collectionGames.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {collectionGames.map(cg => (
-              <div key={cg.item.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-mint/50 hover:shadow-lg transition-all group">
-                <div className="aspect-[3/4] bg-vault-surface-light relative">
-                  {cg.game.imageUrl ? (
-                    <img src={cg.game.imageUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-text-muted">
-                      <Gamepad2 size={32} className="opacity-20" />
-                    </div>
-                  )}
-                  {cg.item.ownershipStatus === '전부 보유' && (
-                    <div className="absolute top-2 right-2 w-5 h-5 bg-mint text-vault-bg rounded-full flex items-center justify-center shadow-md">
-                      <Check size={12} strokeWidth={3} />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-vault-bg/90 to-transparent opacity-80" />
-                  <div className="absolute bottom-2 left-2 right-2">
-                    <p className="text-xs font-bold text-text-primary truncate">{cg.game.title}</p>
-                    <p className="text-[10px] text-text-secondary truncate">{cg.game.platform}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-vault-surface border border-vault-border rounded-xl">
-            <Gamepad2 size={32} className="mx-auto text-text-muted mb-3 opacity-30" />
-            <p className="text-sm text-text-secondary">공개된 컬렉션이 없습니다.</p>
-          </div>
-        )}
       </div>
 
       {/* ── 3. Profile Share Card Preview ── */}
@@ -545,7 +599,7 @@ export default function Profile({ collection, games, viewedUser }: ProfileProps)
         <div className="flex flex-col items-center justify-center mb-6 text-center">
           <h3 className="text-2xl font-black text-text-primary flex items-center gap-2 mb-2">
             <Share2 className="text-mint" size={24} />
-            내 게임 인생 리포트 카드
+            {isOwnProfile ? '내 게임 인생 리포트 카드' : `${displayUser?.nickname || '유저'}님의 게임 인생 리포트 카드`}
           </h3>
           <p className="text-sm text-text-muted">이 명함을 다운로드하여 SNS에 공유해보세요!</p>
         </div>

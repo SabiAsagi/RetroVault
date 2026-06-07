@@ -55,5 +55,48 @@ export async function getUserProfile(userId: string) {
     orderBy: { sortOrder: 'asc' }
   });
 
-  return { user, collection: publicCollection };
+  const publicGroups = await prisma.collectionGroup.findMany({
+    where: { userId, isPublic: true },
+    orderBy: { likes: 'desc' }
+  });
+
+  return { user, collection: publicCollection, collectionGroups: publicGroups };
+}
+
+export async function getUserProfileByNickname(nickname: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { nickname: nickname },
+        { id: nickname } // Fallback for 'me' or legacy id links
+      ]
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      nickname: true,
+      bio: true,
+      image: true,
+      role: true,
+      createdAt: true,
+    }
+  });
+
+  if (!user) return null;
+
+  const publicCollection = await prisma.collectionItem.findMany({
+    where: { 
+      userId: user.id, 
+      visibility: { not: 'private' } // public and friends
+    },
+    orderBy: { sortOrder: 'asc' }
+  });
+
+  const publicGroups = await prisma.collectionGroup.findMany({
+    where: { userId: user.id, isPublic: true },
+    orderBy: { likes: 'desc' }
+  });
+
+  return { user, collection: publicCollection, collectionGroups: publicGroups };
 }

@@ -16,6 +16,10 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
   const [collection, setCollection] = useState<CollectionItem[]>(initialCollection);
   const router = useRouter();
 
+  React.useEffect(() => {
+    setCollection(initialCollection);
+  }, [initialCollection]);
+
   const isOwned = (gameId: string) => collection.some(item => item.gameId === gameId);
 
   const handleAddToCollection = async (gameId: string) => {

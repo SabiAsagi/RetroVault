@@ -1,25 +1,25 @@
 import { getGamesFromDB } from "@/app/actions/games";
 import { getUserCollection } from "@/app/actions/collection";
-import { getUserProfile } from "@/app/actions/profile";
+import { getUserProfileByNickname } from "@/app/actions/profile";
 import Profile from "@/components/Profile";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import LoginRequired from "@/components/LoginRequired";
 import { redirect } from "next/navigation";
 
-export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function ProfilePage({ params }: { params: Promise<{ nickname: string }> }) {
+  const { nickname } = await params;
   const session = await getServerSession(authOptions);
   
-  if (!session?.user && id === "me") return <LoginRequired />;
+  if (!session?.user && nickname === "me") return <LoginRequired />;
 
   const games = await getGamesFromDB();
 
-  if (id === "me" || id === session?.user?.id) {
+  if (nickname === "me" || nickname === session?.user?.nickname || nickname === session?.user?.id) {
     const collection = await getUserCollection();
     return <Profile games={games} collection={collection} />;
   } else {
-    const profileData = await getUserProfile(id);
+    const profileData = await getUserProfileByNickname(nickname);
     if (!profileData) {
       return <div className="p-8 text-center text-text-primary">존재하지 않는 유저입니다.</div>;
     }
@@ -45,6 +45,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       sortIndex: item.sortOrder
     }));
 
-    return <Profile games={games} collection={publicCollection} viewedUser={profileData.user as any} />;
+    return <Profile games={games} collection={publicCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} />;
   }
 }

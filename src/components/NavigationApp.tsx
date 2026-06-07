@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
   { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: '#4AEDC4', group: 'main' },
   { id: 'archive', path: '/games', label: '게임 아카이브', icon: <Archive size={16} />, color: '#4EA8FF', group: 'main' },
   { id: 'consoles', path: '/platforms', label: '콘솔 아카이브', icon: <Database size={16} />, color: '#A78BFA', group: 'main' },
-  { id: 'companies', path: '/companies', label: '회사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
+  { id: 'companies', path: '/companies', label: '게임 제작사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
   { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
   { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
   
@@ -145,7 +145,7 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
                     {searchResults.users.map((u: any) => (
-                      <Link href={`/profile/${u.id}`} key={u.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/profile/${u.nickname || u.id}`} key={u.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
                         <div className="w-6 h-6 rounded-md bg-mint/20 text-mint flex items-center justify-center text-xs font-bold">
                           {u.nickname?.[0] || 'U'}
                         </div>
@@ -170,7 +170,7 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">공개 컬렉션</h3>
                     {searchResults.groups.map((grp: any) => (
-                      <Link href={`/profile/${grp.userId}?group=${grp.id}`} key={grp.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/profile/${grp.user?.nickname || grp.userId}?group=${grp.id}`} key={grp.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
                         <p className="text-sm text-text-primary">{grp.name}</p>
                         <span className="text-[10px] text-text-muted">by {grp.user?.nickname}</span>
                       </Link>
@@ -211,7 +211,7 @@ export default function NavigationApp() {
                       <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
                     </div>
                     {navItems.filter(item => item.group === 'user').map(item => (
-                      <Link key={item.id} href={item.id === 'profile' ? `/profile/${user.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
+                      <Link key={item.id} href={item.id === 'profile' ? `/profile/${user.nickname || user.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
                         {item.icon} {item.label}
                       </Link>
                     ))}

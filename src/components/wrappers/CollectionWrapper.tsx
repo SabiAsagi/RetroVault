@@ -12,6 +12,10 @@ interface Props {
 export default function CollectionWrapper({ initialGames, initialCollection }: Props) {
   const [collection, setCollection] = useState<CollectionItem[]>(initialCollection);
 
+  React.useEffect(() => {
+    setCollection(initialCollection);
+  }, [initialCollection]);
+
   const isOwned = (gameId: string) => collection.some(item => item.gameId === gameId);
 
   const handleAddToCollection = async (gameId: string) => {
@@ -80,6 +84,7 @@ export default function CollectionWrapper({ initialGames, initialCollection }: P
       onUpdateStatus={(id, s) => updateField(id, 'status', s)}
       onUpdateMemo={(id, m) => updateField(id, 'memo', m)}
       onUpdateRating={(id, r) => updateField(id, 'rating', r)}
+      onUpdateVisibility={(id, v) => updateField(id, 'visibility', v)}
       onReorder={reorderCollection}
     />
   );

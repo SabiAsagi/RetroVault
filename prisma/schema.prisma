@@ -18,7 +18,7 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
-  nickname      String?
+  nickname      String?   @unique
   bio           String?
   role          String    @default("USER") // USER, MANAGER, ADMIN
   visibility    String    @default("PUBLIC") // PUBLIC, FRIENDS, PRIVATE
@@ -130,6 +130,10 @@ model Platform {
   description     String?
   innovationPoint String?
 
+  launchPrice     String?
+  totalSales      String?
+  discontinued    Boolean?
+
   status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
   requestedById     String?
   rejectReason      String?
@@ -151,6 +155,10 @@ model Company {
   description String?
   foundedAt   String?
   websiteUrl  String?
+
+  companyStatus      String?
+  flagshipFranchises String?
+  keyFigures         String?
 
   status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
   requestedById     String?
@@ -281,6 +289,8 @@ model CollectionGroup {
   name        String
   description String?
   isPublic    Boolean  @default(true)
+  likes       Int      @default(0)
+  views       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

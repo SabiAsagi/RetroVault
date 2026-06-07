@@ -2,8 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { Building2, Link as LinkIcon, Gamepad2 } from "lucide-react";
 import Link from "next/link";
 
-export default async function CompaniesPage() {
+export default async function CompaniesPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  const { type } = await searchParams;
+
   const companies = await prisma.company.findMany({
+    where: type && type !== 'all' ? { type } : undefined,
     orderBy: { name: 'asc' },
     include: {
       _count: { select: { developedGames: true, publishedGames: true } }
@@ -17,14 +20,17 @@ export default async function CompaniesPage() {
           <Building2 className="text-amber" size={24} />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-text-primary">회사 아카이브</h1>
+          <h1 className="text-2xl font-black text-text-primary">게임 제작사 아카이브</h1>
           <p className="text-sm text-text-muted">게임 개발사 및 퍼블리셔 정보입니다.</p>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-vault-surface border border-vault-border rounded-xl p-4">
         <div className="flex flex-wrap gap-2 flex-1">
-          <span className="px-3 py-1 bg-vault-bg border border-vault-border rounded-lg text-sm text-text-secondary">총 {companies.length}개의 회사</span>
+          <Link href="/companies" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${!type || type === 'all' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>전체</Link>
+          <Link href="/companies?type=DEVELOPER" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'DEVELOPER' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>개발사</Link>
+          <Link href="/companies?type=PUBLISHER" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'PUBLISHER' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>유통사</Link>
+          <Link href="/companies?type=BOTH" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'BOTH' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>개발/유통</Link>
         </div>
         <a href="/request" className="px-4 py-2 text-sm text-vault-bg bg-amber rounded-lg hover:bg-amber/80 transition-colors flex items-center gap-2 font-bold whitespace-nowrap shrink-0">
           회사 추가 요청하기
@@ -53,9 +59,15 @@ export default async function CompaniesPage() {
               </div>
             </div>
             
-            <p className="text-sm text-text-primary line-clamp-3 mb-4 min-h-[60px]">
+            <p className="text-sm text-text-primary line-clamp-3 mb-2 min-h-[40px]">
               {c.description || '상세 정보가 없습니다.'}
             </p>
+
+            <div className="text-[10px] text-text-muted space-y-1 mb-4">
+              {c.keyFigures && <div>주요 인물: <span className="text-text-primary font-medium">{c.keyFigures}</span></div>}
+              {c.flagshipFranchises && <div>대표작: <span className="text-text-primary font-medium">{c.flagshipFranchises}</span></div>}
+              {c.companyStatus && <div>상태: <span className="text-text-primary font-medium">{c.companyStatus}</span></div>}
+            </div>
             
             <div className="flex items-center justify-between text-xs pt-4 border-t border-vault-border/50">
               <div className="flex gap-3 text-text-muted">

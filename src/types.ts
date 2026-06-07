@@ -82,6 +82,9 @@ export interface Platform {
   unitsSoldMillions?: number;
   discontinuedYear?: number;
   cpuSpec?: string;
+  launchPrice?: string;
+  totalSales?: string;
+  discontinued?: boolean;
 }
 
 /** 구형 호환용 alias */

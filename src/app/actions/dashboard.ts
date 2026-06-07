@@ -19,42 +19,40 @@ export async function getDashboardData() {
     });
   }
 
-  // Get users with the most collection items
-  const popularUsers = await prisma.user.findMany({
+  // Get most popular collection groups
+  const popularGroups = await prisma.collectionGroup.findMany({
+    where: { isPublic: true },
+    orderBy: { likes: 'desc' },
     take: 3,
-    orderBy: {
-      collections: { _count: 'desc' }
-    },
     include: {
-      _count: { select: { collections: true } },
-      collections: {
+      user: true,
+      items: {
         take: 3,
-        include: { 
-          game: {
-            include: { platform: true }
+        include: {
+          item: {
+            include: {
+              game: {
+                include: { platform: true }
+              }
+            }
           }
         }
       }
     }
   });
 
-  // Default fallback if no users have collections
-  let popularCollections = popularUsers
-    .filter(u => u._count.collections > 0)
-    .map((user, idx) => {
-      return {
-        id: user.id,
-        user: user.nickname || user.name || `User${idx + 1}`,
-        title: `${user.nickname || user.name || `User${idx + 1}`}님의 베스트 컬렉션`,
-        likes: user._count.collections * 15 + Math.floor(Math.random() * 50),
-        views: user._count.collections * 45 + Math.floor(Math.random() * 100),
-        games: user.collections?.map(c => ({
-          ...c.game,
-          imageUrl: c.game.coverImageUrl || '',
-          platform: (c.game as any).platform?.name || 'Unknown'
-        }) as any) || []
-      };
-    });
+  const popularCollections = popularGroups.map(group => ({
+    id: group.id,
+    user: group.user.nickname || group.user.name || 'User',
+    title: group.name,
+    likes: group.likes,
+    views: group.views,
+    games: group.items.map(i => ({
+      ...i.item.game,
+      imageUrl: i.item.game.coverImageUrl || '',
+      platform: (i.item.game as any).platform?.name || 'Unknown'
+    }) as any)
+  }));
 
   return { historyGame, popularCollections };
 }

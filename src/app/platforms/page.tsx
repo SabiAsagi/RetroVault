@@ -2,11 +2,18 @@ import { prisma } from "@/lib/prisma";
 import { Database, Calendar, Monitor, Link as LinkIcon, Building2 } from "lucide-react";
 import Link from "next/link";
 
-export default async function PlatformsPage() {
+export default async function PlatformsPage({ searchParams }: { searchParams: Promise<{ manufacturer?: string }> }) {
+  const { manufacturer } = await searchParams;
+  
   const platforms = await prisma.platform.findMany({
+    where: manufacturer && manufacturer !== 'all' ? { manufacturer } : undefined,
     orderBy: { releaseYear: 'asc' },
     include: { _count: { select: { games: true } } }
   });
+
+  // Get unique manufacturers for the filter
+  const allPlatforms = await prisma.platform.findMany({ select: { manufacturer: true }});
+  const manufacturers = Array.from(new Set(allPlatforms.map(p => p.manufacturer))).sort();
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 page-enter">
@@ -22,7 +29,12 @@ export default async function PlatformsPage() {
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-vault-surface border border-vault-border rounded-xl p-4">
         <div className="flex flex-wrap gap-2 flex-1">
-          <span className="px-3 py-1 bg-vault-bg border border-vault-border rounded-lg text-sm text-text-secondary">총 {platforms.length}개의 플랫폼</span>
+          <Link href="/platforms" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${!manufacturer || manufacturer === 'all' ? 'bg-neon-purple text-vault-bg border-neon-purple' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>전체</Link>
+          {manufacturers.map(m => (
+            <Link key={m} href={`/platforms?manufacturer=${encodeURIComponent(m)}`} className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${manufacturer === m ? 'bg-neon-purple text-vault-bg border-neon-purple' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>
+              {m}
+            </Link>
+          ))}
         </div>
         <a href="/request" className="px-4 py-2 text-sm text-vault-bg bg-neon-purple rounded-lg hover:bg-neon-purple/80 transition-colors flex items-center gap-2 font-bold whitespace-nowrap shrink-0">
           플랫폼 추가 요청하기
@@ -55,6 +67,12 @@ export default async function PlatformsPage() {
               
               <p className="text-sm text-text-primary line-clamp-2">{p.description}</p>
               
+              <div className="grid grid-cols-2 gap-2 text-[10px] text-text-muted mt-2 border-b border-vault-border/50 pb-3">
+                {p.launchPrice && <div>출시가: <span className="text-text-primary font-bold">{p.launchPrice}</span></div>}
+                {p.totalSales && <div>판매량: <span className="text-text-primary font-bold">{p.totalSales}</span></div>}
+                {p.discontinued !== null && <div>상태: <span className={p.discontinued ? 'text-coral' : 'text-mint'}>{p.discontinued ? '단종' : '현역'}</span></div>}
+              </div>
+
               <div className="flex items-center justify-between pt-2">
                 <span className="text-xs font-bold text-text-secondary bg-vault-bg border border-vault-border px-2 py-1 rounded">
                   등록 게임: {p._count.games}개
