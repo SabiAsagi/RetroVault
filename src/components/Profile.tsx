@@ -355,9 +355,38 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
             <div className="flex items-end gap-5">
               <div className="w-24 h-24 rounded-2xl bg-vault-bg border-4 border-vault-surface flex items-center justify-center shadow-2xl relative overflow-hidden group cursor-pointer">
                 {isEditing ? (
-                  <img src={editData.image || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover" />
+                  <label className="w-full h-full cursor-pointer relative block">
+                    <img src={editData.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${displayUser?.id || 'RetroMaster'}&backgroundColor=1A1A1A`} alt="Avatar" className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] font-bold text-white bg-black/60 px-2 py-1 rounded">사진 변경</span>
+                    </div>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setIsSaving(true);
+                        try {
+                          const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+                            method: 'POST',
+                            body: file,
+                          });
+                          const newBlob = (await response.json()) as any;
+                          if (newBlob.url) {
+                            setEditData({...editData, image: newBlob.url});
+                          }
+                        } catch (err) {
+                          showToast('업로드 실패', 'error');
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }}
+                    />
+                  </label>
                 ) : (
-                  <img src={(displayUser as any)?.image || (displayUser as any)?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                  <img src={(displayUser as any)?.image || (displayUser as any)?.avatar || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${displayUser?.id || 'RetroMaster'}&backgroundColor=1A1A1A`} alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                 )}
               </div>
               
@@ -384,34 +413,6 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                   <div className="flex items-center gap-3 text-xs text-text-muted font-medium">
                     <span className="flex items-center gap-1"><Calendar size={12} /> {(displayUser as any)?.createdAt ? new Date((displayUser as any).createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '2024년 1월 1일'} 가입</span>
                     <span className="flex items-center gap-1"><Gamepad2 size={12} /> {collectionGames.length} 게임 보유</span>
-                  </div>
-                )}
-                {isEditing && (
-                  <div className="mt-2 w-full">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        setIsSaving(true);
-                        try {
-                          const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-                            method: 'POST',
-                            body: file,
-                          });
-                          const newBlob = (await response.json()) as any;
-                          if (newBlob.url) {
-                            setEditData({...editData, image: newBlob.url});
-                          }
-                        } catch (err) {
-                          showToast('업로드 실패', 'error');
-                        } finally {
-                          setIsSaving(false);
-                        }
-                      }}
-                      className="bg-vault-bg border border-vault-border rounded px-2 py-1 text-xs text-text-secondary focus:outline-none focus:border-mint w-full max-w-[300px]"
-                    />
                   </div>
                 )}
               </div>
@@ -622,7 +623,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
           
           <div className="p-8 relative z-10 -mt-16">
             <div className="flex justify-between items-end mb-6">
-              <img src={(displayUser as any)?.image || (displayUser as any)?.avatar || "https://api.dicebear.com/7.x/pixel-art/svg?seed=RetroMaster&backgroundColor=1A1A1A"} alt="Avatar" className="w-24 h-24 rounded-2xl bg-vault-bg border-4 border-vault-surface object-cover shadow-2xl" />
+              <img src={(displayUser as any)?.image || (displayUser as any)?.avatar || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${displayUser?.id || 'RetroMaster'}&backgroundColor=1A1A1A`} alt="Avatar" className="w-24 h-24 rounded-2xl bg-vault-bg border-4 border-vault-surface object-cover shadow-2xl" />
               <div className="text-right">
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${repEmblem?.colorClass || 'text-text-muted'} bg-vault-surface border border-vault-border mb-2 shadow-lg`}>
                   {repEmblem?.name || '신입 컬렉터'}
