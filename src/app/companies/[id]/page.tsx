@@ -29,7 +29,13 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
   const allGamesMap = new Map();
   company.developedGames.forEach((g: any) => allGamesMap.set(g.id, g));
   company.publishedGames.forEach((g: any) => allGamesMap.set(g.id, g));
-  const uniqueGames = Array.from(allGamesMap.values()).sort((a, b) => b.releaseYear - a.releaseYear);
+  const uniqueGames = Array.from(allGamesMap.values())
+    .sort((a: any, b: any) => b.releaseYear - a.releaseYear)
+    .map((g: any) => ({
+      ...g,
+      platform: g.platform?.name || 'Unknown',
+      imageUrl: g.coverImageUrl || ''
+    }));
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">

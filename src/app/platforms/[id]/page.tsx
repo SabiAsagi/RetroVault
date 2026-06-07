@@ -21,6 +21,12 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
     notFound();
   }
 
+  const mappedGames = platform.games.map((g: any) => ({
+    ...g,
+    platform: g.platform?.name || 'Unknown',
+    imageUrl: g.coverImageUrl || ''
+  }));
+
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
       <Link href="/platforms" className="inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-text-primary transition-colors mb-6">
@@ -103,13 +109,13 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
           <Gamepad2 className="text-neon-purple" size={24} />
           <h2 className="text-2xl font-black text-text-primary">발매된 게임</h2>
           <span className="ml-2 px-2 py-1 bg-vault-surface border border-vault-border rounded-md text-xs font-bold text-text-muted">
-            {platform.games.length}
+            {mappedGames.length}
           </span>
         </div>
 
-        {platform.games.length > 0 ? (
+        {mappedGames.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {platform.games.map((game: any) => (
+            {mappedGames.map((game: any) => (
               <GameCard 
                 key={game.id} 
                 game={game} 
