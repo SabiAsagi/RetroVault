@@ -60,6 +60,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        (session.user as any).nickname = token.nickname as string | null;
       }
       return session;
     },
@@ -67,9 +68,13 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.nickname = (user as any).nickname;
       }
       if (trigger === "update" && session) {
-        if (session.nickname) token.name = session.nickname;
+        if (session.nickname) {
+          token.name = session.nickname;
+          token.nickname = session.nickname;
+        }
         if (session.image) token.picture = session.image;
       }
       return token;
