@@ -256,12 +256,16 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
   };
 
   const [localLikes, setLocalLikes] = useState((viewedUser as any)?.profileLikes || 0);
+  const [localViews, setLocalViews] = useState((viewedUser as any)?.profileViews || 0);
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     // view increment for user profile
     if (viewedUser && viewedUser.id && !isOwnProfile) {
-      fetch(`/api/users/${viewedUser.id}/view`, { method: 'POST' }).catch(console.error);
+      fetch(`/api/users/${viewedUser.id}/view`, { method: 'POST' })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => { if (data?.views) setLocalViews(data.views); })
+        .catch(console.error);
     }
   }, [viewedUser, isOwnProfile]);
 
@@ -305,7 +309,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                   전체 컬렉션
                 </button>
               )}
-              {!isOwnProfile && !activeGroupId && (
+              {!isOwnProfile && (
                 <button 
                   onClick={handleLike} 
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
@@ -320,7 +324,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
               )}
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-vault-surface border border-vault-border text-xs font-bold text-text-secondary">
                 <Eye size={14} className="text-neon-blue" />
-                {viewedUser ? (viewedUser as any).profileViews || 0 : 0}
+                {localViews}
               </span>
               <span className="text-xs font-bold text-text-muted bg-vault-surface border border-vault-border px-3 py-1 rounded-full hidden sm:inline-block">
                 총 {collectionGames.length}개
