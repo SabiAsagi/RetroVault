@@ -1,6 +1,7 @@
 import { Game, CollectionItem, Era } from '../types';
 import { Calendar, Heart, Eye, ChevronRight, Star, History, Disc, Trophy, ArrowRight } from 'lucide-react';
 import GameCard, { BoxArtPlaceholder } from './GameCard';
+import Link from 'next/link';
 
 interface DashboardProps {
   games: Game[];
@@ -45,7 +46,9 @@ export default function Dashboard({ games, collection, historyGame, popularColle
             <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-mint/20 border border-mint/40 text-mint">
               <Calendar size={12} />
             </span>
-            <span className="font-pixel text-[10px] text-mint tracking-widest uppercase">Today in History</span>
+            <span className="font-pixel text-[10px] text-mint tracking-widest uppercase">
+              {(historyGame as any)?.isRandom ? "Admin's Pick" : "Today in History"}
+            </span>
           </div>
           
           <h1 className="text-3xl md:text-5xl font-black text-text-primary leading-tight mb-4 tracking-tight">
@@ -57,7 +60,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
                   {historyGame.title}
                 </span>
                 <br />
-                {historyGame.country ? `${historyGame.country} 발매` : '발매'}
+                {(historyGame as any)?.isRandom ? '레트로 명작의 숨결' : (historyGame.country ? `${historyGame.country} 발매` : '발매')}
               </>
             ) : (
               <>
@@ -72,18 +75,20 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
             {historyGame 
-              ? (historyGame.description || '이 전설적인 타이틀은 게임 역사에 큰 획을 그었습니다. 지금 바로 아카이브에서 확인해보세요.') 
+              ? ((historyGame as any)?.isRandom 
+                  ? '오늘 발매된 게임이 없어, 관리자가 추천하는 명작입니다. 게임 역사에 큰 획을 그은 이 타이틀을 아카이브에서 확인해보세요.' 
+                  : (historyGame.description || '이 전설적인 타이틀은 게임 역사에 큰 획을 그었습니다. 지금 바로 아카이브에서 확인해보세요.')) 
               : '수많은 명작 게임들이 당신의 컬렉션을 기다리고 있습니다. 첫 게임을 추가해보세요!'}
           </p>
           
           <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => onTabChange('archive')}
+            <Link
+              href={historyGame ? `/games/${historyGame.id}` : '/games'}
               className="flex items-center gap-2 px-5 py-2.5 bg-mint text-vault-bg text-sm font-bold rounded-lg hover:bg-mint-dim transition-all shadow-[0_0_15px_rgba(74,237,196,0.3)] hover:shadow-[0_0_25px_rgba(74,237,196,0.5)]"
             >
               <History size={16} />
               관련 아카이브 보기
-            </button>
+            </Link>
           </div>
         </div>
       </div>

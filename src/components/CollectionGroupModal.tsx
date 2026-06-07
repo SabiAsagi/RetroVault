@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Folder } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
 import { CollectionItem, Game } from '../types';
 
 interface CollectionGroupModalProps {
@@ -10,6 +11,7 @@ interface CollectionGroupModalProps {
 }
 
 export default function CollectionGroupModal({ isOpen, onClose, collection, games }: CollectionGroupModalProps) {
+  const { showToast } = useToast();
   const [groups, setGroups] = useState<any[]>([]);
   const [newGroupName, setNewGroupName] = useState('');
 
@@ -32,15 +34,19 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
   const handleCreateGroup = async () => {
     if (!newGroupName.trim()) return;
     try {
-      await fetch('/api/collection-groups', {
+      const res = await fetch('/api/collection-groups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newGroupName, description: '', isPublic: true })
       });
-      setNewGroupName('');
-      fetchGroups();
+      if (res.ok) {
+        setNewGroupName('');
+        fetchGroups();
+      } else {
+        showToast('생성 실패', 'error');
+      }
     } catch (e) {
-      alert('생성 실패');
+      showToast('생성 실패', 'error');
     }
   };
 

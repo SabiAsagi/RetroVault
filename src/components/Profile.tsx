@@ -12,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { updateProfile } from '@/app/actions/profile';
 import { useRouter } from 'next/navigation';
 import { toPng } from 'html-to-image';
+import { useToast } from '../contexts/ToastContext';
 
 interface ProfileProps {
   collection: CollectionItem[];
@@ -34,6 +35,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
   const { user, updateProfile: updateProfileContext } = useAuth();
   const router = useRouter();
   const reportRef = useRef<HTMLDivElement>(null);
+  const { showToast } = useToast();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -103,7 +105,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
       }
     } catch (e) {
       console.error(e);
-      alert('요청 처리 중 오류가 발생했습니다.');
+      showToast('요청 처리 중 오류가 발생했습니다.', 'error');
     }
   };
 
@@ -126,7 +128,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
       setIsEditing(false);
       window.location.reload();
     } catch (e: any) {
-      alert(e.message || '프로필 수정 실패');
+      showToast(e.message || '프로필 수정 실패', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -204,7 +206,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
       link.click();
     } catch (err) {
       console.error('Failed to download image:', err);
-      alert('이미지 다운로드에 실패했습니다.');
+      showToast('이미지 다운로드에 실패했습니다.', 'error');
     }
   };
 
@@ -216,11 +218,11 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ receiverId: displayUser.id, content: dmContent })
       });
-      alert('쪽지를 보냈습니다.');
+      showToast('쪽지를 보냈습니다.');
       setDmModalOpen(false);
       setDmContent('');
     } catch (e) {
-      alert('쪽지 전송 실패');
+      showToast('쪽지 전송 실패', 'error');
     }
   };
 
@@ -232,28 +234,28 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ targetType: 'USER', targetId: displayUser.id, reason: reportReason })
       });
-      alert('신고가 접수되었습니다.');
+      showToast('신고가 접수되었습니다.');
       setReportModalOpen(false);
       setReportReason('');
     } catch (e) {
-      alert('신고 접수 실패');
+      showToast('신고 접수 실패', 'error');
     }
   };
 
   const [localLikes, setLocalLikes] = useState(collectionGroups?.[0]?.likes || 0);
 
   const handleLike = async () => {
-    if (!collectionGroups || collectionGroups.length === 0) return alert('공개된 컬렉션이 없습니다.');
+    if (!collectionGroups || collectionGroups.length === 0) return showToast('공개된 컬렉션이 없습니다.', 'error');
     const mainGroupId = collectionGroups[0].id;
     try {
       const res = await fetch(`/api/collection-groups/${mainGroupId}/like`, { method: 'POST' });
       if (res.ok) {
         setLocalLikes((prev: number) => prev + 1);
       } else {
-        alert('로그인이 필요합니다.');
+        showToast('로그인이 필요합니다.', 'error');
       }
     } catch (e) {
-      alert('오류가 발생했습니다.');
+      showToast('오류가 발생했습니다.', 'error');
     }
   };
 
@@ -335,7 +337,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
 
       {/* ── 2. Right Column: Profile Info ── */}
       <div className={`w-full flex flex-col gap-6 transition-all duration-500 overflow-hidden ${
-        isProfileCollapsed ? 'h-0 opacity-0 md:w-0' : 'h-auto opacity-100 md:w-2/5 md:sticky md:top-24'
+        isProfileCollapsed ? 'h-0 opacity-0 md:w-0' : 'h-auto opacity-100 md:w-2/5 md:sticky md:top-24 md:max-h-[calc(100vh-6rem)] md:overflow-y-auto custom-scrollbar md:pr-2'
       }`}>
       
       {/* ── Profile Header ── */}
@@ -399,7 +401,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                             setEditData({...editData, image: newBlob.url});
                           }
                         } catch (err) {
-                          alert('업로드 실패');
+                          showToast('업로드 실패', 'error');
                         } finally {
                           setIsSaving(false);
                         }
@@ -591,11 +593,9 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
         </div>
       )}
 
-      </div>
-
       {/* ── 3. Profile Share Card Preview ── */}
       {isOwnProfile && (
-        <div className="space-y-6 pt-10 border-t border-vault-border/50">
+        <div className="space-y-6 pt-10 border-t border-vault-border/50 pb-8">
         <div className="flex flex-col items-center justify-center mb-6 text-center">
           <h3 className="text-2xl font-black text-text-primary flex items-center gap-2 mb-2">
             <Share2 className="text-mint" size={24} />
@@ -680,6 +680,8 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
         </div>
         </div>
       )}
+      
+      </div> {/* End of Right Column */}
 
       {/* Modals */}
       {dmModalOpen && (

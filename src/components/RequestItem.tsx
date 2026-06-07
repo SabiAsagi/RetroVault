@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function RequestItem() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [requestType, setRequestType] = useState<'game' | 'platform' | 'company'>('game');
   
   const [formData, setFormData] = useState({
@@ -28,7 +30,7 @@ export default function RequestItem() {
 
       if (!res.ok) throw new Error('요청에 실패했습니다.');
 
-      alert('추가 요청이 접수되었습니다. 관리자 승인 후 반영됩니다.');
+      showToast('추가 요청이 접수되었습니다. 관리자 승인 후 반영됩니다.');
       router.push(requestType === 'game' ? '/games' : requestType === 'platform' ? '/platforms' : '/companies');
     } catch (err: any) {
       setError(err.message || '오류가 발생했습니다.');

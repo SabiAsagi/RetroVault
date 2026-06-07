@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Game, CollectionItem, OwnershipStatus, PlayStatus, Visibility, PurchaseType, Region, Condition } from '@/types';
 import { X, Save, Check } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -17,6 +18,7 @@ interface CollectionAddModalProps {
 export default function CollectionAddModal({ game, initialItem, onClose, onSuccess }: CollectionAddModalProps) {
   const router = useRouter();
   const { data: session } = useSession();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState<any[]>([]);
   const [formData, setFormData] = useState({
@@ -75,7 +77,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
       onClose();
     } catch (err) {
       console.error(err);
-      alert('컬렉션 추가 중 오류가 발생했습니다.');
+      showToast('컬렉션 추가 중 오류가 발생했습니다.', 'error');
     } finally {
       setLoading(false);
     }

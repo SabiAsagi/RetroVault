@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { Mail, Send, Inbox as InboxIcon, CheckCircle2, Users, UserPlus, UserX, X, MessageSquare } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 import Link from 'next/link';
 import { getFriends, acceptFriendRequest, rejectFriendRequest, removeFriend } from '@/app/actions/friends';
 
@@ -16,6 +17,7 @@ interface Message {
 }
 
 export default function Friends() {
+  const { showToast } = useToast();
   const [tab, setTab] = useState<'friends' | 'requests' | 'received' | 'sent'>('friends');
   
   // Friends State
@@ -89,14 +91,14 @@ export default function Friends() {
         body: JSON.stringify({ receiverId: dmReceiverId, content: dmContent })
       });
       if (res.ok) {
-        alert('쪽지를 보냈습니다.');
+        showToast('쪽지를 보냈습니다.');
         setDmModalOpen(false);
         setDmContent('');
       } else {
-        alert('쪽지 전송 실패');
+        showToast('쪽지 전송 실패', 'error');
       }
     } catch (e) {
-      alert('오류 발생');
+      showToast('오류 발생', 'error');
     } finally {
       setSendingMessage(false);
     }

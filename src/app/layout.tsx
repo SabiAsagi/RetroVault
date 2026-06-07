@@ -3,6 +3,7 @@ import './globals.css';
 
 import { Providers } from '../components/Providers';
 import NavigationApp from '../components/NavigationApp';
+import { ToastProvider } from '../contexts/ToastContext';
 
 export const metadata: Metadata = {
   title: "RetroVault | 레트로 게임 컬렉션 아카이브",
@@ -59,12 +60,14 @@ export default function RootLayout({
       </head>
       <body className="transition-colors duration-300">
         <Providers>
-          <div className="min-h-screen bg-vault-bg">
-            <NavigationApp />
-            <main className="pb-16 sm:pb-0 page-enter">
-              {children}
-            </main>
-          </div>
+          <ToastProvider>
+            <div className="min-h-screen bg-vault-bg">
+              <NavigationApp />
+              <main className="pb-16 sm:pb-0 page-enter">
+                {children}
+              </main>
+            </div>
+          </ToastProvider>
         </Providers>
       </body>
     </html>

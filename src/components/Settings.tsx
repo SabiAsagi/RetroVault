@@ -1,11 +1,14 @@
 "use client";
 import { useState } from 'react';
+import { updateProfile } from '@/app/actions/profile';
+import { useToast } from '../contexts/ToastContext';
 import { User, Shield, Github, Mail, Camera, Save, Key, Globe, EyeOff, Palette, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from 'next-themes';
 
 export default function Settings() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile: updateContext } = useAuth();
+  const { showToast } = useToast();
   const { theme, setTheme } = useTheme();
 
   const [nickname, setNickname] = useState(user?.nickname || '');
@@ -22,10 +25,14 @@ export default function Settings() {
     );
   }
 
-  const handleSaveProfile = () => {
-    updateProfile({ nickname, avatar });
-    // Show some toast or indication of save
-    alert('프로필이 저장되었습니다.');
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile({ nickname, image: avatar });
+      updateContext({ nickname, avatar });
+      showToast('프로필이 저장되었습니다.');
+    } catch (e: any) {
+      showToast(e.message || '저장 실패', 'error');
+    }
   };
 
   return (

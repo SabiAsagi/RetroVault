@@ -7,6 +7,7 @@ import ShareCollectionModal from './ShareCollectionModal';
 import CollectionSearchModal from './CollectionSearchModal';
 import CollectionAddModal from './CollectionAddModal';
 import CollectionGroupModal from './CollectionGroupModal';
+import { useToast } from '../contexts/ToastContext';
 
 interface MyVaultProps {
   games: Game[];
@@ -40,6 +41,7 @@ export default function MyVault({
   games, collection, isOwned, onAddToCollection, onSelectGame, 
   onUpdateStatus, onUpdateMemo, onUpdateRating, onUpdateVisibility, onReorder 
 }: MyVaultProps) {
+  const { showToast } = useToast();
   const [viewMode, setViewMode] = useState<VaultViewMode>('shelf');
   const [theme, setTheme] = useState<ExhibitionTheme>('basic');
   const [visibilityFilter, setVisibilityFilter] = useState<Visibility | 'all'>('all');
@@ -493,7 +495,7 @@ export default function MyVault({
           game={gameToAdd}
           onClose={() => setGameToAdd(null)}
           onSuccess={() => {
-            alert(`'${gameToAdd.title}'이(가) 컬렉션에 추가되었습니다!`);
+            showToast(`'${gameToAdd.title}'이(가) 컬렉션에 추가되었습니다!`);
             setGameToAdd(null);
           }}
         />
@@ -505,7 +507,7 @@ export default function MyVault({
           initialItem={itemToEdit.item}
           onClose={() => setItemToEdit(null)}
           onSuccess={() => {
-            alert(`'${itemToEdit.game.title}' 정보가 수정되었습니다!`);
+            showToast(`'${itemToEdit.game.title}' 정보가 수정되었습니다!`);
             setItemToEdit(null);
           }}
         />

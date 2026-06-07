@@ -37,14 +37,15 @@ export default async function PlatformsPage({ searchParams }: { searchParams: Pr
           ))}
         </div>
         <a href="/request" className="px-4 py-2 text-sm text-vault-bg bg-neon-purple rounded-lg hover:bg-neon-purple/80 transition-colors flex items-center gap-2 font-bold whitespace-nowrap shrink-0">
-          플랫폼 추가 요청하기
+          콘솔 추가 요청하기
         </a>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {platforms.map(p => (
-          <div key={p.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-vault-border-light transition-colors group">
-            <div className="h-40 bg-vault-surface-light relative overflow-hidden">
+          <Link href={`/platforms/${p.id}`} key={p.id} className="block group">
+            <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-neon-purple/50 transition-colors">
+              <div className="h-40 bg-vault-surface-light relative overflow-hidden">
               {p.imageUrl ? (
                 <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" />
               ) : (
@@ -82,7 +83,8 @@ export default async function PlatformsPage({ searchParams }: { searchParams: Pr
                 </Link>
               </div>
             </div>
-          </div>
+            </div>
+          </Link>
         ))}
       </div>
     </div>

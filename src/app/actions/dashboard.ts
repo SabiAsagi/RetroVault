@@ -7,6 +7,8 @@ export async function getDashboardData() {
   const day = String(today.getDate()).padStart(2, '0');
   const dateStr = `-${month}-${day}`; // Matches YYYY-MM-DD
 
+  let isRandom = false;
+
   let historyGame = await prisma.game.findFirst({
     where: { 
       releaseDate: { contains: dateStr } 
@@ -14,9 +16,14 @@ export async function getDashboardData() {
   });
 
   if (!historyGame) {
+    // Fallback to a random game if no release today
+    const totalGames = await prisma.game.count();
+    const skip = Math.max(0, Math.floor(Math.random() * totalGames));
     historyGame = await prisma.game.findFirst({
-      orderBy: { releaseYear: 'asc' }
+      skip,
+      take: 1
     });
+    isRandom = true;
   }
 
   // Get most popular collection groups
@@ -54,5 +61,5 @@ export async function getDashboardData() {
     }) as any)
   }));
 
-  return { historyGame, popularCollections };
+  return { historyGame: { ...historyGame, isRandom }, popularCollections };
 }

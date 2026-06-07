@@ -33,14 +33,15 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
           <Link href="/companies?type=BOTH" className={`px-3 py-1 rounded-lg text-sm font-bold border transition-colors ${type === 'BOTH' ? 'bg-amber text-vault-bg border-amber' : 'bg-vault-bg border-vault-border text-text-secondary hover:text-text-primary'}`}>개발/유통</Link>
         </div>
         <a href="/request" className="px-4 py-2 text-sm text-vault-bg bg-amber rounded-lg hover:bg-amber/80 transition-colors flex items-center gap-2 font-bold whitespace-nowrap shrink-0">
-          회사 추가 요청하기
+          제작사 추가 요청하기
         </a>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {companies.map(c => (
-          <div key={c.id} className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-vault-border-light transition-colors p-5">
-            <div className="flex items-start gap-4 mb-4">
+          <Link href={`/companies/${c.id}`} key={c.id} className="block group">
+            <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden hover:border-amber/50 transition-colors p-5 h-full flex flex-col">
+              <div className="flex items-start gap-4 mb-4">
               <div className="w-16 h-16 rounded-lg bg-vault-surface-light border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-2">
                 {c.logoUrl ? (
                   <img src={c.logoUrl} alt={c.name} className="w-full h-full object-contain" />
@@ -80,15 +81,9 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
                   퍼블: <span className="font-bold text-text-primary">{c._count.publishedGames}</span>
                 </span>
               </div>
-              
-              {c.websiteUrl && (
-                <a href={c.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-text-muted hover:text-text-primary transition-colors">
-                  <LinkIcon size={12} />
-                  웹사이트
-                </a>
-              )}
             </div>
-          </div>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
