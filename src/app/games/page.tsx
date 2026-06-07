@@ -1,6 +1,7 @@
 import ArchiveWrapper from "@/components/wrappers/ArchiveWrapper";
 import { getGamesFromDB } from "@/app/actions/games";
 import { getUserCollection } from "@/app/actions/collection";
+import Link from "next/link";
 
 export default async function GamesPage({ searchParams }: { searchParams: Promise<{ platform?: string, developer?: string, publisher?: string }> }) {
   const { platform, developer, publisher } = await searchParams;

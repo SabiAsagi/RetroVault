@@ -42,6 +42,7 @@ model User {
   requestedGames Game[]           @relation("RequestedGames")
   requestedPlatforms Platform[]   @relation("RequestedPlatforms")
   requestedCompanies Company[]    @relation("RequestedCompanies")
+  editRequests     EditRequest[]  @relation("UserEditRequests")
   
   friendships      Friendship[]      @relation("UserFriendships")
   friendOf         Friendship[]      @relation("FriendFriendships")
@@ -254,6 +255,21 @@ model Report {
   resolvedAt DateTime?
 
   reporter User @relation("UserReports", fields: [reporterId], references: [id])
+}
+
+model EditRequest {
+  id             String    @id @default(uuid())
+  targetType     String    // GAME, PLATFORM, COMPANY
+  targetId       String
+  requestedById  String?
+  proposedData   String    // JSON string
+  reason         String?
+  status         String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminMemo      String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  requestedBy    User?     @relation("UserEditRequests", fields: [requestedById], references: [id])
 }
 
 model AdminLog {

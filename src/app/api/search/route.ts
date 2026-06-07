@@ -4,46 +4,53 @@ import { prisma } from '@/lib/prisma';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q');
+  const type = searchParams.get('type'); // 'game' | 'platform' | 'company'
 
   if (!q || q.length < 2) {
-    return NextResponse.json({ games: [], companies: [], users: [], groups: [] });
+    return NextResponse.json([]);
   }
 
   try {
-    const games = await prisma.game.findMany({
-      where: {
-        OR: [
-          { title: { contains: q, mode: 'insensitive' } },
-          { genre: { contains: q, mode: 'insensitive' } },
-          { platform: { name: { contains: q, mode: 'insensitive' } } },
-        ]
-      },
-      include: { platform: true },
-      take: 5
-    });
+    let results = [];
 
-    const companies = await prisma.company.findMany({
-      where: { name: { contains: q, mode: 'insensitive' } },
-      take: 3
-    });
+    if (type === 'game') {
+      const games = await prisma.game.findMany({
+        where: { title: { contains: q, mode: 'insensitive' } },
+        select: { id: true, title: true, releaseYear: true, platform: { select: { name: true } } },
+        take: 10
+      });
+      results = games.map(g => ({
+        id: g.id,
+        name: `${g.title} (${g.platform.name})`,
+        data: g
+      }));
+    } else if (type === 'platform') {
+      const platforms = await prisma.platform.findMany({
+        where: { name: { contains: q, mode: 'insensitive' } },
+        select: { id: true, name: true, manufacturer: true },
+        take: 10
+      });
+      results = platforms.map(p => ({
+        id: p.id,
+        name: p.name,
+        data: p
+      }));
+    } else if (type === 'company') {
+      const companies = await prisma.company.findMany({
+        where: { name: { contains: q, mode: 'insensitive' } },
+        select: { id: true, name: true, type: true },
+        take: 10
+      });
+      results = companies.map(c => ({
+        id: c.id,
+        name: c.name,
+        data: c
+      }));
+    }
 
-    const users = await prisma.user.findMany({
-      where: { nickname: { contains: q, mode: 'insensitive' } },
-      take: 3
-    });
-
-    const groups = await prisma.collectionGroup.findMany({
-      where: { 
-        isPublic: true,
-        name: { contains: q, mode: 'insensitive' } 
-      },
-      include: { user: true },
-      take: 3
-    });
-
-    return NextResponse.json({ games, companies, users, groups });
+    return NextResponse.json(results);
   } catch (error) {
-    console.error('Search error:', error);
-    return NextResponse.json({ error: 'Search failed' }, { status: 500 });
+    console.error('Search API Error:', error);
+    return NextResponse.json({ error: 'Failed to search' }, { status: 500 });
   }
 }

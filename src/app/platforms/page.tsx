@@ -110,9 +110,11 @@ export default function PlatformsPage() {
             </span>
           </div>
           <Link href="/request?tab=platform" className="text-xs px-3 py-1.5 bg-neon-purple/10 text-neon-purple font-bold border border-neon-purple/30 rounded-lg hover:bg-neon-purple/20 transition-colors">
-            + 콘솔 추가 건의
+            + 추가 건의
           </Link>
-        </div>
+          <Link href="/request/edit?tab=platform" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
+            ✏️ 수정 건의
+          </Link>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}

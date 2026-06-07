@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { getTimelineEvents } from "@/app/actions/timeline";
 import { 
   getAdminDashboardStats, getUsers, getReports, getAdminLogs, getCompanies, 
-  getGameRequests, getPlatformRequests, getCompanyRequests, getPlatforms 
+  getGameRequests, getPlatformRequests, getCompanyRequests, getPlatforms, getEditRequests
 } from "@/app/actions/admin-dashboard";
 
 export default async function AdminPage() {
@@ -30,6 +30,7 @@ export default async function AdminPage() {
   const gameRequests = await getGameRequests();
   const platformRequests = await getPlatformRequests();
   const companyRequests = await getCompanyRequests();
+  const editRequests = await getEditRequests();
 
   // Admin page uses client-side state internally, but takes data as props
   return (
@@ -46,6 +47,7 @@ export default async function AdminPage() {
       gameRequests={gameRequests}
       platformRequests={platformRequests}
       companyRequests={companyRequests}
+      editRequests={editRequests}
     />
   );
 }

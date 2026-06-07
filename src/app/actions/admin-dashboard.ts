@@ -188,3 +188,51 @@ export async function getPlatforms() {
   });
 }
 
+export async function getEditRequests() {
+  await requireAdmin();
+  return prisma.editRequest.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      requestedBy: {
+        select: { name: true, nickname: true, email: true }
+      }
+    }
+  });
+}
+
+export async function resolveEditRequest(requestId: string, status: "APPROVED" | "REJECTED", adminMemo: string) {
+  const adminId = await requireAdmin();
+  const request = await prisma.editRequest.findUnique({ where: { id: requestId } });
+  if (!request) throw new Error("Request not found");
+
+  if (status === "APPROVED") {
+    const data = JSON.parse(request.proposedData);
+    if (request.targetType === "GAME") {
+      await prisma.game.update({ where: { id: request.targetId }, data });
+    } else if (request.targetType === "PLATFORM") {
+      await prisma.platform.update({ where: { id: request.targetId }, data });
+    } else if (request.targetType === "COMPANY") {
+      await prisma.company.update({ where: { id: request.targetId }, data });
+    }
+  }
+
+  const updatedRequest = await prisma.editRequest.update({
+    where: { id: requestId },
+    data: { status, adminMemo }
+  });
+
+  await prisma.adminLog.create({
+    data: {
+      adminId,
+      action: "UPDATE",
+      targetType: "EDIT_REQUEST",
+      targetId: requestId,
+      afterJson: JSON.stringify({ status, adminMemo })
+    }
+  });
+
+  revalidatePath('/admin');
+  return updatedRequest;
+}
+

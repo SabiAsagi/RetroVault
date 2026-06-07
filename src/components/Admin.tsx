@@ -24,13 +24,14 @@ interface AdminProps {
   gameRequests: any[];
   platformRequests?: any[];
   companyRequests?: any[];
+  editRequests?: any[];
   onResetToSample?: () => void;
   onClearAll?: () => void;
 }
 
 type Tab = 'dashboard' | 'games' | 'requests' | 'companies' | 'platforms' | 'users' | 'reports' | 'logs' | 'settings' | 'timeline';
 
-export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, platforms, gameRequests, platformRequests, companyRequests, onResetToSample, onClearAll }: AdminProps) {
+export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, platforms, gameRequests, platformRequests, companyRequests, editRequests, onResetToSample, onClearAll }: AdminProps) {
   const [activeTab, setActiveTab] = useSessionStorage<Tab>('admin-tab', 'dashboard');
   const [confirmAction, setConfirmAction] = useState<'reset' | 'clear' | null>(null);
 
@@ -106,9 +107,9 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   const [promptInput, setPromptInput] = useState('');
 
   // Request Management State
-  const [requestTab, setRequestTab] = useState<'game' | 'platform' | 'company'>('game');
+  const [requestTab, setRequestTab] = useState<'game' | 'platform' | 'company' | 'edit'>('game');
   const [reviewingRequest, setReviewingRequest] = useState<any>(null);
-  const [reviewingRequestType, setReviewingRequestType] = useState<'game'|'platform'|'company'>('game');
+  const [reviewingRequestType, setReviewingRequestType] = useState<'game'|'platform'|'company'|'edit'>('game');
 
   const executeUserAction = async (actionType: 'ROLE' | 'MAKE_MANAGER' | 'MAKE_USER' | 'BAN' | 'UNBAN' | 'DELETE', reason?: string) => {
     if (!selectedUserForAction) return;
@@ -437,6 +438,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <button onClick={() => setRequestTab('game')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'game' ? 'bg-neon-blue text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>게임</button>
           <button onClick={() => setRequestTab('platform')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔/플랫폼</button>
           <button onClick={() => setRequestTab('company')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'company' ? 'bg-amber text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>회사</button>
+          <button onClick={() => setRequestTab('edit')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${requestTab === 'edit' ? 'bg-coral text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>수정 건의</button>
         </div>
       </div>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
@@ -480,9 +482,20 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </td>
               </tr>
             ))}
+            {requestTab === 'edit' && (editRequests || []).map((r: any) => (
+              <tr key={r.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-primary font-medium">{r.targetType} ({r.targetId})</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{r.requestedBy?.name || '익명'}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{new Date(r.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <button onClick={() => { setReviewingRequest(r); setReviewingRequestType('edit'); }} className="p-1.5 text-coral bg-coral/10 border border-coral/30 rounded hover:bg-coral/20 transition-colors text-xs font-bold" title="확인 및 승인">검토</button>
+                </td>
+              </tr>
+            ))}
             {((requestTab === 'game' && (!gameRequests || gameRequests.length === 0)) ||
               (requestTab === 'platform' && (!platformRequests || platformRequests.length === 0)) ||
-              (requestTab === 'company' && (!companyRequests || companyRequests.length === 0))) && (
+              (requestTab === 'company' && (!companyRequests || companyRequests.length === 0)) ||
+              (requestTab === 'edit' && (!editRequests || editRequests.length === 0))) && (
               <tr><td colSpan={4} className="px-4 py-8 text-center text-text-muted">대기 중인 요청이 없습니다.</td></tr>
             )}
           </tbody>
@@ -1199,7 +1212,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
               <h3 className="text-lg font-bold text-text-primary">
-                {reviewingRequestType === 'game' ? '게임' : reviewingRequestType === 'platform' ? '콘솔/플랫폼' : '회사'} 추가 요청 검토
+                {reviewingRequestType === 'game' ? '게임' : reviewingRequestType === 'platform' ? '콘솔/플랫폼' : reviewingRequestType === 'company' ? '회사' : '수정 건의'} 검토
               </h3>
               <button onClick={() => setReviewingRequest(null)} className="text-text-muted hover:text-text-primary">
                 <XCircle size={20} />
@@ -1245,10 +1258,22 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 </>
               )}
 
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">설명 / 참고자료</label>
-                <textarea rows={3} value={reviewingRequest.description || ''} onChange={e => setReviewingRequest({...reviewingRequest, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
-              </div>
+              {reviewingRequestType === 'edit' ? (
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">건의 사유</label>
+                  <p className="text-sm text-text-primary bg-vault-bg border border-vault-border rounded p-3 mb-4">{reviewingRequest.reason || '없음'}</p>
+                  
+                  <label className="block text-xs font-bold text-text-muted mb-1">수정 제안 데이터</label>
+                  <pre className="text-[10px] text-text-primary bg-vault-bg border border-vault-border rounded p-3 overflow-x-auto whitespace-pre-wrap">
+                    {reviewingRequest.proposedData ? JSON.stringify(JSON.parse(reviewingRequest.proposedData), null, 2) : ''}
+                  </pre>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">설명 / 참고자료</label>
+                  <textarea rows={3} value={reviewingRequest.description || ''} onChange={e => setReviewingRequest({...reviewingRequest, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between gap-3 p-4 border-t border-vault-border bg-vault-bg/50">
@@ -1266,6 +1291,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                         if (reviewingRequestType === 'game') await rejectGameRequest(reviewingRequest.id, reason);
                         if (reviewingRequestType === 'platform') await rejectPlatformRequest(reviewingRequest.id, reason);
                         if (reviewingRequestType === 'company') await rejectCompanyRequest(reviewingRequest.id, reason);
+                        if (reviewingRequestType === 'edit') {
+                          const { resolveEditRequest } = await import('@/app/actions/admin-dashboard');
+                          await resolveEditRequest(reviewingRequest.id, 'REJECTED', reason);
+                        }
                         window.location.reload();
                       } catch(e) { alert('오류 발생'); setIsSubmitting(false); }
                     }
@@ -1293,6 +1322,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                         if (reviewingRequestType === 'company') {
                           await updateCompany(reviewingRequest.id, reviewingRequest);
                           await approveCompanyRequest(reviewingRequest.id);
+                        }
+                        if (reviewingRequestType === 'edit') {
+                          const { resolveEditRequest } = await import('@/app/actions/admin-dashboard');
+                          await resolveEditRequest(reviewingRequest.id, 'APPROVED', '관리자 승인');
                         }
                         window.location.reload();
                       } catch(e) { alert('오류 발생'); setIsSubmitting(false); }
