@@ -60,6 +60,67 @@ export async function deleteCompany(id: string) {
   revalidatePath('/admin');
 }
 
+// ── PLATFORM ACTIONS ──
+export async function createPlatform(data: any) {
+  const adminId = await requireAdmin();
+  const created = await prisma.platform.create({
+    data: {
+      name: data.name,
+      manufacturer: data.manufacturer || "",
+      generation: Number(data.generation) || 1,
+      releaseYear: Number(data.releaseYear) || 0,
+      type: data.type || "HOME",
+      description: data.description || "",
+      imageUrl: data.imageUrl || null,
+      country: data.country || null,
+      specs: data.specs || null,
+      additionalInput: data.additionalInput || null,
+      gamesCount: data.gamesCount || null,
+      launchPrice: data.launchPrice || null,
+      totalSales: data.totalSales || null,
+      discontinued: data.discontinued === true,
+      status: "APPROVED"
+    }
+  });
+  await logAdminAction(adminId, "CREATE", "PLATFORM", created.id, undefined, JSON.stringify(created));
+  revalidatePath('/admin');
+  return created;
+}
+
+export async function updatePlatform(id: string, data: any) {
+  const adminId = await requireAdmin();
+  const updated = await prisma.platform.update({
+    where: { id },
+    data: {
+      name: data.name,
+      manufacturer: data.manufacturer || "",
+      generation: Number(data.generation) || 1,
+      releaseYear: Number(data.releaseYear) || 0,
+      type: data.type || "HOME",
+      description: data.description || "",
+      imageUrl: data.imageUrl || null,
+      country: data.country || null,
+      specs: data.specs || null,
+      additionalInput: data.additionalInput || null,
+      gamesCount: data.gamesCount || null,
+      launchPrice: data.launchPrice || null,
+      totalSales: data.totalSales || null,
+      discontinued: data.discontinued === true,
+    }
+  });
+  await logAdminAction(adminId, "UPDATE", "PLATFORM", updated.id, undefined, JSON.stringify(data));
+  revalidatePath('/admin');
+  return updated;
+}
+
+export async function deletePlatform(id: string) {
+  const adminId = await requireAdmin();
+  await prisma.platform.delete({ where: { id } });
+  await logAdminAction(adminId, "DELETE", "PLATFORM", id);
+  revalidatePath('/admin');
+}
+
+
 // ── USER ACTIONS ──
 export async function updateUserProfileFromAdmin(userId: string, data: any) {
   const adminId = await requireAdmin();

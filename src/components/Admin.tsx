@@ -8,7 +8,7 @@ import {
 import { CollectionItem, Game, TimelineEvent } from '../types';
 import { createGame, updateGame, deleteGame, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from '@/app/actions/admin';
 import { resolveReport } from '@/app/actions/admin-dashboard';
-import { createCompany, updateCompany, deleteCompany, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest, approvePlatformRequest, rejectPlatformRequest, approveCompanyRequest, rejectCompanyRequest, updateUserProfileFromAdmin } from '@/app/actions/admin-extensions';
+import { createCompany, updateCompany, deleteCompany, createPlatform, updatePlatform, deletePlatform, updateUserRole, toggleUserBan, deleteUser, approveGameRequest, rejectGameRequest, approvePlatformRequest, rejectPlatformRequest, approveCompanyRequest, rejectCompanyRequest, updateUserProfileFromAdmin } from '@/app/actions/admin-extensions';
 
 interface AdminProps {
   collection: CollectionItem[];
@@ -46,6 +46,11 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   
   const [editingCompany, setEditingCompany] = useState<any>(null);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+
+  const [editingPlatform, setEditingPlatform] = useState<any>(null);
+  const [isPlatformModalOpen, setIsPlatformModalOpen] = useState(false);
+  const [platformsPage, setPlatformsPage] = useState(1);
+  const platformsPerPage = 10;
 
   // Custom User Management Modal State
   const [userActionModalOpen, setUserActionModalOpen] = useState(false);
@@ -587,16 +592,77 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     </div>
   );
 
+  const handleAddPlatform = () => {
+    setEditingPlatform({ generation: 1, type: 'HOME' });
+    setIsPlatformModalOpen(true);
+  };
+
   const renderPlatforms = () => (
     <div className="space-y-4 animate-in fade-in">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-text-primary">콘솔/플랫폼 관리</h3>
-        <button onClick={() => alert('추후 구현 예정입니다.')} className="bg-neon-purple hover:bg-neon-purple/80 text-vault-bg px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
+        <button onClick={handleAddPlatform} className="bg-neon-purple hover:bg-neon-purple/80 text-vault-bg px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
           <Plus size={14} /> 플랫폼 추가
         </button>
       </div>
-      <div className="bg-vault-surface border border-vault-border rounded-xl p-8 text-center text-text-muted">
-        플랫폼 관리 기능은 준비 중입니다.
+      
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input type="text" placeholder="플랫폼 검색..." className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-purple" />
+        </div>
+      </div>
+
+      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
+        <table className="w-full text-left text-sm whitespace-nowrap">
+          <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
+            <tr>
+              <th className="px-4 py-3">이름</th>
+              <th className="px-4 py-3">제조사</th>
+              <th className="px-4 py-3">세대</th>
+              <th className="px-4 py-3">타입</th>
+              <th className="px-4 py-3 text-right">관리</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-vault-border/50">
+            {(platforms || []).slice((platformsPage - 1) * platformsPerPage, platformsPage * platformsPerPage).map(p => (
+              <tr key={p.id} className="hover:bg-vault-surface-light">
+                <td className="px-4 py-3 text-text-primary font-medium">{p.name}</td>
+                <td className="px-4 py-3 text-text-secondary text-xs">{p.manufacturer || '-'}</td>
+                <td className="px-4 py-3 text-neon-purple font-mono text-xs">{p.generation}세대</td>
+                <td className="px-4 py-3">
+                  <span className="text-[10px] px-2 py-0.5 rounded border bg-vault-bg border-vault-border text-text-muted">
+                    {p.type}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <button onClick={() => { setEditingPlatform(p); setIsPlatformModalOpen(true); }} className="p-1.5 text-text-muted hover:text-neon-purple rounded transition-colors" title="수정"><Edit size={14} /></button>
+                  <button onClick={() => {
+                    setConfirmConfig({
+                      message: `'${p.name}' 플랫폼을 삭제하시겠습니까?`,
+                      onConfirm: async () => { await deletePlatform(p.id); window.location.reload(); }
+                    });
+                    setConfirmModalOpen(true);
+                  }} className="p-1.5 text-text-muted hover:text-coral rounded transition-colors" title="삭제"><Trash2 size={14} /></button>
+                </td>
+              </tr>
+            ))}
+            {(!platforms || platforms.length === 0) && (
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-text-muted">등록된 플랫폼이 없습니다.</td></tr>
+            )}
+          </tbody>
+        </table>
+        
+        {(platforms || []).length > 0 && (
+          <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
+            <span className="text-xs text-text-muted">총 {(platforms || []).length}개 플랫폼</span>
+            <div className="flex gap-2">
+              <button disabled={platformsPage === 1} onClick={() => setPlatformsPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
+              <span className="px-3 py-1 text-xs text-text-primary">{platformsPage} / {Math.ceil((platforms || []).length / platformsPerPage)}</span>
+              <button disabled={platformsPage >= Math.ceil((platforms || []).length / platformsPerPage)} onClick={() => setPlatformsPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1201,6 +1267,104 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 className="px-4 py-2 bg-mint text-vault-bg rounded text-sm font-bold"
               >정보 수정 및 승인</button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* ── Platform Form Modal ── */}
+      {isPlatformModalOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
+              <h3 className="text-lg font-bold text-text-primary">{editingPlatform?.id ? '플랫폼 수정' : '플랫폼 추가'}</h3>
+              <button onClick={() => setIsPlatformModalOpen(false)} className="text-text-muted hover:text-text-primary">
+                <XCircle size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setIsSubmitting(true);
+              try {
+                if (editingPlatform?.id) {
+                  await updatePlatform(editingPlatform.id, editingPlatform);
+                } else {
+                  await createPlatform(editingPlatform);
+                }
+                window.location.reload();
+              } catch (err: any) {
+                alert(err.message || '오류 발생');
+              } finally {
+                setIsSubmitting(false);
+              }
+            }} className="p-4 overflow-y-auto flex-1 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">이름</label>
+                  <input required type="text" value={editingPlatform?.name || ''} onChange={e => setEditingPlatform({...editingPlatform, name: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">제조사</label>
+                  <input type="text" value={editingPlatform?.manufacturer || ''} onChange={e => setEditingPlatform({...editingPlatform, manufacturer: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">세대 (숫자)</label>
+                  <input required type="number" value={editingPlatform?.generation || 1} onChange={e => setEditingPlatform({...editingPlatform, generation: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">출시연도</label>
+                  <input required type="number" value={editingPlatform?.releaseYear || 0} onChange={e => setEditingPlatform({...editingPlatform, releaseYear: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">타입 (HOME, HANDHELD, HYBRID 등)</label>
+                  <input type="text" value={editingPlatform?.type || 'HOME'} onChange={e => setEditingPlatform({...editingPlatform, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">이미지 URL</label>
+                  <input type="text" value={editingPlatform?.imageUrl || ''} onChange={e => setEditingPlatform({...editingPlatform, imageUrl: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">제조 국가</label>
+                  <input type="text" value={editingPlatform?.country || ''} onChange={e => setEditingPlatform({...editingPlatform, country: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">기기 스펙</label>
+                  <input type="text" value={editingPlatform?.specs || ''} onChange={e => setEditingPlatform({...editingPlatform, specs: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">보조 기기</label>
+                  <input type="text" value={editingPlatform?.additionalInput || ''} onChange={e => setEditingPlatform({...editingPlatform, additionalInput: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">내장 게임 수</label>
+                  <input type="text" value={editingPlatform?.gamesCount || ''} onChange={e => setEditingPlatform({...editingPlatform, gamesCount: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">출시 가격</label>
+                  <input type="text" value={editingPlatform?.launchPrice || ''} onChange={e => setEditingPlatform({...editingPlatform, launchPrice: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-muted mb-1">총 판매량</label>
+                  <input type="text" value={editingPlatform?.totalSales || ''} onChange={e => setEditingPlatform({...editingPlatform, totalSales: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer text-sm text-text-primary">
+                  <input type="checkbox" checked={editingPlatform?.discontinued || false} onChange={e => setEditingPlatform({...editingPlatform, discontinued: e.target.checked})} className="rounded bg-vault-bg border-vault-border text-neon-purple focus:ring-neon-purple" />
+                  단종됨
+                </label>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
+                <textarea rows={4} value={editingPlatform?.description || ''} onChange={e => setEditingPlatform({...editingPlatform, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
+              </div>
+              <div className="pt-4 flex justify-end gap-2 border-t border-vault-border">
+                <button type="button" onClick={() => setIsPlatformModalOpen(false)} className="px-4 py-2 text-text-muted hover:text-text-primary text-sm">취소</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-neon-purple hover:bg-neon-purple/80 text-vault-bg rounded text-sm font-bold flex items-center gap-2 disabled:opacity-50">
+                  {isSubmitting ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                  저장하기
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
