@@ -106,6 +106,7 @@ export default function NavigationApp() {
             {activeItem?.label}
           </span>
 
+          {!pathname.startsWith('/games') && (
           <div className="relative flex-1 max-w-lg hidden sm:block z-[80]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
             <input
@@ -113,6 +114,14 @@ export default function NavigationApp() {
               placeholder="게임명, 회사, 유저 등 통합 검색..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  const router = require('next/navigation').useRouter;
+                  // actually, we already have router from top
+                  window.location.href = `/games?q=${encodeURIComponent(searchQuery.trim())}`;
+                  setSearchFocused(false);
+                }
+              }}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
               className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-8 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-mint transition-all"
@@ -183,6 +192,7 @@ export default function NavigationApp() {
               </div>
             )}
           </div>
+          )}
 
           <div className="flex items-center gap-2 ml-auto shrink-0">
             <ThemeToggle />

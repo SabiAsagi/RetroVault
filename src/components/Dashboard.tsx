@@ -31,8 +31,8 @@ export default function Dashboard({ games, collection, historyGame, popularColle
   // Get recent 6 games from the complete game list to mock "Recently Added" across the platform
   const recentlyAddedGames = [...(games || [])].sort((a, b) => b.releaseYear - a.releaseYear).slice(0, 6);
   
-  // Get legendary/rare games for "Recommended Archives"
-  const recommendedGames = (games || []).filter(g => g.rarity === 'Legendary' || g.rarity === 'Rare').slice(0, 4);
+  // Get legendary/rare games for "Popular Games"
+  const recommendedGames = [...(games || [])].sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-8 page-enter">
@@ -50,7 +50,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
               <Calendar size={12} />
             </span>
             <span className="font-pixel text-[10px] text-mint tracking-widest uppercase">
-              {(historyGame as any)?.isRandom ? "Admin's Pick" : "Today in History"}
+              {(historyGame as any)?.isRandom ? "Admin's Pick" : "그날의 게임 추천"}
             </span>
           </div>
           
@@ -104,7 +104,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           subtitle="다른 유저들이 구성한 멋진 컬렉션을 구경해보세요."
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {popularCollections.map(col => {
+          {popularCollections.slice(0, 6).map(col => {
             const colGames = (col.games || []).slice(0, 3); // Show up to 3 games
             
             return (
@@ -229,12 +229,12 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           </div>
         </div>
 
-        {/* ── 4. Recommended Archives ───────────────────────────────────────── */}
+        {/* ── 4. Popular Games ───────────────────────────────────────── */}
         <div>
           <SectionHeader 
-            title="추천 아카이브" 
+            title="인기 게임" 
             icon={<Trophy size={16} className="text-amber" />} 
-            subtitle="역사적으로 의미 있는 기념비적 타이틀"
+            subtitle="가장 많은 유저가 즐기는 인기 타이틀"
           />
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             {recommendedGames.map(game => (

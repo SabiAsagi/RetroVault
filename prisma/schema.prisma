@@ -47,6 +47,7 @@ model User {
   friendships      Friendship[]      @relation("UserFriendships")
   friendOf         Friendship[]      @relation("FriendFriendships")
   notifications    Notification[]    @relation("UserNotifications")
+  reviews          Review[]          @relation("UserReviews")
 }
 
 model Account {
@@ -93,6 +94,12 @@ model Game {
   country           String?
   coverImageUrl     String?
   description       String?
+  shortDescription  String?
+  originalTitle     String?
+  pcSpecsMin        String?
+  pcSpecsRec        String?
+  installSize       String?
+  releaseStatus     String    @default("RELEASED") // UNRELEASED, EARLY_ACCESS, RELEASED, CANCELLED
   historicalContext String?
   popularity        Int       @default(0)
   rating            Float?    @default(0)
@@ -118,6 +125,7 @@ model Game {
   screenshots Screenshot[]
   collectedBy CollectionItem[]
   timelineEvents TimelineEvent[]
+  reviews     Review[]       @relation("GameReviews")
 
   @@unique([title, platformId, releaseYear])
 }
@@ -142,6 +150,7 @@ model Platform {
   specs           String?
   additionalInput String?
   gamesCount      String?
+  releaseStatus   String    @default("RELEASED") // UNRELEASED, RELEASED, CANCELLED
 
   status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
   requestedById     String?
@@ -370,4 +379,19 @@ model Notification {
   createdAt DateTime @default(now())
 
   user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  gameId    String
+  rating    Int      // 1 to 5
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation("GameReviews", fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
 }

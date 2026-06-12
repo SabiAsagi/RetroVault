@@ -26,16 +26,11 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
   
   // Filters
   const [showFilters, setShowFilters] = useState(false);
-  const [platformFilter, setPlatformFilter] = useState('');
-  const [genreFilter, setGenreFilter] = useState('');
-  const [countryFilter, setCountryFilter] = useState('');
+  const [showConsoles, setShowConsoles] = useState(true);
+  const [showGames, setShowGames] = useState(true);
+  const [showEvents, setShowEvents] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Extract all available filters
-  const allPlatforms = useMemo(() => [...new Set(games.map(g => g.platform))].filter(Boolean).sort(), [games]);
-  const allGenres = useMemo(() => [...new Set(games.map(g => g.genre))].filter(Boolean).sort(), [games]);
-  const allCountries = useMemo(() => [...new Set(games.map(g => g.country).filter(Boolean))].sort(), [games]);
 
   // Aggregate Data
   const timelineData = useMemo(() => {
@@ -48,33 +43,30 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
     }
 
     // Add Platforms
-    platforms.forEach(p => {
-      if (p.releaseYear >= minYear && p.releaseYear <= maxYear) {
-        dataByYear[p.releaseYear].consoles.push(p);
-      }
-    });
+    if (showConsoles) {
+      platforms.forEach(p => {
+        if (p.releaseYear >= minYear && p.releaseYear <= maxYear) {
+          dataByYear[p.releaseYear].consoles.push(p);
+        }
+      });
+    }
 
-    // Add Games & Events
-    games.forEach(g => {
-      // Filter games based on current filter state
-      let match = true;
-      if (platformFilter && g.platform !== platformFilter) match = false;
-      if (genreFilter && g.genre !== genreFilter) match = false;
-      if (countryFilter && g.country !== countryFilter) match = false;
-
-      if (match && g.releaseYear >= minYear && g.releaseYear <= maxYear) {
-        dataByYear[g.releaseYear].games.push(g);
-      }
-
-    });
+    // Add Games
+    if (showGames) {
+      games.forEach(g => {
+        if (g.releaseYear >= minYear && g.releaseYear <= maxYear) {
+          dataByYear[g.releaseYear].games.push(g);
+        }
+      });
+    }
 
     // Add explicit timeline events
-    if (timelineEvents) {
+    if (showEvents && timelineEvents) {
       timelineEvents.forEach(evt => {
         if (evt.year >= minYear && evt.year <= maxYear) {
           dataByYear[evt.year].events.push(evt.description || evt.title);
           
-          if (evt.type === 'console') {
+          if (evt.type === 'console' && showConsoles) {
             dataByYear[evt.year].consoles.push({
               id: evt.id,
               name: evt.title,
@@ -98,9 +90,9 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
     });
 
     return Object.values(dataByYear).sort((a, b) => a.year - b.year);
-  }, [games, platformFilter, genreFilter, countryFilter]);
+  }, [games, platforms, timelineEvents, showConsoles, showGames, showEvents]);
 
-  const hasFilters = platformFilter || genreFilter || countryFilter;
+  const hasFilters = !showConsoles || !showGames || !showEvents;
 
   // Jump to year functionality
   const handleJumpToYear = (yearStr: string) => {
@@ -115,6 +107,21 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
       container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (scrollRef.current && e.deltaY !== 0 && !e.shiftKey) {
+        e.preventDefault();
+        scrollRef.current.scrollBy({ left: e.deltaY * 1.5, behavior: 'smooth' });
+      }
+    };
+    
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener('wheel', handleWheel, { passive: false });
+      return () => el.removeEventListener('wheel', handleWheel);
+    }
+  }, []);
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 h-[calc(100vh-64px)] flex flex-col page-enter">
@@ -174,40 +181,31 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
               }`}
             >
               <Filter size={16} />
-              게임 필터 {hasFilters && <span className="w-2 h-2 rounded-full bg-neon-blue ml-1" />}
+              통합 필터 {hasFilters && <span className="w-2 h-2 rounded-full bg-neon-blue ml-1" />}
             </button>
           </div>
         </div>
 
         {/* Filter Panel */}
         {showFilters && (
-          <div className="p-4 bg-vault-surface border border-vault-border rounded-lg grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2">
-            <div>
-              <label className="text-[10px] text-text-muted block mb-1 font-medium">플랫폼</label>
-              <select value={platformFilter} onChange={e => setPlatformFilter(e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-neon-blue/50">
-                <option value="">전체 플랫폼</option>
-                {allPlatforms.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-text-muted block mb-1 font-medium">장르</label>
-              <select value={genreFilter} onChange={e => setGenreFilter(e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-neon-blue/50">
-                <option value="">전체 장르</option>
-                {allGenres.map(g => <option key={g} value={g}>{g}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-text-muted block mb-1 font-medium">국가</label>
-              <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-neon-blue/50">
-                <option value="">전체 국가</option>
-                {allCountries.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+          <div className="p-4 bg-vault-surface border border-vault-border rounded-lg flex flex-wrap gap-4 animate-in fade-in slide-in-from-top-2">
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-text-primary font-bold">
+              <input type="checkbox" checked={showConsoles} onChange={e => setShowConsoles(e.target.checked)} className="rounded text-neon-blue focus:ring-neon-blue bg-vault-bg border-vault-border" />
+              <Monitor size={14} className="text-neon-blue" /> 콘솔 발매
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-text-primary font-bold">
+              <input type="checkbox" checked={showGames} onChange={e => setShowGames(e.target.checked)} className="rounded text-mint focus:ring-mint bg-vault-bg border-vault-border" />
+              <Disc size={14} className="text-mint" /> 주요 게임
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-text-primary font-bold">
+              <input type="checkbox" checked={showEvents} onChange={e => setShowEvents(e.target.checked)} className="rounded text-amber focus:ring-amber bg-vault-bg border-vault-border" />
+              <Zap size={14} className="text-amber" /> 주요 사건
+            </label>
             
             {hasFilters && (
-              <div className="md:col-span-3 flex justify-end">
+              <div className="ml-auto">
                 <button 
-                  onClick={() => { setPlatformFilter(''); setGenreFilter(''); setCountryFilter(''); }}
+                  onClick={() => { setShowConsoles(true); setShowGames(true); setShowEvents(true); }}
                   className="text-xs text-text-muted hover:text-coral transition-colors flex items-center gap-1"
                 >
                   <X size={12} /> 필터 초기화

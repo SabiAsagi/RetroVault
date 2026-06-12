@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Building2, ArrowLeft, Link as LinkIcon, Gamepad2, Users } from "lucide-react";
+import { Building2, ArrowLeft, Link as LinkIcon, Gamepad2, Package } from "lucide-react";
 import Link from "next/link";
 import GameGrid from "@/components/GameGrid";
 
@@ -33,19 +33,16 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
     notFound();
   }
 
-  // To prevent duplicates if a company is both developer and publisher for the same game
-  const allGamesMap = new Map();
-  company.developedGames.forEach((g: any) => allGamesMap.set(g.id, g));
-  company.publishedGames.forEach((g: any) => allGamesMap.set(g.id, g));
-  const uniqueGames = Array.from(allGamesMap.values())
-    .sort((a: any, b: any) => b.releaseYear - a.releaseYear)
-    .map((g: any) => ({
-      ...g,
-      platform: g.platform?.name || 'Unknown',
-      imageUrl: g.coverImageUrl || '',
-      era: g.releaseYear ? `${Math.floor(g.releaseYear / 10) * 10}s` : 'Unknown',
-      rarity: 'Common'
-    }));
+  const formatGame = (g: any) => ({
+    ...g,
+    platform: g.platform?.name || 'Unknown',
+    imageUrl: g.coverImageUrl || '',
+    era: g.releaseYear ? `${Math.floor(g.releaseYear / 10) * 10}s` : 'Unknown',
+    rarity: 'Common'
+  });
+
+  const devGames = company.developedGames.map(formatGame);
+  const pubGames = company.publishedGames.map(formatGame);
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
@@ -151,18 +148,34 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 border-b border-vault-border pb-4">
-          <Gamepad2 className="text-amber" size={24} />
-          <h2 className="text-2xl font-black text-text-primary">관련 게임</h2>
-          <span className="ml-2 px-2 py-1 bg-vault-surface border border-vault-border rounded-md text-xs font-bold text-text-muted">
-            {uniqueGames.length}
-          </span>
-        </div>
+      <div className="space-y-12">
+        {devGames.length > 0 && (
+          <div>
+            <div className="flex items-center gap-2 border-b border-vault-border pb-4 mb-6">
+              <Gamepad2 className="text-mint" size={24} />
+              <h2 className="text-2xl font-black text-text-primary">개발한 게임</h2>
+              <span className="ml-2 px-2 py-1 bg-vault-surface border border-vault-border rounded-md text-xs font-bold text-text-muted">
+                {devGames.length}
+              </span>
+            </div>
+            <GameGrid games={devGames} />
+          </div>
+        )}
 
-        {uniqueGames.length > 0 ? (
-          <GameGrid games={uniqueGames} />
-        ) : (
+        {pubGames.length > 0 && (
+          <div>
+            <div className="flex items-center gap-2 border-b border-vault-border pb-4 mb-6">
+              <Package className="text-neon-blue" size={24} />
+              <h2 className="text-2xl font-black text-text-primary">유통한 게임</h2>
+              <span className="ml-2 px-2 py-1 bg-vault-surface border border-vault-border rounded-md text-xs font-bold text-text-muted">
+                {pubGames.length}
+              </span>
+            </div>
+            <GameGrid games={pubGames} />
+          </div>
+        )}
+
+        {devGames.length === 0 && pubGames.length === 0 && (
           <div className="py-20 text-center bg-vault-surface border border-vault-border rounded-xl">
             <p className="text-text-muted">등록된 게임이 없습니다.</p>
           </div>

@@ -164,21 +164,21 @@ export default function MyVault({
   // Render Theme specific classes
   const getThemeClasses = () => {
     switch (theme) {
-      case 'glass': return 'bg-white/5 border border-white/10 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.05)]';
-      case 'crt': return 'bg-vault-bg border-2 border-neon-purple/50 shadow-[0_0_15px_rgba(167,139,250,0.3)] relative crt-flicker overflow-hidden';
-      case 'shop': return 'bg-vault-surface-light border-y-4 border-amber shadow-lg';
+      case 'glass': return 'bg-white/5 border border-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] rounded-xl';
+      case 'crt': return 'bg-vault-bg border-2 border-neon-purple/50 shadow-[0_0_20px_rgba(167,139,250,0.4)] relative crt-flicker overflow-hidden rounded-xl';
+      case 'shop': return 'bg-vault-surface-light border-4 border-[#8B4513] shadow-2xl rounded-xl';
       case 'basic':
-      default: return 'bg-vault-surface border border-vault-border rounded-xl';
+      default: return 'bg-vault-surface border border-vault-border rounded-xl shadow-md';
     }
   };
 
   const getShelfBoardClasses = () => {
     switch (theme) {
-      case 'glass': return 'h-2 bg-gradient-to-b from-white/20 to-white/5 rounded backdrop-blur-lg border-t border-white/30 shadow-[0_5px_15px_rgba(0,0,0,0.5)]';
-      case 'crt': return 'h-2 bg-neon-purple shadow-[0_0_10px_rgba(167,139,250,0.8)] border-y border-white/20';
-      case 'shop': return 'shelf-wood h-4 rounded-b-md shadow-md border-b border-[#3A1F04]';
+      case 'glass': return 'h-2 bg-gradient-to-b from-white/30 to-white/10 rounded backdrop-blur-md border-t border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.15)]';
+      case 'crt': return 'h-2 bg-neon-purple shadow-[0_0_15px_rgba(167,139,250,0.8)] border-y border-white/30';
+      case 'shop': return 'shelf-wood h-5 rounded-b-md shadow-[0_10px_20px_rgba(0,0,0,0.4)] border-b border-[#2A1502]';
       case 'basic':
-      default: return 'h-3 bg-vault-border rounded-sm shadow-sm';
+      default: return 'h-3 bg-gradient-to-b from-vault-border to-vault-surface-light rounded-sm shadow-[0_2px_4px_rgba(0,0,0,0.05)] border-t border-vault-border-light';
     }
   };
 

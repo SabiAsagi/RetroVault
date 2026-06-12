@@ -54,10 +54,8 @@ export default function CompaniesPage() {
   const allCountries = useMemo(() => [...new Set(companies.map(c => c.country).filter(Boolean))].sort() as string[], [companies]);
   const allStatuses = useMemo(() => [...new Set(companies.map(c => c.companyStatus).filter(Boolean))].sort() as string[], [companies]);
 
-  const typeTabs = useMemo(() => {
-    const counts = allTypes.map(t => ({ name: t, count: companies.filter(c => c.type === t).length }));
-    return counts.sort((a, b) => b.count - a.count);
-  }, [allTypes, companies]);
+  const devCount = useMemo(() => companies.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH').length, [companies]);
+  const pubCount = useMemo(() => companies.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH').length, [companies]);
 
   const filtered = useMemo(() => {
     let result = [...companies];
@@ -69,7 +67,8 @@ export default function CompaniesPage() {
         (c.flagshipFranchises || '').toLowerCase().includes(q)
       );
     }
-    if (activeTypeTab) result = result.filter(c => c.type === activeTypeTab);
+    if (activeTypeTab === 'DEVELOPER') result = result.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH');
+    if (activeTypeTab === 'PUBLISHER') result = result.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH');
     if (typeFilter) result = result.filter(c => c.type === typeFilter);
     if (countryFilter) result = result.filter(c => c.country === countryFilter);
     if (statusFilter) result = result.filter(c => c.companyStatus === statusFilter);
@@ -170,19 +169,26 @@ export default function CompaniesPage() {
           <Building2 size={11} />
           전체 ({companies.length})
         </button>
-        {typeTabs.map(t => (
-          <button
-            key={t.name}
-            onClick={() => setActiveTypeTab(prev => prev === t.name ? '' : t.name)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
-              activeTypeTab === t.name
-                ? 'bg-neon-blue/10 text-neon-blue border-neon-blue/30 font-medium'
-                : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-            }`}
-          >
-            {typeLabels[t.name] || t.name} ({t.count})
-          </button>
-        ))}
+        <button
+          onClick={() => setActiveTypeTab(prev => prev === 'DEVELOPER' ? '' : 'DEVELOPER')}
+          className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
+            activeTypeTab === 'DEVELOPER'
+              ? 'bg-mint/10 text-mint border-mint/30 font-medium'
+              : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
+          }`}
+        >
+          개발사 ({devCount})
+        </button>
+        <button
+          onClick={() => setActiveTypeTab(prev => prev === 'PUBLISHER' ? '' : 'PUBLISHER')}
+          className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
+            activeTypeTab === 'PUBLISHER'
+              ? 'bg-neon-blue/10 text-neon-blue border-neon-blue/30 font-medium'
+              : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
+          }`}
+        >
+          유통사 ({pubCount})
+        </button>
       </div>
 
       {/* Filter Panel */}

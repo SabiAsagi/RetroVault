@@ -123,6 +123,14 @@ export interface Game {
   rating?: number; // 0~5
   era: Era;
   rarity: Rarity;
+  releaseStatus?: string;
+  platformType?: string;
+  platformDiscontinued?: boolean;
+  originalTitle?: string;
+  shortDescription?: string;
+  pcSpecsMin?: string;
+  pcSpecsRec?: string;
+  installSize?: string;
 }
 
 // ─── CollectionItem ───────────────────────────────────────────────────────────

@@ -3,8 +3,8 @@ import { getGamesFromDB } from "@/app/actions/games";
 import { getUserCollection } from "@/app/actions/collection";
 import Link from "next/link";
 
-export default async function GamesPage({ searchParams }: { searchParams: Promise<{ platform?: string, developer?: string, publisher?: string }> }) {
-  const { platform, developer, publisher } = await searchParams;
+export default async function GamesPage({ searchParams }: { searchParams: Promise<{ platform?: string, developer?: string, publisher?: string, q?: string }> }) {
+  const { platform, developer, publisher, q } = await searchParams;
   
   // Use getGamesFromDB or Prisma directly if it doesn't support structured filters
   // getGamesFromDB currently only takes a string `query`.
@@ -23,5 +23,5 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
 
   const collection = await getUserCollection();
 
-  return <ArchiveWrapper initialGames={games} initialCollection={collection} />;
+  return <ArchiveWrapper initialGames={games} initialCollection={collection} initialSearchQuery={q} />;
 }

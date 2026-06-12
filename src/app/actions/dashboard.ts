@@ -16,9 +16,12 @@ export async function getDashboardData() {
   });
 
   if (!historyGame) {
-    // Fallback to a random game if no release today
+    // Fallback to a deterministic random game per day if no release today
     const totalGames = await prisma.game.count();
-    const skip = Math.max(0, Math.floor(Math.random() * totalGames));
+    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    const pseudoRandom = Math.abs(Math.sin(seed) * 10000) % 1;
+    const skip = Math.max(0, Math.floor(pseudoRandom * totalGames));
+    
     historyGame = await prisma.game.findFirst({
       skip,
       take: 1

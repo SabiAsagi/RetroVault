@@ -97,8 +97,49 @@ export default function LoginPage() {
 
         <div className="mt-6 flex items-center gap-4 text-xs text-text-muted relative z-10">
           <div className="flex-1 h-px bg-vault-border" />
-          <span>데모 계정: demo@retrovault.kr / demo1234</span>
+          <span>소셜 로그인</span>
           <div className="flex-1 h-px bg-vault-border" />
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2 relative z-10">
+          <button
+            onClick={() => signIn("google", { callbackUrl: '/' })}
+            className="w-full py-2.5 bg-white text-black font-bold rounded-lg border border-gray-200 transition-all hover:bg-gray-50 flex items-center justify-center gap-2"
+          >
+            Google로 로그인
+          </button>
+          <button
+            onClick={() => signIn("kakao", { callbackUrl: '/' })}
+            className="w-full py-2.5 bg-[#FEE500] text-black font-bold rounded-lg transition-all hover:bg-[#FEE500]/90 flex items-center justify-center gap-2"
+          >
+            카카오로 로그인
+          </button>
+          <button
+            onClick={() => signIn("naver", { callbackUrl: '/' })}
+            className="w-full py-2.5 bg-[#03C75A] text-white font-bold rounded-lg transition-all hover:bg-[#03C75A]/90 flex items-center justify-center gap-2"
+          >
+            네이버로 로그인
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2 relative z-10">
+          <div className="flex items-center gap-4 text-xs text-text-muted">
+            <div className="flex-1 h-px bg-vault-border" />
+            <span>계정이 없으신가요?</span>
+            <div className="flex-1 h-px bg-vault-border" />
+          </div>
+          <button
+            onClick={() => router.push('/register')}
+            className="w-full py-2 text-sm text-mint hover:text-mint-dim font-bold transition-colors"
+          >
+            회원가입
+          </button>
+          <button
+            onClick={() => router.push('/recover')}
+            className="w-full py-2 text-xs text-text-muted hover:text-text-primary transition-colors"
+          >
+            비밀번호를 잊으셨나요?
+          </button>
         </div>
       </div>
     </div>

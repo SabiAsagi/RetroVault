@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 
 @theme {
   /* Core colors */
@@ -30,7 +31,7 @@
   --color-rarity-legendary: var(--color-rarity-legendary);
 
   /* Fonts */
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Pretendard', 'Inter', system-ui, sans-serif;
   --font-pixel: 'Press Start 2P', monospace;
 }
 
@@ -42,18 +43,18 @@
   --color-vault-border: #DEE2E6;
   --color-vault-border-light: #CED4DA;
 
-  --color-mint: #20C997;
-  --color-mint-dim: #0CA678;
-  --color-amber: #F59F00;
-  --color-amber-dim: #E67700;
-  --color-coral: #FA5252;
-  --color-coral-dim: #E03131;
-  --color-neon-blue: #339AF0;
-  --color-neon-purple: #845EF7;
+  --color-mint: #0CA678;
+  --color-mint-dim: #20C997;
+  --color-amber: #E67700;
+  --color-amber-dim: #F59F00;
+  --color-coral: #E03131;
+  --color-coral-dim: #FA5252;
+  --color-neon-blue: #1C7ED6;
+  --color-neon-purple: #6741D9;
 
-  --color-text-primary: #111111;
-  --color-text-secondary: #333333;
-  --color-text-muted: #555555;
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-muted: #868E96;
 
   --color-rarity-common: #868E96;
   --color-rarity-uncommon: #20C997;
@@ -149,6 +150,8 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ─── CRT Noise Overlay ───────────────────────────────────────────────────── */

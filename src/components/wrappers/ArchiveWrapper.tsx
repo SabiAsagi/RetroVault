@@ -11,13 +11,20 @@ import CollectionAddModal from '@/components/CollectionAddModal';
 interface Props {
   initialGames: Game[];
   initialCollection: CollectionItem[];
+  initialSearchQuery?: string;
 }
 
-export default function ArchiveWrapper({ initialGames, initialCollection }: Props) {
+export default function ArchiveWrapper({ initialGames, initialCollection, initialSearchQuery }: Props) {
   const [collection, setCollection] = useState<CollectionItem[]>(initialCollection);
-  const [searchQuery, setSearchQuery] = useSessionStorage("archive-search", "");
+  const [searchQuery, setSearchQuery] = useSessionStorage("archive-search", initialSearchQuery || "");
   const [gameToAdd, setGameToAdd] = useState<Game | null>(null);
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (initialSearchQuery !== undefined) {
+      setSearchQuery(initialSearchQuery);
+    }
+  }, [initialSearchQuery, setSearchQuery]);
 
   const isOwned = (gameId: string) => collection.some(item => item.gameId === gameId);
 

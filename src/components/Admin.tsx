@@ -540,6 +540,20 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <Plus size={14} /> 회사 추가
         </button>
       </div>
+
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input 
+            type="text" 
+            placeholder="회사 검색..." 
+            value={companiesSearch} 
+            onChange={e => {setCompaniesSearch(e.target.value); setCompaniesPage(1);}} 
+            className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-amber" 
+          />
+        </div>
+      </div>
+
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
@@ -1052,6 +1066,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                     });
                     setLocalUsers(localUsers.map(u => u.id === selectedUserForAction.id ? { ...u, nickname: selectedUserForAction.nickname, email: selectedUserForAction.email } : u));
                     alert('회원 정보가 성공적으로 수정되었습니다.');
+                    window.location.reload();
                   } catch (e: any) {
                     alert(`수정 실패: ${e.message}`);
                   }
@@ -1261,10 +1276,10 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               {reviewingRequestType === 'edit' ? (
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">건의 사유</label>
-                  <p className="text-sm text-text-primary bg-vault-bg border border-vault-border rounded p-3 mb-4">{reviewingRequest.reason || '없음'}</p>
+                  <p className="text-sm text-text-primary bg-vault-bg border border-vault-border rounded p-3 mb-4 break-words whitespace-pre-wrap">{reviewingRequest.reason || '없음'}</p>
                   
                   <label className="block text-xs font-bold text-text-muted mb-1">수정 제안 데이터</label>
-                  <pre className="text-[10px] text-text-primary bg-vault-bg border border-vault-border rounded p-3 overflow-x-auto whitespace-pre-wrap">
+                  <pre className="text-[10px] text-text-primary bg-vault-bg border border-vault-border rounded p-3 overflow-x-auto whitespace-pre-wrap break-all">
                     {reviewingRequest.proposedData ? JSON.stringify(JSON.parse(reviewingRequest.proposedData), null, 2) : ''}
                   </pre>
                 </div>
@@ -1313,7 +1328,12 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                       setIsSubmitting(true);
                       try {
                         if (reviewingRequestType === 'game') {
-                          await updateGame(reviewingRequest.id, reviewingRequest);
+                          const updateData = {
+                            ...reviewingRequest,
+                            platform: typeof reviewingRequest.platform === 'object' ? reviewingRequest.platform?.name : reviewingRequest.platform,
+                            developer: typeof reviewingRequest.developer === 'object' ? reviewingRequest.developer?.name : reviewingRequest.developer,
+                          };
+                          await updateGame(reviewingRequest.id, updateData);
                           await approveGameRequest(reviewingRequest.id);
                         }
                         if (reviewingRequestType === 'platform') {
@@ -1420,11 +1440,19 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                   <input type="text" value={editingPlatform?.totalSales || ''} onChange={e => setEditingPlatform({...editingPlatform, totalSales: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
                 <label className="flex items-center gap-2 cursor-pointer text-sm text-text-primary">
                   <input type="checkbox" checked={editingPlatform?.discontinued || false} onChange={e => setEditingPlatform({...editingPlatform, discontinued: e.target.checked})} className="rounded bg-vault-bg border-vault-border text-neon-purple focus:ring-neon-purple" />
                   단종됨
                 </label>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-bold text-text-muted">발매 상태:</label>
+                  <select value={editingPlatform?.releaseStatus || 'RELEASED'} onChange={e => setEditingPlatform({...editingPlatform, releaseStatus: e.target.value})} className="bg-vault-bg border border-vault-border rounded px-2 py-1 text-sm text-text-primary">
+                    <option value="RELEASED">정식 출시</option>
+                    <option value="UNRELEASED">미출시</option>
+                    <option value="CANCELLED">개발 취소</option>
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-1">설명</label>

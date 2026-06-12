@@ -113,12 +113,56 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   }, [allPlatforms, games]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-text-primary">게임 아카이브</h2>
+    <div className="max-w-[1600px] mx-auto px-4 py-6">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar Filters */}
+        {showFilters && (
+          <aside className="w-full md:w-64 shrink-0 space-y-4">
+            <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
+              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
+                <Filter size={16} className="text-mint" /> 상세 필터
+              </h3>
+              {hasFilters && (
+                <button onClick={clearFilters} className="text-xs text-text-muted hover:text-coral transition-colors">초기화</button>
+              )}
+            </div>
+            
+            <div className="bg-vault-surface border border-vault-border rounded-lg p-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">플랫폼</label>
+                <FilterSelect value={platformFilter} onChange={setPlatformFilter} options={allPlatforms} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">장르</label>
+                <FilterSelect value={genreFilter} onChange={setGenreFilter} options={allGenres} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">개발사</label>
+                <FilterSelect value={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">희귀도</label>
+                <FilterSelect value={rarityFilter} onChange={setRarityFilter} options={rarities} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">시대</label>
+                <FilterSelect value={eraFilter} onChange={setEraFilter} options={eraList} labelMap={eraLabels} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">국가</label>
+                <FilterSelect value={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
+              </div>
+            </div>
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-text-primary">게임 아카이브</h2>
             <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
               {filtered.length}개
             </span>
@@ -204,20 +248,6 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         ))}
       </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="mb-4 p-4 bg-vault-surface border border-vault-border rounded-lg">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <FilterSelect label="플랫폼" value={platformFilter} onChange={setPlatformFilter} options={allPlatforms} />
-            <FilterSelect label="장르" value={genreFilter} onChange={setGenreFilter} options={allGenres} />
-            <FilterSelect label="개발사" value={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
-            <FilterSelect label="희귀도" value={rarityFilter} onChange={setRarityFilter} options={rarities} />
-            <FilterSelect label="시대" value={eraFilter} onChange={setEraFilter} options={eraList} labelMap={eraLabels} />
-            <FilterSelect label="국가" value={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
-          </div>
-        </div>
-      )}
-
       {/* Results */}
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
@@ -302,20 +332,19 @@ function ListRow({ game, isOwned, onAddToCollection, onClick }: { game: Game; is
   );
 }
 
-function FilterSelect({ label, value, onChange, options, labelMap }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[]; labelMap?: Record<string, string>;
-}) {
+function FilterSelect({ value, onChange, options, labelMap, label }: any) {
   return (
-    <div>
-      <label className="text-[10px] text-text-muted block mb-1 font-medium">{label}</label>
+    <div className="flex flex-col">
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
         className="w-full bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
       >
-        <option value="">전체</option>
-        {options.map(o => (
-          <option key={o} value={o}>{labelMap ? (labelMap[o as Era] ?? o) : o}</option>
+        <option value="">전체 {label || ''}</option>
+        {options.map((o: any) => (
+          <option key={o} value={o}>
+            {labelMap ? labelMap[o] || o : o}
+          </option>
         ))}
       </select>
     </div>
