@@ -163,18 +163,18 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-text-primary">게임 아카이브</h2>
-            <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
-              {filtered.length}개
-            </span>
-          </div>
-          <Link href="/request?tab=game" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
-            + 게임 추가 건의
-          </Link>
-          <Link href="/request/edit?tab=game" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
-            ✏️ 수정 건의
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
+                <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
+                  {filtered.length}개
+                </span>
+              </div>
+              <Link href="/request?tab=game" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
+                + 게임 추가 건의
+              </Link>
+              <Link href="/request/edit?tab=game" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
+                ✏️ 수정 건의
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
           {/* Filter toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -292,6 +292,8 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
           ))}
         </div>
       )}
+        </main>
+      </div>
     </div>
   );
 }
