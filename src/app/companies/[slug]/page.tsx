@@ -29,6 +29,13 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
     }
   });
 
+  if (company) {
+    await prisma.company.update({
+      where: { id: company.id },
+      data: { views: { increment: 1 } }
+    });
+  }
+
   if (!company) {
     notFound();
   }

@@ -106,7 +106,7 @@ export default function NavigationApp() {
             {activeItem?.label}
           </span>
 
-          {!pathname.startsWith('/games') && !pathname.startsWith('/archive') && (
+          {!pathname.startsWith('/games') && !pathname.startsWith('/archive') && !pathname.startsWith('/platforms') && !pathname.startsWith('/companies') && (
           <div className="relative flex-1 max-w-lg hidden sm:block z-[80]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
             <input

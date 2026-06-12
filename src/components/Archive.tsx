@@ -13,6 +13,7 @@ interface ArchiveProps {
   onAddToCollection: (gameId: string) => void;
   onSelectGame: (game: Game) => void;
   initialEra?: Era | null;
+  onSearchChange?: (q: string) => void;
 }
 
 const rarities: Rarity[] = ['Common', 'Uncommon', 'Rare', 'Legendary'];
@@ -45,7 +46,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 type ViewMode = 'grid' | 'list';
 
-export default function Archive({ games, isLoading, searchQuery, isOwned, onAddToCollection, onSelectGame, initialEra }: ArchiveProps) {
+export default function Archive({ games, isLoading, searchQuery, isOwned, onAddToCollection, onSelectGame, initialEra, onSearchChange }: ArchiveProps) {
   const allPlatforms = useMemo(() => [...new Set(games.map(g => g.platform))].filter(Boolean).sort(), [games]);
   const allGenres = useMemo(() => [...new Set(games.map(g => g.genre))].filter(Boolean).sort(), [games]);
   const allCountries = useMemo(() => [...new Set(games.map(g => g.country).filter(Boolean))].sort(), [games]);
@@ -55,7 +56,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', true);
-  const [platformFilter, setPlatformFilter] = useSessionStorage('archive-platform', '');
+  const [platformFilters, setPlatformFilters] = useSessionStorage<string[]>('archive-platforms', []);
   const [genreFilter, setGenreFilter] = useSessionStorage('archive-genre', '');
   const [rarityFilter, setRarityFilter] = useSessionStorage('archive-rarity', '');
   const [eraFilter, setEraFilter] = useSessionStorage<string>('archive-era', initialEra || '');
@@ -72,15 +73,9 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
     let result = [...games];
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(g =>
-        g.title.toLowerCase().includes(q) ||
-        g.platform.toLowerCase().includes(q) ||
-        g.publisher.toLowerCase().includes(q) ||
-        (g.developer || '').toLowerCase().includes(q) ||
-        (g.genre || '').toLowerCase().includes(q)
-      );
+      result = result.filter(g => g.title.toLowerCase().includes(q) || g.developer?.toLowerCase().includes(q) || g.publisher?.toLowerCase().includes(q));
     }
-    if (platformFilter) result = result.filter(g => g.platform === platformFilter);
+    if (platformFilters.length > 0) result = result.filter(g => platformFilters.includes(g.platform));
     if (genreFilter) result = result.filter(g => g.genre === genreFilter);
     if (rarityFilter) result = result.filter(g => g.rarity === rarityFilter);
     if (eraFilter) result = result.filter(g => g.era === eraFilter);
@@ -99,27 +94,33 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
       case 'rating':      result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return result;
-  }, [games, searchQuery, platformFilter, genreFilter, rarityFilter, eraFilter, countryFilter, developerFilter, installSizeFilter, sortBy]);
+  }, [games, searchQuery, platformFilters, genreFilter, rarityFilter, eraFilter, sortBy, countryFilter, installSizeFilter]);
 
-  const hasFilters = platformFilter || genreFilter || rarityFilter || eraFilter || countryFilter || developerFilter || installSizeFilter;
+  const hasFilters = platformFilters.length > 0 || genreFilter || rarityFilter || eraFilter || countryFilter || developerFilter || installSizeFilter;
 
-  const clearFilters = () => {
-    setPlatformFilter(''); setGenreFilter(''); setRarityFilter('');
-    setEraFilter(''); setCountryFilter(''); setDeveloperFilter(''); setInstallSizeFilter('');
-  };
-
-  // Platform tabs (top 8 by game count)
-  const platformTabs = useMemo(() => {
-    const counts = allPlatforms.map(p => ({ name: p, count: games.filter(g => g.platform === p).length }));
-    return counts.sort((a, b) => b.count - a.count).slice(0, 8);
-  }, [allPlatforms, games]);
+  const clearFilters = () => { setPlatformFilters([]); setGenreFilter(''); setRarityFilter(''); setEraFilter(''); setCountryFilter(''); setDeveloperFilter(''); setInstallSizeFilter(''); };
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6">
+      {onSearchChange && (
+        <div className="mb-6">
+          <div className="relative max-w-2xl mx-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="제목, 개발사, 퍼블리셔 검색..."
+              className="w-full bg-vault-surface border border-vault-border rounded-xl px-10 py-3 text-text-primary focus:outline-none focus:border-mint transition-colors"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar Filters */}
         {showFilters && (
-          <aside className="w-full md:w-64 shrink-0 space-y-4">
+          <aside className="w-full md:w-56 shrink-0 space-y-6">
             <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
               <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
                 <Filter size={16} className="text-mint" /> 상세 필터
@@ -129,10 +130,25 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
               )}
             </div>
             
-            <div className="bg-vault-surface border border-vault-border rounded-lg p-4 space-y-4">
+            <div className="bg-vault-surface border border-vault-border rounded-xl p-4 space-y-4 shadow-sm sticky top-20">
               <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">플랫폼</label>
-                <FilterSelect value={platformFilter} onChange={setPlatformFilter} options={allPlatforms} />
+                <label className="block text-xs font-bold text-text-muted mb-2">플랫폼 (다중 선택)</label>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                  {allPlatforms.map(p => (
+                    <label key={p} className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={platformFilters.includes(p)}
+                        onChange={(e) => {
+                          if (e.target.checked) setPlatformFilters([...platformFilters, p]);
+                          else setPlatformFilters(platformFilters.filter(f => f !== p));
+                        }}
+                        className="rounded border-vault-border bg-vault-bg text-mint focus:ring-mint focus:ring-offset-vault-surface"
+                      />
+                      <span className="text-xs text-text-secondary group-hover:text-text-primary transition-colors">{p}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-2">장르</label>
@@ -228,31 +244,6 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         </div>
       </div>
 
-      {/* Platform Quick Tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
-        <button
-          onClick={() => setPlatformFilter('')}
-          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer ${
-            !platformFilter ? 'bg-mint/10 text-mint border-mint/30 font-medium' : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-          }`}
-        >
-          <Monitor size={11} />
-          전체 ({games.length})
-        </button>
-        {platformTabs.map(p => (
-          <button
-            key={p.name}
-            onClick={() => setPlatformFilter(prev => prev === p.name ? '' : p.name)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
-              platformFilter === p.name
-                ? 'bg-neon-blue/10 text-neon-blue border-neon-blue/30 font-medium'
-                : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-            }`}
-          >
-            {p.name} ({p.count})
-          </button>
-        ))}
-      </div>
 
       {/* Results */}
       {isLoading ? (

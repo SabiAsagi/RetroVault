@@ -23,6 +23,13 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
     }
   });
 
+  if (platform) {
+    await prisma.platform.update({
+      where: { id: platform.id },
+      data: { views: { increment: 1 } }
+    });
+  }
+
   if (!platform) {
     notFound();
   }

@@ -99,6 +99,13 @@ export async function getGameBySlug(slug: string): Promise<Game | null> {
     }
   });
 
+  if (g) {
+    await prisma.game.update({
+      where: { id: g.id },
+      data: { views: { increment: 1 } }
+    });
+  }
+
   if (!g) return null;
 
   return {

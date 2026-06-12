@@ -85,6 +85,7 @@ export interface Platform {
   launchPrice?: string;
   totalSales?: string;
   discontinued?: boolean;
+  views?: number;
 }
 
 /** 구형 호환용 alias */
@@ -132,6 +133,20 @@ export interface Game {
   pcSpecsRec?: string;
   installSize?: string;
   trailerUrl?: string;
+  views?: number;
+}
+
+// ─── Company ──────────────────────────────────────────────────────────────────
+
+export interface Company {
+  id: string;
+  name: string;
+  foundedYear?: number;
+  country?: string;
+  description?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  views?: number;
 }
 
 // ─── CollectionItem ───────────────────────────────────────────────────────────

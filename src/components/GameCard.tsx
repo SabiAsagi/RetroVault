@@ -1,6 +1,6 @@
 "use client";
 import { Game, Rarity } from '../types';
-import { Plus, Check, Star } from 'lucide-react';
+import { Plus, Check, Star, Eye } from 'lucide-react';
 
 interface GameCardProps {
   game: Game;
@@ -133,11 +133,15 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
         <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} · {game.releaseYear}</p>
 
         <div className="flex items-center justify-between mt-2">
-          {/* Rating and Genre */}
+          {/* Rating, Views, and Genre */}
           <div className="flex items-center gap-1.5 flex-1 min-w-0 mr-2">
             <div className="flex items-center gap-0.5 shrink-0 bg-vault-surface-light px-1 py-0.5 rounded border border-vault-border">
               <Star size={9} className="text-amber fill-amber" />
               <span className="text-[9px] font-bold text-text-primary">{game.rating ? game.rating.toFixed(1) : '-'}</span>
+            </div>
+            <div className="flex items-center gap-0.5 shrink-0 bg-vault-surface-light px-1 py-0.5 rounded border border-vault-border">
+              <Eye size={9} className="text-text-muted" />
+              <span className="text-[9px] font-bold text-text-secondary">{game.views ?? 0}</span>
             </div>
             <span className="text-[9px] text-text-muted truncate">{game.genre}</span>
           </div>

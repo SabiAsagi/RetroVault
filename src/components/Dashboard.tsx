@@ -79,8 +79,8 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
             {historyGame 
               ? ((historyGame as any)?.isRandom 
-                  ? '오늘 발매된 게임이 없어, 관리자가 추천하는 명작입니다. 게임 역사에 큰 획을 그은 이 타이틀을 아카이브에서 확인해보세요.' 
-                  : (historyGame.description || '이 전설적인 타이틀은 게임 역사에 큰 획을 그었습니다. 지금 바로 아카이브에서 확인해보세요.')) 
+                  ? '관리자가 추천하는 명작입니다. 게임 역사에 큰 획을 그은 이 타이틀을 아카이브에서 확인해보세요.'
+                  : `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`)
               : '수많은 명작 게임들이 당신의 컬렉션을 기다리고 있습니다. 첫 게임을 추가해보세요!'}
           </p>
           

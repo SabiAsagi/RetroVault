@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { Database, Calendar, Monitor, Filter, X, LayoutGrid, List, Search, Gamepad2 } from "lucide-react";
+import { Database, Calendar, Monitor, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from "lucide-react";
 import Link from "next/link";
 
 interface Platform {
@@ -16,6 +16,7 @@ interface Platform {
   launchPrice: string | null;
   totalSales: string | null;
   discontinued: boolean | null;
+  views?: number;
   _count: { games: number };
   slug: string;
 }
@@ -88,35 +89,80 @@ export default function PlatformsPage() {
   const typeLabels: Record<string, string> = { HOME: '가정용', HANDHELD: '휴대용', HYBRID: '하이브리드', ARCADE: '아케이드', PC: 'PC' };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 page-enter">
+    <div className="max-w-[1600px] mx-auto px-4 py-6 page-enter">
       {/* Search */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="콘솔 검색..."
-          className="w-full max-w-md bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:border-neon-purple"
-        />
+      <div className="mb-6">
+        <div className="relative max-w-2xl mx-auto">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="콘솔 검색..."
+            className="w-full bg-vault-surface border border-vault-border rounded-xl px-10 py-3 text-text-primary focus:outline-none focus:border-neon-purple transition-colors"
+          />
+        </div>
       </div>
 
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar Filters */}
+        {showFilters && (
+          <aside className="w-full md:w-56 shrink-0 space-y-6">
+            <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
+              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
+                <Filter size={16} className="text-neon-purple" /> 상세 필터
+              </h3>
+              {hasFilters && (
+                <button onClick={clearFilters} className="text-[10px] text-text-muted hover:text-neon-purple transition-colors cursor-pointer">초기화</button>
+              )}
+            </div>
+            
+            <div className="bg-vault-surface border border-vault-border rounded-xl p-4 space-y-4 shadow-sm sticky top-20">
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">제조사 (다중 선택)</label>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                  {allManufacturers.map(m => (
+                    <label key={m} className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={manufacturerFilter === m}
+                        onChange={(e) => {
+                          if (e.target.checked) setManufacturerFilter(m);
+                          else setManufacturerFilter('');
+                        }}
+                        className="rounded border-vault-border bg-vault-bg text-neon-purple focus:ring-neon-purple focus:ring-offset-vault-surface"
+                      />
+                      <span className="text-xs text-text-secondary group-hover:text-text-primary transition-colors">{m}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <FilterSelect label="세대" value={generationFilter} onChange={setGenerationFilter} options={allGenerations.map(String)} labelMap={Object.fromEntries(allGenerations.map(g => [String(g), `${g}세대`]))} />
+              <FilterSelect label="타입" value={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
+            </div>
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-text-primary">콘솔 아카이브</h2>
-            <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
-              {filtered.length}개
-            </span>
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-text-primary">콘솔 아카이브</h2>
+              <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
+                {filtered.length}개
+              </span>
+            </div>
+            <Link href="/request?tab=platform" className="text-xs px-3 py-1.5 bg-neon-purple/10 text-neon-purple font-bold border border-neon-purple/30 rounded-lg hover:bg-neon-purple/20 transition-colors">
+              + 추가 건의
+            </Link>
+            <Link href="/request/edit?tab=platform" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
+              ✏️ 수정 건의
+            </Link>
           </div>
-          <Link href="/request?tab=platform" className="text-xs px-3 py-1.5 bg-neon-purple/10 text-neon-purple font-bold border border-neon-purple/30 rounded-lg hover:bg-neon-purple/20 transition-colors">
-            + 추가 건의
-          </Link>
-          <Link href="/request/edit?tab=platform" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
-            ✏️ 수정 건의
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
@@ -156,45 +202,7 @@ export default function PlatformsPage() {
           </div>
         </div>
       </div>
-
-      {/* Manufacturer Quick Tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
-        <button
-          onClick={() => setActiveManufacturerTab('')}
-          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer ${
-            !activeManufacturerTab ? 'bg-neon-purple/10 text-neon-purple border-neon-purple/30 font-medium' : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-          }`}
-        >
-          <Monitor size={11} />
-          전체 ({platforms.length})
-        </button>
-        {manufacturerTabs.map(m => (
-          <button
-            key={m.name}
-            onClick={() => setActiveManufacturerTab(prev => prev === m.name ? '' : m.name)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
-              activeManufacturerTab === m.name
-                ? 'bg-neon-blue/10 text-neon-blue border-neon-blue/30 font-medium'
-                : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-            }`}
-          >
-            {m.name} ({m.count})
-          </button>
-        ))}
-      </div>
-
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="mb-4 p-4 bg-vault-surface border border-vault-border rounded-lg">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <FilterSelect label="제조사" value={manufacturerFilter} onChange={setManufacturerFilter} options={allManufacturers} />
-            <FilterSelect label="세대" value={generationFilter} onChange={setGenerationFilter} options={allGenerations.map(String)} labelMap={Object.fromEntries(allGenerations.map(g => [String(g), `${g}세대`]))} />
-            <FilterSelect label="타입" value={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
-          </div>
-        </div>
-      )}
-
-      {/* Results */}
+        {/* Results */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
@@ -233,6 +241,8 @@ export default function PlatformsPage() {
           ))}
         </div>
       )}
+        </main>
+      </div>
     </div>
   );
 }
@@ -270,9 +280,15 @@ function PlatformCard({ platform }: { platform: Platform }) {
         <div className="p-2.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-text-muted">{platform.releaseYear}년</span>
-            <div className="flex items-center gap-1">
-              <Gamepad2 size={10} className="text-neon-purple" />
-              <span className="text-[10px] font-bold text-text-secondary">{platform._count.games}개</span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <Gamepad2 size={10} className="text-neon-purple" />
+                <span className="text-[10px] font-bold text-text-secondary">{platform._count.games}개</span>
+              </div>
+              <div className="flex items-center gap-1 bg-vault-surface-light px-1.5 py-0.5 rounded border border-vault-border">
+                <Eye size={10} className="text-text-muted" />
+                <span className="text-[10px] font-bold text-text-secondary">{platform.views ?? 0}</span>
+              </div>
             </div>
           </div>
           {platform.discontinued !== null && (
@@ -308,6 +324,10 @@ function PlatformListRow({ platform }: { platform: Platform }) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 bg-vault-surface-light px-1.5 py-0.5 rounded border border-vault-border">
+            <Eye size={10} className="text-text-muted" />
+            <span className="text-[10px] font-bold text-text-secondary">{platform.views ?? 0}</span>
+          </div>
           <span className="text-[9px] px-1.5 py-0.5 rounded bg-neon-purple/10 text-neon-purple border border-neon-purple/20">
             {platform._count.games}게임
           </span>

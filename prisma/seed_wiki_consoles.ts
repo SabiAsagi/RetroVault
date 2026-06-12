@@ -444,7 +444,7 @@ async function main() {
       const launchPrice = enriched.launchPrice || '불명';
       const country = enriched.country || (manufacturer ? `불명 (${manufacturer})` : '불명');
       const discontinued = enriched.discontinued !== undefined ? enriched.discontinued : true;
-      const gamesCount = '알 수 없음';
+      const gamesCount = undefined;
       const media = (specs.includes('블루레이') || specs.includes('디스크') || specs.includes('CD')) ? '디스크 / 다운로드' : '카트리지';
       
       const combinedSpecs = `${specs}${specs !== '알 수 없음' ? ` | 미디어: ${media}` : ''}`;

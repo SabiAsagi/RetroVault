@@ -103,8 +103,9 @@ model Game {
   trailerUrl        String?
   historicalContext String?
   popularity        Int       @default(0)
-  rating            Float?    @default(0)
-  status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
+  views             Int       @default(0)
+  rating            Float?
+  status            String    @default("PENDING") // PENDING, APPROVED, REJECTED
   requestedById     String?
   rejectReason      String?
   referenceUrl      String?
@@ -150,8 +151,9 @@ model Platform {
   country         String?
   specs           String?
   additionalInput String?
-  gamesCount      String?
-  releaseStatus   String    @default("RELEASED") // UNRELEASED, RELEASED, CANCELLED
+  gamesCount      Int       @default(0)
+  views           Int       @default(0)
+  releaseStatus   String?   @default("RELEASED") // RELEASED, UNRELEASED, CANCELLED
 
   status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED
   requestedById     String?
@@ -175,8 +177,9 @@ model Company {
   foundedAt   String?
   websiteUrl  String?
 
-  companyStatus      String?
+  companyStatus      String? // ACTIVE, DEFUNCT, ACQUIRED
   flagshipFranchises String?
+  views              Int     @default(0)
   keyFigures         String?
 
   status            String    @default("APPROVED") // PENDING, APPROVED, REJECTED

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
-import { Building2, Filter, X, LayoutGrid, List, Search, Gamepad2, Globe } from "lucide-react";
+import { Building2, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from 'lucide-react';
 import Link from "next/link";
 
 interface Company {
@@ -15,6 +15,7 @@ interface Company {
   companyStatus: string | null;
   flagshipFranchises: string | null;
   keyFigures: string | null;
+  views?: number;
   _count: { developedGames: number; publishedGames: number };
   slug: string;
 }
@@ -83,41 +84,69 @@ export default function CompaniesPage() {
     return result;
   }, [companies, searchQuery, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);
 
-  const hasFilters = typeFilter || countryFilter || statusFilter || activeTypeTab;
-  const clearFilters = () => { setTypeFilter(''); setCountryFilter(''); setStatusFilter(''); setActiveTypeTab(''); };
+
+  const hasFilters = typeFilter || countryFilter || statusFilter;
+  const clearFilters = () => { setTypeFilter(''); setCountryFilter(''); setStatusFilter(''); };
 
   const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 page-enter">
+    <div className="max-w-[1600px] mx-auto px-4 py-6 page-enter">
       {/* Search */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="제작사 검색..."
-          className="w-full max-w-md bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:border-amber"
-        />
+      <div className="mb-6">
+        <div className="relative max-w-2xl mx-auto">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="회사 검색..."
+            className="w-full bg-vault-surface border border-vault-border rounded-xl px-10 py-3 text-text-primary focus:outline-none focus:border-amber transition-colors"
+          />
+        </div>
       </div>
 
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar Filters */}
+        {showFilters && (
+          <aside className="w-full md:w-56 shrink-0 space-y-6">
+            <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
+              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
+                <Filter size={16} className="text-amber" /> 상세 필터
+              </h3>
+              {hasFilters && (
+                <button onClick={clearFilters} className="text-[10px] text-text-muted hover:text-amber transition-colors cursor-pointer">초기화</button>
+              )}
+            </div>
+            
+            <div className="bg-vault-surface border border-vault-border rounded-xl p-4 space-y-4 shadow-sm sticky top-20">
+              <FilterSelect label="타입" value={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
+              <FilterSelect label="국가" value={countryFilter} onChange={setCountryFilter} options={allCountries} />
+              <FilterSelect label="상태" value={statusFilter} onChange={setStatusFilter} options={allStatuses} />
+            </div>
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-text-primary">게임 제작사 아카이브</h2>
-            <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
-              {filtered.length}개
-            </span>
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-text-primary">게임 제작사 아카이브</h2>
+              <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
+                {filtered.length}개
+              </span>
+            </div>
+            <Link href="/request?tab=company" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
+              + 추가 건의
+            </Link>
+            <Link href="/request/edit?tab=company" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
+              ✏️ 수정 건의
+            </Link>
           </div>
-          <Link href="/request?tab=company" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
-            + 추가 건의
-          </Link>
-          <Link href="/request/edit?tab=company" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
-            ✏️ 수정 건의
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
@@ -158,50 +187,6 @@ export default function CompaniesPage() {
         </div>
       </div>
 
-      {/* Type Quick Tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
-        <button
-          onClick={() => setActiveTypeTab('')}
-          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer ${
-            !activeTypeTab ? 'bg-amber/10 text-amber border-amber/30 font-medium' : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-          }`}
-        >
-          <Building2 size={11} />
-          전체 ({companies.length})
-        </button>
-        <button
-          onClick={() => setActiveTypeTab(prev => prev === 'DEVELOPER' ? '' : 'DEVELOPER')}
-          className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
-            activeTypeTab === 'DEVELOPER'
-              ? 'bg-mint/10 text-mint border-mint/30 font-medium'
-              : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-          }`}
-        >
-          개발사 ({devCount})
-        </button>
-        <button
-          onClick={() => setActiveTypeTab(prev => prev === 'PUBLISHER' ? '' : 'PUBLISHER')}
-          className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
-            activeTypeTab === 'PUBLISHER'
-              ? 'bg-neon-blue/10 text-neon-blue border-neon-blue/30 font-medium'
-              : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
-          }`}
-        >
-          유통사 ({pubCount})
-        </button>
-      </div>
-
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="mb-4 p-4 bg-vault-surface border border-vault-border rounded-lg">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <FilterSelect label="타입" value={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
-            <FilterSelect label="국가" value={countryFilter} onChange={setCountryFilter} options={allCountries} />
-            <FilterSelect label="상태" value={statusFilter} onChange={setStatusFilter} options={allStatuses} />
-          </div>
-        </div>
-      )}
-
       {/* Results */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
@@ -241,6 +226,8 @@ export default function CompaniesPage() {
           ))}
         </div>
       )}
+        </main>
+      </div>
     </div>
   );
 }
@@ -279,9 +266,15 @@ function CompanyCard({ company }: { company: Company }) {
           </h3>
           <div className="flex items-center justify-between mt-1">
             <span className="text-[10px] text-text-muted">{company.foundedAt ? `${company.foundedAt.substring(0,4)}년 설립` : ''}</span>
-            <div className="flex items-center gap-1">
-              <Gamepad2 size={10} className="text-amber" />
-              <span className="text-[10px] font-bold text-text-secondary">{totalGames}개</span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <Gamepad2 size={10} className="text-amber" />
+                <span className="text-[10px] font-bold text-text-secondary">{totalGames}개</span>
+              </div>
+              <div className="flex items-center gap-1 bg-vault-surface-light px-1.5 py-0.5 rounded border border-vault-border">
+                <Eye size={10} className="text-text-muted" />
+                <span className="text-[10px] font-bold text-text-secondary">{company.views ?? 0}</span>
+              </div>
             </div>
           </div>
           {company.companyStatus && (
@@ -320,6 +313,10 @@ function CompanyListRow({ company }: { company: Company }) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 bg-vault-surface-light px-1.5 py-0.5 rounded border border-vault-border">
+            <Eye size={10} className="text-text-muted" />
+            <span className="text-[10px] font-bold text-text-secondary">{company.views ?? 0}</span>
+          </div>
           <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber/10 text-amber border border-amber/20">
             {totalGames}게임
           </span>
