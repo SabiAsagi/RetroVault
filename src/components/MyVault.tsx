@@ -176,9 +176,9 @@ export default function MyVault({
     switch (theme) {
       case 'glass': return 'h-2 bg-gradient-to-b from-white/30 to-white/10 rounded backdrop-blur-md border-t border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.15)]';
       case 'crt': return 'h-2 bg-neon-purple shadow-[0_0_15px_rgba(167,139,250,0.8)] border-y border-white/30';
-      case 'shop': return 'shelf-wood h-5 rounded-b-md shadow-[0_10px_20px_rgba(0,0,0,0.4)] border-b border-[#2A1502]';
+      case 'shop': return 'h-6 rounded-b-sm shadow-[0_10px_20px_rgba(0,0,0,0.6)] border-b-4 border-[#2A1502] bg-[linear-gradient(to_bottom,#8B4513,#5C2E0B)] relative before:absolute before:inset-0 before:bg-[url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.1%22/%3E%3C/svg%3E")] before:opacity-30 overflow-hidden';
       case 'basic':
-      default: return 'h-3 bg-gradient-to-b from-vault-border to-vault-surface-light rounded-sm shadow-[0_2px_4px_rgba(0,0,0,0.05)] border-t border-vault-border-light';
+      default: return 'h-4 bg-[linear-gradient(to_bottom,#4e342e,#3e2723)] rounded-sm shadow-[0_8px_15px_rgba(0,0,0,0.5)] border-b-2 border-[#261410] relative before:absolute before:inset-0 before:bg-[url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.6%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.15%22/%3E%3C/svg%3E")] before:opacity-20 overflow-hidden';
     }
   };
 

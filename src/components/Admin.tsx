@@ -253,17 +253,11 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         </div>
       </div>
 
-      <div className="flex gap-2 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input type="text" placeholder="회사 검색..." value={companiesSearch} onChange={e => {setCompaniesSearch(e.target.value); setCompaniesPage(1);}} className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-blue" />
-        </div>
-      </div>
       <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
+        <table className="w-full text-left text-sm table-fixed">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
             <tr>
-              <th className="px-4 py-3">ID</th>
+              <th className="px-4 py-3 w-40">ID</th>
               <th className="px-4 py-3">타이틀</th>
               <th className="px-4 py-3">플랫폼</th>
               <th className="px-4 py-3">출시연도</th>
@@ -275,11 +269,11 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <tbody className="divide-y divide-vault-border/50">
             {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).slice((gamesPage - 1) * gamesPerPage, gamesPage * gamesPerPage).map(g => (
               <tr key={g.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-text-muted font-mono text-xs">{g.id}</td>
-                <td className="px-4 py-3 text-text-primary font-medium">{g.title}</td>
-                <td className="px-4 py-3 text-text-secondary">{g.platform}</td>
+                <td className="px-4 py-3 text-text-muted font-mono text-xs truncate" title={g.id}>{g.id}</td>
+                <td className="px-4 py-3 text-text-primary font-medium truncate" title={g.title}>{g.title}</td>
+                <td className="px-4 py-3 text-text-secondary truncate">{g.platform}</td>
                 <td className="px-4 py-3 text-text-secondary">{g.releaseYear}</td>
-                <td className="px-4 py-3 text-text-secondary">{g.developer || '-'}</td>
+                <td className="px-4 py-3 text-text-secondary truncate">{g.developer || '-'}</td>
                 <td className="px-4 py-3">
                   <span className={`text-[10px] px-2 py-0.5 rounded border
                     ${g.rarity === 'Legendary' ? 'bg-coral/10 border-coral/30 text-coral' : 
@@ -1286,7 +1280,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               ) : (
                 <div>
                   <label className="block text-xs font-bold text-text-muted mb-1">설명 / 참고자료</label>
-                  <textarea rows={3} value={reviewingRequest.description || ''} onChange={e => setReviewingRequest({...reviewingRequest, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
+                  <textarea rows={6} value={reviewingRequest.description || ''} onChange={e => setReviewingRequest({...reviewingRequest, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
                 </div>
               )}
             </div>

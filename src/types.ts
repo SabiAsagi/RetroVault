@@ -131,6 +131,7 @@ export interface Game {
   pcSpecsMin?: string;
   pcSpecsRec?: string;
   installSize?: string;
+  trailerUrl?: string;
 }
 
 // ─── CollectionItem ───────────────────────────────────────────────────────────

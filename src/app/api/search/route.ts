@@ -11,44 +11,35 @@ export async function GET(request: Request) {
   }
 
   try {
-    let results: any[] = [];
+    let games: any[] = [];
+    let platforms: any[] = [];
+    let companies: any[] = [];
 
-    if (type === 'game') {
-      const games = await prisma.game.findMany({
+    if (type === 'game' || !type) {
+      games = await prisma.game.findMany({
         where: { title: { contains: q, mode: 'insensitive' } },
-        select: { id: true, title: true, releaseYear: true, platform: { select: { name: true } } },
-        take: 10
+        select: { id: true, title: true, releaseYear: true, platform: { select: { name: true } }, coverImageUrl: true },
+        take: type ? 10 : 4
       });
-      results = games.map(g => ({
-        id: g.id,
-        name: `${g.title} (${g.platform.name})`,
-        data: g
-      }));
-    } else if (type === 'platform') {
-      const platforms = await prisma.platform.findMany({
+    }
+    
+    if (type === 'platform' || !type) {
+      platforms = await prisma.platform.findMany({
         where: { name: { contains: q, mode: 'insensitive' } },
         select: { id: true, name: true, manufacturer: true },
-        take: 10
+        take: type ? 10 : 3
       });
-      results = platforms.map(p => ({
-        id: p.id,
-        name: p.name,
-        data: p
-      }));
-    } else if (type === 'company') {
-      const companies = await prisma.company.findMany({
+    }
+    
+    if (type === 'company' || !type) {
+      companies = await prisma.company.findMany({
         where: { name: { contains: q, mode: 'insensitive' } },
         select: { id: true, name: true, type: true },
-        take: 10
+        take: type ? 10 : 3
       });
-      results = companies.map(c => ({
-        id: c.id,
-        name: c.name,
-        data: c
-      }));
     }
 
-    return NextResponse.json(results);
+    return NextResponse.json({ games, platforms, companies });
   } catch (error) {
     console.error('Search API Error:', error);
     return NextResponse.json({ error: 'Failed to search' }, { status: 500 });

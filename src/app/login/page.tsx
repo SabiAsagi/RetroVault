@@ -97,49 +97,38 @@ export default function LoginPage() {
 
         <div className="mt-6 flex items-center gap-4 text-xs text-text-muted relative z-10">
           <div className="flex-1 h-px bg-vault-border" />
-          <span>소셜 로그인</span>
+          <span>소셜 계정으로 시작</span>
           <div className="flex-1 h-px bg-vault-border" />
         </div>
 
-        <div className="mt-4 flex flex-col gap-2 relative z-10">
+        <div className="mt-4 flex gap-3 relative z-10">
           <button
             onClick={() => signIn("google", { callbackUrl: '/' })}
-            className="w-full py-2.5 bg-white text-black font-bold rounded-lg border border-gray-200 transition-all hover:bg-gray-50 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-text-primary text-sm font-bold transition-colors flex justify-center items-center gap-2"
           >
-            Google로 로그인
+            구글
           </button>
           <button
             onClick={() => signIn("kakao", { callbackUrl: '/' })}
-            className="w-full py-2.5 bg-[#FEE500] text-black font-bold rounded-lg transition-all hover:bg-[#FEE500]/90 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 bg-[#FEE500] hover:bg-[#FEE500]/80 text-[#000000] border border-[#FEE500] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
           >
-            카카오로 로그인
+            카카오
           </button>
           <button
             onClick={() => signIn("naver", { callbackUrl: '/' })}
-            className="w-full py-2.5 bg-[#03C75A] text-white font-bold rounded-lg transition-all hover:bg-[#03C75A]/90 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 bg-[#03C75A] hover:bg-[#03C75A]/80 text-white border border-[#03C75A] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
           >
-            네이버로 로그인
+            네이버
           </button>
         </div>
 
-        <div className="mt-6 flex flex-col gap-2 relative z-10">
-          <div className="flex items-center gap-4 text-xs text-text-muted">
-            <div className="flex-1 h-px bg-vault-border" />
-            <span>계정이 없으신가요?</span>
-            <div className="flex-1 h-px bg-vault-border" />
+        <div className="mt-8 text-center text-xs text-text-secondary relative z-10 flex flex-col gap-2">
+          <div>
+            계정이 없으신가요? <a href="/register" className="text-neon-blue font-bold hover:underline">회원가입하기</a>
           </div>
-          <button
-            onClick={() => router.push('/register')}
-            className="w-full py-2 text-sm text-mint hover:text-mint-dim font-bold transition-colors"
-          >
-            회원가입
-          </button>
-          <button
-            onClick={() => router.push('/recover')}
-            className="w-full py-2 text-xs text-text-muted hover:text-text-primary transition-colors"
-          >
-            비밀번호를 잊으셨나요?
-          </button>
+          <div>
+            비밀번호를 잊으셨나요? <a href="/recover" className="text-text-muted hover:text-text-primary hover:underline">계정 복구하기</a>
+          </div>
         </div>
       </div>
     </div>

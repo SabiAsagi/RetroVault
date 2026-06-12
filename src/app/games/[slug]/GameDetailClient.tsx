@@ -128,6 +128,21 @@ export default function GameDetailClient({ game }: { game: Game }) {
               {activeTab === 'info' && (
                 <div className="space-y-4">
                   <p>{game.description || '상세 설명이 없습니다.'}</p>
+                  
+                  {game.trailerUrl && (
+                    <div className="mt-6 pt-4 border-t border-vault-border">
+                      <h3 className="font-bold text-text-primary mb-3">트레일러 영상</h3>
+                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-vault-border bg-black shadow-lg">
+                        <iframe 
+                          src={game.trailerUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} 
+                          className="absolute top-0 left-0 w-full h-full"
+                          allowFullScreen
+                          title={`${game.title} Trailer`}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {(game.pcSpecsMin || game.pcSpecsRec || game.installSize) && (
                     <div className="mt-6 pt-4 border-t border-vault-border space-y-3 bg-vault-bg p-4 rounded-lg">
                       <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2">시스템 요구사항 및 설치 정보</h3>

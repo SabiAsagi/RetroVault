@@ -31,6 +31,11 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
   const [showEvents, setShowEvents] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  // Drag to scroll state
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   // Aggregate Data
   const timelineData = useMemo(() => {
@@ -122,6 +127,29 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
       return () => el.removeEventListener('wheel', handleWheel);
     }
   }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 h-[calc(100vh-64px)] flex flex-col page-enter">
@@ -219,7 +247,11 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
       {/* ── Horizontal Timeline Container ── */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden flex gap-4 pb-6 pt-2 scroll-smooth custom-scrollbar snap-x snap-mandatory"
+        className={`flex-1 overflow-x-auto overflow-y-hidden flex gap-4 pb-6 pt-2 scroll-smooth custom-scrollbar snap-x snap-mandatory ${isDragging ? 'cursor-grabbing select-none snap-none' : 'cursor-grab'}`}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
       >
         {/* Connection Line Background */}
         <div className="absolute top-[35%] left-0 right-0 h-0.5 bg-vault-border-light -z-10 hidden md:block" />

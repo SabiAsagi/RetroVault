@@ -100,6 +100,7 @@ model Game {
   pcSpecsRec        String?
   installSize       String?
   releaseStatus     String    @default("RELEASED") // UNRELEASED, EARLY_ACCESS, RELEASED, CANCELLED
+  trailerUrl        String?
   historicalContext String?
   popularity        Int       @default(0)
   rating            Float?    @default(0)

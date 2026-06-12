@@ -142,8 +142,11 @@
   transition-duration: 200ms;
 }
 
-body {
+html {
   font-family: var(--font-sans);
+}
+
+body {
   background-color: var(--color-vault-bg);
   color: var(--color-text-primary);
   margin: 0;

@@ -139,9 +139,36 @@ export default function RegisterPage() {
           </button>
         </form>
         
+        <div className="mt-6 flex items-center gap-4 text-xs text-text-muted relative z-10">
+          <div className="flex-1 h-px bg-vault-border" />
+          <span>소셜 계정으로 시작</span>
+          <div className="flex-1 h-px bg-vault-border" />
+        </div>
+
+        <div className="mt-4 flex gap-3 relative z-10">
+          <button
+            onClick={() => signIn("google", { callbackUrl: '/' })}
+            className="flex-1 py-2.5 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-text-primary text-sm font-bold transition-colors flex justify-center items-center gap-2"
+          >
+            구글
+          </button>
+          <button
+            onClick={() => signIn("kakao", { callbackUrl: '/' })}
+            className="flex-1 py-2.5 bg-[#FEE500] hover:bg-[#FEE500]/80 text-[#000000] border border-[#FEE500] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
+          >
+            카카오
+          </button>
+          <button
+            onClick={() => signIn("naver", { callbackUrl: '/' })}
+            className="flex-1 py-2.5 bg-[#03C75A] hover:bg-[#03C75A]/80 text-white border border-[#03C75A] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
+          >
+            네이버
+          </button>
+        </div>
+
         <div className="mt-6 text-center text-sm relative z-10">
           <span className="text-text-muted">이미 계정이 있으신가요? </span>
-          <Link href="/login" className="text-mint hover:underline font-medium">
+          <Link href="/login" className="text-neon-blue hover:underline font-bold">
             로그인하기
           </Link>
         </div>

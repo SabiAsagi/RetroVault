@@ -51,16 +51,18 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   const allCountries = useMemo(() => [...new Set(games.map(g => g.country).filter(Boolean))].sort(), [games]);
   const allDevelopers = useMemo(() => [...new Set(games.map(g => g.developer).filter(Boolean))].sort(), [games]);
 
+  const allInstallSizes = useMemo(() => [...new Set(games.map(g => g.installSize).filter(Boolean))].sort(), [games]);
+
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
-  const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', false);
+  const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', true);
   const [platformFilter, setPlatformFilter] = useSessionStorage('archive-platform', '');
   const [genreFilter, setGenreFilter] = useSessionStorage('archive-genre', '');
   const [rarityFilter, setRarityFilter] = useSessionStorage('archive-rarity', '');
   const [eraFilter, setEraFilter] = useSessionStorage<string>('archive-era', initialEra || '');
   const [countryFilter, setCountryFilter] = useSessionStorage('archive-country', '');
   const [developerFilter, setDeveloperFilter] = useSessionStorage('archive-developer', '');
+  const [installSizeFilter, setInstallSizeFilter] = useSessionStorage('archive-installsize', '');
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
-  const [activePlatformTab, setActivePlatformTab] = useSessionStorage('archive-tab', '');
 
   useEffect(() => {
     if (initialEra) { setEraFilter(initialEra); setShowFilters(true); }
@@ -78,13 +80,13 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         (g.genre || '').toLowerCase().includes(q)
       );
     }
-    if (activePlatformTab) result = result.filter(g => g.platform === activePlatformTab);
     if (platformFilter) result = result.filter(g => g.platform === platformFilter);
     if (genreFilter) result = result.filter(g => g.genre === genreFilter);
     if (rarityFilter) result = result.filter(g => g.rarity === rarityFilter);
     if (eraFilter) result = result.filter(g => g.era === eraFilter);
     if (countryFilter) result = result.filter(g => g.country === countryFilter);
     if (developerFilter) result = result.filter(g => g.developer === developerFilter);
+    if (installSizeFilter) result = result.filter(g => g.installSize === installSizeFilter);
 
     const rarityOrder: Record<Rarity, number> = { Legendary: 0, Rare: 1, Uncommon: 2, Common: 3 };
     switch (sortBy) {
@@ -97,13 +99,13 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
       case 'rating':      result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return result;
-  }, [games, searchQuery, activePlatformTab, platformFilter, genreFilter, rarityFilter, eraFilter, countryFilter, developerFilter, sortBy]);
+  }, [games, searchQuery, platformFilter, genreFilter, rarityFilter, eraFilter, countryFilter, developerFilter, installSizeFilter, sortBy]);
 
-  const hasFilters = platformFilter || genreFilter || rarityFilter || eraFilter || countryFilter || developerFilter || activePlatformTab;
+  const hasFilters = platformFilter || genreFilter || rarityFilter || eraFilter || countryFilter || developerFilter || installSizeFilter;
 
   const clearFilters = () => {
     setPlatformFilter(''); setGenreFilter(''); setRarityFilter('');
-    setEraFilter(''); setCountryFilter(''); setDeveloperFilter(''); setActivePlatformTab('');
+    setEraFilter(''); setCountryFilter(''); setDeveloperFilter(''); setInstallSizeFilter('');
   };
 
   // Platform tabs (top 8 by game count)
@@ -151,6 +153,10 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
               <div>
                 <label className="block text-xs font-bold text-text-muted mb-2">국가</label>
                 <FilterSelect value={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-text-muted mb-2">용량</label>
+                <FilterSelect value={installSizeFilter} onChange={setInstallSizeFilter} options={allInstallSizes as string[]} />
               </div>
             </div>
           </aside>
@@ -225,9 +231,9 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
       {/* Platform Quick Tabs */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
         <button
-          onClick={() => setActivePlatformTab('')}
+          onClick={() => setPlatformFilter('')}
           className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer ${
-            !activePlatformTab ? 'bg-mint/10 text-mint border-mint/30 font-medium' : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
+            !platformFilter ? 'bg-mint/10 text-mint border-mint/30 font-medium' : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
           }`}
         >
           <Monitor size={11} />
@@ -236,9 +242,9 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         {platformTabs.map(p => (
           <button
             key={p.name}
-            onClick={() => setActivePlatformTab(prev => prev === p.name ? '' : p.name)}
+            onClick={() => setPlatformFilter(prev => prev === p.name ? '' : p.name)}
             className={`shrink-0 px-3 py-1.5 rounded-full text-xs border transition-all cursor-pointer whitespace-nowrap ${
-              activePlatformTab === p.name
+              platformFilter === p.name
                 ? 'bg-neon-blue/10 text-neon-blue border-neon-blue/30 font-medium'
                 : 'bg-vault-surface text-text-muted border-vault-border hover:border-vault-border-light'
             }`}
