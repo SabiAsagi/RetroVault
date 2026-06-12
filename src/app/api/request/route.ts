@@ -13,14 +13,14 @@ export async function POST(request: Request) {
     const { requestType, ...data } = await request.json();
 
     if (requestType === 'platform') {
-      const { name, manufacturer, releaseYear, description, referenceUrl, imageUrl, type, generation, specs, additionalInput, launchPrice, totalSales, discontinued, country } = data;
+      const { name, manufacturer, releaseYear, description, referenceUrl, imageUrl, type, generation, specs, additionalInput, launchPrice, totalSales, discontinued, country, releaseStatus } = data;
       if (!name || !manufacturer || !releaseYear) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
       const platformReq = await prisma.platform.create({
         data: {
           name, manufacturer, releaseYear: parseInt(releaseYear), description,
           imageUrl, type: type || 'HOME', generation: generation ? parseInt(generation) : null,
           specs, additionalInput, launchPrice, totalSales,
-          discontinued: discontinued === 'true', country,
+          discontinued: discontinued === 'true', country, releaseStatus,
           status: 'PENDING', requestedById: session.user.id
         }
       });

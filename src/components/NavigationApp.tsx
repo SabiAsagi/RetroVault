@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { getGameSlug } from '@/lib/slug';
+import { getGameSlug, getPlatformSlug, getCompanySlug } from '@/lib/slug';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
   Trophy, User, Users, Settings, Search, Mail,
-  Database, X, Menu, LogIn, ChevronDown, Loader2
+  Database, X, Menu, LogIn, ChevronDown, Loader2, Monitor
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useSession, signOut } from 'next-auth/react';
@@ -151,6 +151,23 @@ export default function NavigationApp() {
                   </div>
                 )}
                 
+                {searchResults.platforms?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">콘솔</h3>
+                    {searchResults.platforms.map((p: any) => (
+                      <Link href={`/platforms/${getPlatformSlug(p)}`} key={p.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border flex items-center justify-center">
+                          <Monitor size={16} className="text-text-muted" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-text-primary leading-tight">{p.name}</p>
+                          <p className="text-xs text-text-secondary">{p.manufacturer}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                
                 {searchResults.users?.length > 0 && (
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
@@ -186,7 +203,7 @@ export default function NavigationApp() {
                   </div>
                 )}
                 
-                {(!searchResults.games?.length && !searchResults.users?.length && !searchResults.companies?.length && !searchResults.groups?.length) && (
+                {(!searchResults.games?.length && !searchResults.platforms?.length && !searchResults.users?.length && !searchResults.companies?.length && !searchResults.groups?.length) && (
                   <div className="p-6 text-center text-sm text-text-muted">검색 결과가 없습니다.</div>
                 )}
               </div>

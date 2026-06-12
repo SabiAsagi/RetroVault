@@ -143,18 +143,18 @@ export default function RequestItem() {
           <div className="flex-1 space-y-4">
             <div className="flex flex-wrap gap-2 mb-2">
               <input name="country" value={formData.country} onChange={handleChange} placeholder="국가 (예: JP, US)" className="w-24 px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none" />
-              {requestType === 'game' && (
-                <select name="releaseStatus" value={formData.releaseStatus} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
-                  <option value="RELEASED">발매됨 (RELEASED)</option>
-                  <option value="UNRELEASED">미발매 (UNRELEASED)</option>
-                  <option value="CANCELLED">발매 취소 (CANCELLED)</option>
-                </select>
-              )}
               {requestType === 'platform' && (
-                <select name="discontinued" value={formData.discontinued} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
-                  <option value="false">생산중</option>
-                  <option value="true">단종</option>
-                </select>
+                <>
+                  <select name="releaseStatus" value={formData.releaseStatus} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
+                    <option value="RELEASED">발매됨 (RELEASED)</option>
+                    <option value="UNRELEASED">미발매 (UNRELEASED)</option>
+                    <option value="CANCELLED">발매 취소 (CANCELLED)</option>
+                  </select>
+                  <select name="discontinued" value={formData.discontinued} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
+                    <option value="false">생산중</option>
+                    <option value="true">단종</option>
+                  </select>
+                </>
               )}
             </div>
 

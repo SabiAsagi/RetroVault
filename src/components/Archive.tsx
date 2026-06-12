@@ -64,6 +64,11 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   const [developerFilter, setDeveloperFilter] = useSessionStorage('archive-developer', '');
   const [installSizeFilter, setInstallSizeFilter] = useSessionStorage('archive-installsize', '');
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
+  const [visibleCount, setVisibleCount] = useState(30);
+
+  useEffect(() => {
+    setVisibleCount(30);
+  }, [searchQuery, platformFilters, genreFilter, rarityFilter, eraFilter, sortBy, countryFilter, installSizeFilter, developerFilter]);
 
   useEffect(() => {
     if (initialEra) { setEraFilter(initialEra); setShowFilters(true); }
@@ -103,8 +108,8 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6">
       {onSearchChange && (
-        <div className="mb-6">
-          <div className="relative max-w-2xl mx-auto">
+        <div className="mb-6 flex justify-end">
+          <div className="relative w-full max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
             <input
               type="text"
@@ -278,15 +283,26 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {filtered.map(game => (
+          {filtered.slice(0, visibleCount).map(game => (
             <GameCard key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
           ))}
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(game => (
+          {filtered.slice(0, visibleCount).map(game => (
             <ListRow key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
           ))}
+        </div>
+      )}
+
+      {filtered.length > visibleCount && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setVisibleCount(prev => prev + 30)}
+            className="px-6 py-2.5 bg-vault-surface border border-vault-border rounded-lg text-sm font-bold text-text-primary hover:border-mint hover:text-mint transition-colors"
+          >
+            더보기 ({visibleCount} / {filtered.length})
+          </button>
         </div>
       )}
         </main>

@@ -44,6 +44,11 @@ export default function PlatformsPage() {
   const [typeFilter, setTypeFilter] = useSessionStorage('platforms-type', '');
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('platforms-sort', 'year-asc');
   const [activeManufacturerTab, setActiveManufacturerTab] = useSessionStorage('platforms-tab', '');
+  const [visibleCount, setVisibleCount] = useState(30);
+
+  useEffect(() => {
+    setVisibleCount(30);
+  }, [searchQuery, manufacturerFilter, generationFilter, typeFilter, sortBy, activeManufacturerTab]);
 
   useEffect(() => {
     fetch('/api/platforms-list')
@@ -91,8 +96,8 @@ export default function PlatformsPage() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 page-enter">
       {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-2xl mx-auto">
+      <div className="mb-6 flex justify-end">
+        <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
           <input
             type="text"
@@ -230,15 +235,26 @@ export default function PlatformsPage() {
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filtered.map(p => (
+          {filtered.slice(0, visibleCount).map(p => (
             <PlatformCard key={p.id} platform={p} />
           ))}
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(p => (
+          {filtered.slice(0, visibleCount).map(p => (
             <PlatformListRow key={p.id} platform={p} />
           ))}
+        </div>
+      )}
+      
+      {filtered.length > visibleCount && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setVisibleCount(prev => prev + 30)}
+            className="px-6 py-2.5 bg-vault-surface border border-vault-border rounded-lg text-sm font-bold text-text-primary hover:border-neon-purple hover:text-neon-purple transition-colors"
+          >
+            더보기 ({visibleCount} / {filtered.length})
+          </button>
         </div>
       )}
         </main>

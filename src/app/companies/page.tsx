@@ -54,6 +54,11 @@ export default function CompaniesPage() {
   const allTypes = useMemo(() => [...new Set(companies.map(c => c.type))].filter(Boolean).sort(), [companies]);
   const allCountries = useMemo(() => [...new Set(companies.map(c => c.country).filter(Boolean))].sort() as string[], [companies]);
   const allStatuses = useMemo(() => [...new Set(companies.map(c => c.companyStatus).filter(Boolean))].sort() as string[], [companies]);
+  const [visibleCount, setVisibleCount] = useState(30);
+
+  useEffect(() => {
+    setVisibleCount(30);
+  }, [searchQuery, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);
 
   const devCount = useMemo(() => companies.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH').length, [companies]);
   const pubCount = useMemo(() => companies.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH').length, [companies]);
@@ -93,8 +98,8 @@ export default function CompaniesPage() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 page-enter">
       {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-2xl mx-auto">
+      <div className="mb-6 flex justify-end">
+        <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
           <input
             type="text"
@@ -214,16 +219,27 @@ export default function CompaniesPage() {
           )}
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {filtered.map(c => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {filtered.slice(0, visibleCount).map(c => (
             <CompanyCard key={c.id} company={c} />
           ))}
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(c => (
+          {filtered.slice(0, visibleCount).map(c => (
             <CompanyListRow key={c.id} company={c} />
           ))}
+        </div>
+      )}
+      
+      {filtered.length > visibleCount && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setVisibleCount(prev => prev + 30)}
+            className="px-6 py-2.5 bg-vault-surface border border-vault-border rounded-lg text-sm font-bold text-text-primary hover:border-amber hover:text-amber transition-colors"
+          >
+            더보기 ({visibleCount} / {filtered.length})
+          </button>
         </div>
       )}
         </main>
