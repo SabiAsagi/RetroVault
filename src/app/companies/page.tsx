@@ -113,9 +113,7 @@ export default function CompaniesPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6">
-        {/* Main Content */}
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
         {/* Left Sidebar Filters */}
         <aside className={`w-full md:w-64 shrink-0 bg-vault-surface border border-vault-border rounded-xl p-5 ${showFilters ? 'block' : 'hidden md:block'}`}>
           <div className="flex justify-between items-center mb-6 md:hidden">
@@ -284,7 +282,7 @@ export default function CompaniesPage() {
           </>
         );
       })()}
-        </div>
+        </main>
       </div>
     </div>
   );
