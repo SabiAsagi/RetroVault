@@ -55,20 +55,6 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
             </div>
           )}
 
-          {/* 대표 선반 이미지 프리뷰 (시뮬레이션) */}
-          <div className="mb-6 relative aspect-video bg-vault-bg rounded-xl border border-vault-border overflow-hidden group">
-            <img src="https://images.unsplash.com/photo-1593118247619-e2d6f056869e?q=80&w=800" alt="Shelf Preview" className="w-full h-full object-cover opacity-80" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-              <h3 className="text-text-primary font-black text-lg">{username}님의 컬렉션</h3>
-              <p className="text-mint text-xs font-bold">RetroVault Digital Museum</p>
-            </div>
-            
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <button className="flex items-center gap-2 px-4 py-2 bg-vault-surface border border-vault-border text-text-primary text-sm font-bold rounded-lg hover:text-mint hover:border-mint transition-colors">
-                <ImageIcon size={16} /> 대표 이미지 다운로드
-              </button>
-            </div>
-          </div>
 
           <div className="space-y-4">
             <div>

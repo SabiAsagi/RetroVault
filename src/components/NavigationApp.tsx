@@ -44,6 +44,7 @@ const bottomTabIds = ['dashboard', 'archive', 'consoles', 'community', 'timeline
 export default function NavigationApp() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { data: session } = useSession();
 
@@ -55,6 +56,20 @@ export default function NavigationApp() {
   const [searchResults, setSearchResults] = useState<any>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   React.useEffect(() => {
     if (debouncedSearch.length >= 2) {
@@ -214,7 +229,7 @@ export default function NavigationApp() {
                 <span className="hidden sm:inline">로그인</span>
               </Link>
             ) : (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
@@ -224,10 +239,8 @@ export default function NavigationApp() {
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>
                 {dropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
-                      <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
+                    <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
                         <p className="text-sm font-bold text-text-primary truncate">{(user as any)?.nickname || user?.name}</p>
                         <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
                       </div>
@@ -240,8 +253,7 @@ export default function NavigationApp() {
                       <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2 cursor-pointer">
                         <LogIn size={14} className="rotate-180" /> 로그아웃
                       </button>
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
             )}
