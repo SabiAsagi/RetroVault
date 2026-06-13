@@ -21,15 +21,16 @@ interface Company {
   slug: string;
 }
 
-type SortOption = 'name-asc' | 'name-desc' | 'games-desc' | 'founded-asc' | 'founded-desc';
+type SortOption = 'popularity' | 'name-asc' | 'name-desc' | 'founded-desc' | 'founded-asc' | 'games-desc';
 type ViewMode = 'grid' | 'list';
 
 const sortOptions: { value: SortOption; label: string }[] = [
+  { value: 'popularity', label: '인기도순' },
   { value: 'name-asc', label: '이름 A→Z' },
   { value: 'name-desc', label: '이름 Z→A' },
+  { value: 'founded-desc', label: '최신 설립연도순' },
+  { value: 'founded-asc', label: '과거 설립연도순' },
   { value: 'games-desc', label: '게임 수순' },
-  { value: 'founded-asc', label: '설립연도 ↑' },
-  { value: 'founded-desc', label: '설립연도 ↓' },
 ];
 
 export default function CompaniesPage() {
@@ -42,7 +43,7 @@ export default function CompaniesPage() {
   const [typeFilter, setTypeFilter] = useSessionStorage<string[]>('companies-type', []);
   const [countryFilter, setCountryFilter] = useSessionStorage<string[]>('companies-country', []);
   const [statusFilter, setStatusFilter] = useSessionStorage<string[]>('companies-status', []);
-  const [sortBy, setSortBy] = useSessionStorage<SortOption>('companies-sort', 'name-asc');
+  const [sortBy, setSortBy] = useSessionStorage<SortOption>('companies-sort', 'popularity');
   const [activeTypeTab, setActiveTypeTab] = useSessionStorage('companies-tab', '');
 
   useEffect(() => {
@@ -82,11 +83,12 @@ export default function CompaniesPage() {
     if (statusFilter.length > 0) result = result.filter(c => statusFilter.includes(c.companyStatus || ''));
 
     switch (sortBy) {
+      case 'popularity': result.sort((a, b) => (b.views || 0) - (a.views || 0)); break;
       case 'name-asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
       case 'name-desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
       case 'games-desc': result.sort((a, b) => (b._count.developedGames + b._count.publishedGames) - (a._count.developedGames + a._count.publishedGames)); break;
-      case 'founded-asc': result.sort((a, b) => (a.foundedAt || '9999').localeCompare(b.foundedAt || '9999')); break;
       case 'founded-desc': result.sort((a, b) => (b.foundedAt || '0000').localeCompare(a.foundedAt || '0000')); break;
+      case 'founded-asc': result.sort((a, b) => (a.foundedAt || '9999').localeCompare(b.foundedAt || '9999')); break;
     }
     return result;
   }, [companies, searchQuery, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);

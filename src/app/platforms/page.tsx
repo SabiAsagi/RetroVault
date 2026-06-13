@@ -22,14 +22,15 @@ interface Platform {
   slug: string;
 }
 
-type SortOption = 'year-asc' | 'year-desc' | 'name-asc' | 'name-desc' | 'games-desc';
+type SortOption = 'popularity' | 'name-asc' | 'name-desc' | 'year-desc' | 'year-asc' | 'games-desc';
 type ViewMode = 'grid' | 'list';
 
 const sortOptions: { value: SortOption; label: string }[] = [
-  { value: 'year-asc', label: '출시연도 ↑' },
-  { value: 'year-desc', label: '출시연도 ↓' },
+  { value: 'popularity', label: '인기도순' },
   { value: 'name-asc', label: '이름 A→Z' },
   { value: 'name-desc', label: '이름 Z→A' },
+  { value: 'year-desc', label: '최신 출시연도순' },
+  { value: 'year-asc', label: '과거 출시연도순' },
   { value: 'games-desc', label: '게임 수순' },
 ];
 
@@ -43,7 +44,7 @@ export default function PlatformsPage() {
   const [manufacturerFilter, setManufacturerFilter] = useSessionStorage<string[]>('platforms-manufacturer', []);
   const [generationFilter, setGenerationFilter] = useSessionStorage<string[]>('platforms-gen', []);
   const [typeFilter, setTypeFilter] = useSessionStorage<string[]>('platforms-type', []);
-  const [sortBy, setSortBy] = useSessionStorage<SortOption>('platforms-sort', 'year-asc');
+  const [sortBy, setSortBy] = useSessionStorage<SortOption>('platforms-sort', 'popularity');
   const [activeManufacturerTab, setActiveManufacturerTab] = useSessionStorage('platforms-tab', '');
   const [currentPage, setCurrentPage] = useSessionStorage('platforms-page', 1);
   const itemsPerPage = 30;
@@ -75,6 +76,7 @@ export default function PlatformsPage() {
     if (typeFilter.length > 0) result = result.filter(p => typeFilter.includes(p.type));
 
     switch (sortBy) {
+      case 'popularity': result.sort((a, b) => (b.views || 0) - (a.views || 0)); break;
       case 'year-asc': result.sort((a, b) => a.releaseYear - b.releaseYear); break;
       case 'year-desc': result.sort((a, b) => b.releaseYear - a.releaseYear); break;
       case 'name-asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;

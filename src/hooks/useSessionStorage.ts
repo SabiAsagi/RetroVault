@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useSessionStorage<T>(key: string, initialValue: T) {
   // 서버 사이드 렌더링(SSR)과의 Hydration 불일치를 막기 위해
@@ -16,17 +16,19 @@ export function useSessionStorage<T>(key: string, initialValue: T) {
     }
   }, [key]);
 
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(state) : value;
-      setState(valueToStore);
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
+  const setValue = useCallback((value: T | ((val: T) => T)) => {
+    setState((prevState) => {
+      const valueToStore = value instanceof Function ? value(prevState) : value;
+      try {
+        if (typeof window !== 'undefined') {
+          window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
+        }
+      } catch (error) {
+        console.warn('Error setting sessionStorage', error);
       }
-    } catch (error) {
-      console.warn('Error setting sessionStorage', error);
-    }
-  };
+      return valueToStore;
+    });
+  }, [key]);
 
   return [state, setValue] as const;
 }
