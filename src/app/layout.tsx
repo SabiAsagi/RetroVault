@@ -3,6 +3,7 @@ import './globals.css';
 
 import { Providers } from '../components/Providers';
 import NavigationApp from '../components/NavigationApp';
+import Footer from '../components/Footer';
 import { ToastProvider } from '../contexts/ToastContext';
 
 export const metadata: Metadata = {
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "RetroVault - Digital Retro Game Museum",
     description: "시대를 초월하는 명작들을 수집하고 기록하는 나만의 게임 박물관.",
-    url: "https://retrovault.kr",
+    url: "https://retrovault.kro.kr",
     siteName: "RetroVault",
     images: [
       {
@@ -39,13 +40,14 @@ export const metadata: Metadata = {
       follow: true,
     },
   },
+  alternates: {
+    canonical: 'https://retrovault.kro.kr',
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export default function RootLayout({
@@ -63,9 +65,10 @@ export default function RootLayout({
           <ToastProvider>
             <div className="min-h-screen bg-vault-bg">
               <NavigationApp />
-              <main className="pb-16 sm:pb-0 page-enter">
+              <main className="pb-16 sm:pb-0 page-enter flex-1">
                 {children}
               </main>
+              <Footer />
             </div>
           </ToastProvider>
         </Providers>

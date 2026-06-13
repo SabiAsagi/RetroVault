@@ -23,6 +23,7 @@ interface YearData {
 export default function Timeline({ games, timelineEvents, platforms, onSelectGame }: TimelineProps) {
   const [zoomLevel, setZoomLevel] = useState<'dense' | 'comfortable'>('comfortable');
   const [jumpYear, setJumpYear] = useState<string>('');
+  const [expandedYears, setExpandedYears] = useState<number[]>([]);
   
   // Filters
   const [showFilters, setShowFilters] = useState(false);
@@ -289,21 +290,53 @@ export default function Timeline({ games, timelineEvents, platforms, onSelectGam
 
                 <div className="space-y-6">
                   {/* Consoles */}
-                  {data.consoles.length > 0 && (
-                    <div>
-                      <h4 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 flex items-center gap-1">
-                        <Monitor size={12} className="text-neon-blue" /> 기종 발매
-                      </h4>
-                      <div className="space-y-2">
-                        {data.consoles.map(console => (
-                          <div key={console.id} className="p-2 rounded bg-vault-surface-light border border-vault-border">
-                            <p className="text-xs font-bold text-neon-blue mb-0.5">{console.name}</p>
-                            <p className="text-[10px] text-text-secondary">{console.innovationPoint || console.description}</p>
-                          </div>
-                        ))}
+                  {data.consoles.length > 0 && (() => {
+                    const CORE_PONG_CONSOLES = ['Odyssey', 'Electrotennis', 'Pong', 'Telstar', 'Channel F', 'Color TV Game', '2600', 'VCS', 'Telejogo'];
+                    
+                    const isExpanded = expandedYears.includes(data.year);
+                    const coreConsoles = data.consoles.filter(c => 
+                      data.year > 1979 || CORE_PONG_CONSOLES.some(k => c.name.toLowerCase().includes(k.toLowerCase()))
+                    );
+                    const pongClones = data.consoles.filter(c => 
+                      data.year <= 1979 && !CORE_PONG_CONSOLES.some(k => c.name.toLowerCase().includes(k.toLowerCase()))
+                    );
+
+                    const visibleConsoles = isExpanded ? data.consoles : coreConsoles;
+                    const hiddenCount = data.consoles.length - coreConsoles.length;
+
+                    return (
+                      <div>
+                        <h4 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 flex items-center gap-1">
+                          <Monitor size={12} className="text-neon-blue" /> 기종 발매
+                        </h4>
+                        <div className="space-y-2">
+                          {visibleConsoles.map(console => (
+                            <div key={console.id} className="p-2 rounded bg-vault-surface-light border border-vault-border">
+                              <p className="text-xs font-bold text-neon-blue mb-0.5">{console.name}</p>
+                              <p className="text-[10px] text-text-secondary">{console.innovationPoint || console.description}</p>
+                            </div>
+                          ))}
+                          
+                          {!isExpanded && hiddenCount > 0 && (
+                            <button 
+                              onClick={() => setExpandedYears(prev => [...prev, data.year])}
+                              className="w-full p-2 mt-1 rounded bg-vault-surface hover:bg-vault-surface-light border border-dashed border-vault-border text-[10px] font-bold text-text-muted hover:text-neon-blue transition-colors flex items-center justify-center gap-1"
+                            >
+                              ▼ {data.year}년 유사 콘솔 클론 ({hiddenCount}종 더 보기)
+                            </button>
+                          )}
+                          {isExpanded && hiddenCount > 0 && (
+                            <button 
+                              onClick={() => setExpandedYears(prev => prev.filter(y => y !== data.year))}
+                              className="w-full p-1.5 mt-1 rounded text-[10px] font-bold text-text-muted hover:text-coral transition-colors flex items-center justify-center gap-1"
+                            >
+                              ▲ 접기
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Games */}
                   {data.games.length > 0 && (

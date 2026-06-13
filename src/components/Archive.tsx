@@ -54,7 +54,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: 'year-desc', label: '출시연도 ↓' },
   { value: 'name-asc', label: '이름 A→Z' },
   { value: 'name-desc', label: '이름 Z→A' },
-  { value: 'popularity', label: '인기도순' },
+  { value: 'popularity', label: '인기도순 (기본)' },
   { value: 'rating', label: '평점순' },
 ];
 

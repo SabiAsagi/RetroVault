@@ -49,7 +49,7 @@ export function BoxArtPlaceholder({ game }: { game: Game }) {
     >
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 px-2 py-1.5 flex items-center justify-between">
-        <span className="font-pixel text-[5px] text-text-primary/40">{(game.platform || 'UNK').slice(0, 8)}</span>
+        <span className="font-pixel text-[5px] text-text-primary/40 cursor-help" title={game.platform}>{(game.platform || 'UNK').slice(0, 8)}</span>
         <span className="font-pixel text-[5px] text-text-primary/40">'{year}</span>
       </div>
 
@@ -57,8 +57,9 @@ export function BoxArtPlaceholder({ game }: { game: Game }) {
       <div className="z-10 relative text-center px-3">
         {/* Genre badge */}
         <div
-          className="inline-block px-1.5 py-0.5 rounded text-[6px] font-pixel mb-2 text-text-primary/70"
+          className="inline-block px-1.5 py-0.5 rounded text-[6px] font-pixel mb-2 text-text-primary/70 cursor-help"
           style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
+          title={game.genre}
         >
           {genre}
         </div>
@@ -143,7 +144,7 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
               <Eye size={9} className="text-text-muted" />
               <span className="text-[9px] font-bold text-text-secondary">{game.views ?? 0}</span>
             </div>
-            <span className="text-[9px] text-text-muted truncate">{game.genre}</span>
+            <span className="text-[9px] text-text-muted truncate cursor-help" title={game.genre}>{game.genre}</span>
           </div>
 
           {/* Add button */}

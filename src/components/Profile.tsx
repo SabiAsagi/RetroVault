@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { toPng } from 'html-to-image';
 import { useToast } from '../contexts/ToastContext';
 import Stats from './Stats';
+import { BoxArtPlaceholder } from './GameCard';
 
 interface ProfileProps {
   collection: CollectionItem[];
@@ -378,8 +379,8 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
                       {cg.game.imageUrl ? (
                         <img src={cg.game.imageUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-text-muted">
-                          <Gamepad2 size={32} className="opacity-20" />
+                        <div className="w-full h-full opacity-80 group-hover:opacity-100 transition-opacity">
+                          <BoxArtPlaceholder game={cg.game} />
                         </div>
                       )}
                       {cg.item.ownershipStatus === '전부 보유' && (
