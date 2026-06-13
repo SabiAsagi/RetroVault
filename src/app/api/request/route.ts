@@ -13,13 +13,13 @@ export async function POST(request: Request) {
     const { requestType, ...data } = await request.json();
 
     if (requestType === 'platform') {
-      const { name, manufacturer, releaseYear, description, referenceUrl, imageUrl, type, generation, specs, additionalInput, launchPrice, totalSales, discontinued, country, releaseStatus } = data;
+      const { name, manufacturer, releaseYear, releaseDate, description, referenceUrl, imageUrl, type, generation, specs, additionalInput, launchPrice, totalSales, discontinued, country, releaseStatus, mediaFormat } = data;
       if (!name || !manufacturer || !releaseYear) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
       const platformReq = await prisma.platform.create({
         data: {
-          name, manufacturer, releaseYear: parseInt(releaseYear), description,
+          name, manufacturer, releaseYear: parseInt(releaseYear), releaseDate, description,
           imageUrl, type: type || 'HOME', generation: generation ? parseInt(generation) : null,
-          specs, additionalInput, launchPrice, totalSales,
+          specs, additionalInput, launchPrice, totalSales, mediaFormat,
           discontinued: discontinued === 'true', country, releaseStatus,
           status: 'PENDING', requestedById: session.user.id
         }
@@ -27,12 +27,13 @@ export async function POST(request: Request) {
       return NextResponse.json(platformReq);
     } 
     else if (requestType === 'company') {
-      const { name, type, country, websiteUrl, description, imageUrl, releaseYear, historicalContext } = data;
+      const { name, type, country, websiteUrl, description, imageUrl, releaseYear, historicalContext, companyStatus, subsidiaries, flagshipFranchises, keyFigures } = data;
       if (!name || !type) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
       const companyReq = await prisma.company.create({
         data: {
           name, type, country, websiteUrl, description: historicalContext || description,
           logoUrl: imageUrl, foundedAt: releaseYear ? String(releaseYear) : null,
+          companyStatus, subsidiaries, flagshipFranchises, keyFigures,
           status: 'PENDING', requestedById: session.user.id
         }
       });

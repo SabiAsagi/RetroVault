@@ -138,7 +138,14 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               {company.companyStatus && (
                 <div className="flex justify-between items-start gap-4">
                   <span className="text-text-muted shrink-0">현재 상태</span>
-                  <span className="text-text-primary font-bold text-right">{company.companyStatus}</span>
+                  <span className="text-text-primary font-bold text-right">{company.companyStatus === 'ACTIVE' ? '운영중' : company.companyStatus === 'DEFUNCT' ? '폐업' : company.companyStatus === 'ACQUIRED' ? '인수합병' : company.companyStatus}</span>
+                </div>
+              )}
+
+              {company.subsidiaries && (
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-text-muted shrink-0">산하 스튜디오</span>
+                  <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.subsidiaries}</span>
                 </div>
               )}
 

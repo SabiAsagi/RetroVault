@@ -83,8 +83,12 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6">
               <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
-                <span className="text-text-muted text-sm font-bold">출시년도</span>
-                <span className="text-text-primary text-sm font-bold">{platform.releaseYear === 0 ? '불명' : `${platform.releaseYear}년`}</span>
+                <span className="text-text-muted text-sm font-bold">출시일</span>
+                <span className="text-text-primary text-sm font-bold">{platform.releaseDate ? platform.releaseDate : (platform.releaseYear === 0 ? '불명' : `${platform.releaseYear}년`)}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">미디어 매체</span>
+                <span className="text-text-primary text-sm font-bold">{platform.mediaFormat || '불명'}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
                 <span className="text-text-muted text-sm font-bold">제조 국가</span>

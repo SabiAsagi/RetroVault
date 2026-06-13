@@ -144,6 +144,9 @@ model Platform {
   description     String?
   innovationPoint String?
 
+  releaseDate     String?
+  mediaFormat     String?
+
   launchPrice     String?
   totalSales      String?
   discontinued    Boolean?
@@ -179,6 +182,7 @@ model Company {
 
   companyStatus      String? // ACTIVE, DEFUNCT, ACQUIRED
   flagshipFranchises String?
+  subsidiaries       String?
   views              Int     @default(0)
   keyFigures         String?
 

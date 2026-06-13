@@ -307,6 +307,7 @@ export default function RequestItem() {
                     ))}
                   </select>
                   <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="개발/발매 국가 (예: 일본, 미국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <input name="mediaFormat" value={formData.mediaFormat || ''} onChange={handleChange} placeholder="미디어 매체 (예: 카트리지, CD-ROM, 블루레이)" className="col-span-2 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 </>
               )}
               {requestType === 'company' && (
@@ -328,6 +329,9 @@ export default function RequestItem() {
                   </div>
                   <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} placeholder="웹사이트 URL" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                   <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="설립 국가 (예: 일본, 미국)" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <input name="keyFigures" value={formData.keyFigures || ''} onChange={handleChange} placeholder="핵심 인물 (예: 미야모토 시게루)" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <input name="subsidiaries" value={formData.subsidiaries || ''} onChange={handleChange} placeholder="산하 스튜디오 (쉼표로 구분)" className="w-full col-span-2 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <input name="flagshipFranchises" value={formData.flagshipFranchises || ''} onChange={handleChange} placeholder="대표 프랜차이즈 (쉼표로 구분)" className="w-full col-span-2 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 </>
               )}
             </div>

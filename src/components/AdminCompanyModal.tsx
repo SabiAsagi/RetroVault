@@ -98,6 +98,9 @@ export default function AdminCompanyModal({
                 </div>
                 <input type="url" name="websiteUrl" value={formData.websiteUrl || ''} onChange={handleChange} placeholder="웹사이트 URL" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="설립 국가 (예: 일본, 미국, 한국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                <input name="keyFigures" value={formData.keyFigures || ''} onChange={handleChange} placeholder="핵심 인물 (예: 미야모토 시게루)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                <input name="subsidiaries" value={formData.subsidiaries || ''} onChange={handleChange} placeholder="산하 스튜디오 (쉼표로 구분)" className="col-span-2 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                <input name="flagshipFranchises" value={formData.flagshipFranchises || ''} onChange={handleChange} placeholder="대표 프랜차이즈 (쉼표로 구분)" className="col-span-2 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-6 p-4 mt-6 bg-vault-surface border border-vault-border rounded-xl">
