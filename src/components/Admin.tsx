@@ -1278,9 +1278,6 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         handleImageUpload={handleImageUpload}
         uploadingImage={uploadingImage}
       />
-      </div>
-        </div>
-      )}
     </div>
   );
 }
