@@ -1,6 +1,6 @@
 "use client";
 import { Game } from "@/types";
-import { ArrowLeft, Star, Plus, Info } from "lucide-react";
+import { ArrowLeft, Star, Plus, Info, Eye } from "lucide-react";
 import Link from "next/link";
 import { BoxArtPlaceholder } from "@/components/GameCard";
 import { useState } from "react";
@@ -92,7 +92,17 @@ export default function GameDetailClient({ game }: { game: Game }) {
               </div>
             </div>
             <div className="h-10 w-px bg-vault-border" />
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center text-mint">
+                <Eye size={20} />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-text-muted">조회수</p>
+                <p className="text-lg font-black text-text-primary">{game.views || 0}</p>
+              </div>
+            </div>
+            <div className="h-10 w-px bg-vault-border hidden sm:block" />
+            <div className="flex items-center gap-3 flex-1 min-w-0 hidden sm:flex">
               <div className="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue shrink-0">
                 <Info size={20} />
               </div>

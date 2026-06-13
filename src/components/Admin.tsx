@@ -265,7 +265,6 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               <th className="px-4 py-3">플랫폼</th>
               <th className="px-4 py-3">출시연도</th>
               <th className="px-4 py-3">제작사</th>
-              <th className="px-4 py-3">희귀도</th>
               <th className="px-4 py-3 text-right">관리</th>
             </tr>
           </thead>
@@ -277,16 +276,6 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 <td className="px-4 py-3 text-text-secondary truncate">{g.platform}</td>
                 <td className="px-4 py-3 text-text-secondary">{g.releaseYear}</td>
                 <td className="px-4 py-3 text-text-secondary truncate">{g.developer || '-'}</td>
-                <td className="px-4 py-3">
-                  <span className={`text-[10px] px-2 py-0.5 rounded border
-                    ${g.rarity === 'Legendary' ? 'bg-coral/10 border-coral/30 text-coral' : 
-                      g.rarity === 'Rare' ? 'bg-amber/10 border-amber/30 text-amber' : 
-                      g.rarity === 'Uncommon' ? 'bg-mint/10 border-mint/30 text-mint' : 
-                      'bg-vault-bg border-vault-border text-text-muted'}`
-                  }>
-                    {g.rarity}
-                  </span>
-                </td>
                 <td className="px-4 py-3 text-right space-x-2">
                   <button 
                     onClick={() => { setEditingGame(g); setIsGameModalOpen(true); }}

@@ -50,38 +50,36 @@ export default function Dashboard({ games, collection, historyGame, popularColle
               <Calendar size={12} />
             </span>
             <span className="font-pixel text-[10px] text-mint tracking-widest uppercase">
-              {(historyGame as any)?.isRandom ? "Admin's Pick" : "그날의 게임 추천"}
+              {(historyGame as any)?.isRandom ? "RetroVault" : "그날의 게임 추천"}
             </span>
           </div>
           
           <h1 className="text-3xl md:text-5xl font-black text-text-primary leading-tight mb-4 tracking-tight">
-            {historyGame ? (
+            {historyGame && !(historyGame as any)?.isRandom ? (
               <>
-                {historyGame.releaseYear}년 {(historyGame as any)?.isRandom ? '출시' : '오늘'},
+                {historyGame.releaseYear}년 오늘,
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
                   {historyGame.title}
                 </span>
                 <br />
-                {(historyGame as any)?.isRandom ? '레트로 명작의 숨결' : (historyGame.country ? `${historyGame.country} 발매` : '발매')}
+                {historyGame.country ? `${historyGame.country} 발매` : '발매'}
               </>
             ) : (
               <>
-                아카이브의 시작,
+                모든 시대를 아우르는,
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
-                  레트로 게임의 세계로
+                  당신만의 레트로 아카이브
                 </span>
               </>
             )}
           </h1>
           
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
-            {historyGame 
-              ? ((historyGame as any)?.isRandom 
-                  ? '관리자가 추천하는 명작입니다. 게임 역사에 큰 획을 그은 이 타이틀을 아카이브에서 확인해보세요.'
-                  : `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`)
-              : '수많은 명작 게임들이 당신의 컬렉션을 기다리고 있습니다. 첫 게임을 추가해보세요!'}
+            {historyGame && !(historyGame as any)?.isRandom 
+              ? `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`
+              : 'RetroVault는 레트로 비디오 게임의 역사와 데이터베이스를 보존하고, 전 세계의 명작들을 함께 발굴하고 기록하는 공간입니다.'}
           </p>
           
           <div className="flex flex-wrap gap-3">

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { PlusCircle, Loader2, Image as ImageIcon, Info, Calendar, Monitor, Gamepad2, Upload, Star, X, XCircle } from 'lucide-react';
 
 export default function AdminGameModal({ 
@@ -12,9 +12,32 @@ export default function AdminGameModal({
   uploadingImage 
 }: any) {
   if (!isOpen) return null;
-  const [formData, setFormData] = useState<any>(initialData || {});
+  const [formData, setFormData] = useState<any>(initialData || { dateType: 'EXACT' });
   const [activeTab, setActiveTab] = useState<'info' | 'era'>('info');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [platforms, setPlatforms] = useState<any[]>([]);
+  const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false);
+  const [platformSearchQuery, setPlatformSearchQuery] = useState('');
+
+  useEffect(() => {
+    fetch('/api/platforms-list')
+      .then(res => res.json())
+      .then(data => setPlatforms(data || []))
+      .catch(err => console.error(err));
+  }, []);
+
+  const togglePlatform = (platformName: string) => {
+    const currentPlatforms = formData.platform ? formData.platform.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
+    if (currentPlatforms.includes(platformName)) {
+      setFormData({ ...formData, platform: currentPlatforms.filter((p: string) => p !== platformName).join(', ') });
+    } else {
+      currentPlatforms.push(platformName);
+      setFormData({ ...formData, platform: currentPlatforms.join(', ') });
+    }
+  };
+
+  const selectedPlatforms = formData.platform ? formData.platform.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
 
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,11 +57,15 @@ export default function AdminGameModal({
           e.preventDefault();
           
           let finalReleaseYear = formData.releaseYear;
-          if (formData.releaseDate) {
-            finalReleaseYear = new Date(formData.releaseDate).getFullYear();
+          if (formData.dateType === 'UNKNOWN') {
+            finalReleaseYear = 0;
+          } else if (formData.releaseDate) {
+            const match = String(formData.releaseDate).match(/\d{4}/);
+            if (match) finalReleaseYear = Number(match[0]);
           }
+          const finalReleaseDate = formData.dateType === 'UNKNOWN' ? '불명' : formData.releaseDate;
 
-          onSave({ ...formData, releaseYear: finalReleaseYear });
+          onSave({ ...formData, releaseYear: finalReleaseYear, releaseDate: finalReleaseDate });
         }} className="p-6 overflow-y-auto flex-1 space-y-8">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left Column: Image Upload */}
@@ -67,8 +94,6 @@ export default function AdminGameModal({
             {/* Right Column */}
             <div className="flex-1 space-y-4 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="국가 (예: 일본, 미국)" className="w-32 px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none" />
-                
                 <select name="releaseStatus" value={formData.releaseStatus || 'RELEASED'} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
                   <option value="RELEASED">정식 출시 (RELEASED)</option>
                   <option value="UNRELEASED">미출시 (UNRELEASED)</option>
@@ -81,11 +106,77 @@ export default function AdminGameModal({
               
               <input name="originalTitle" value={formData.originalTitle || ''} onChange={handleChange} placeholder="원제 (선택)" className="w-full text-xl font-bold bg-transparent border-b border-vault-border focus:border-mint pb-1 text-text-secondary focus:outline-none placeholder:text-text-muted/50 mt-2" />
 
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <input name="platform" value={formData.platform || ''} onChange={handleChange} placeholder="플랫폼 (예: SFC, MD) - 여러 개 입력 가능" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+              <div className="grid grid-cols-2 gap-4 mt-4 relative">
+                <div className="col-span-2 md:col-span-1 relative z-50">
+                  <div className="flex flex-wrap gap-1 mb-1">
+                    {selectedPlatforms.map((p: string) => (
+                      <span key={p} className="flex items-center gap-1 px-2 py-0.5 bg-vault-bg border border-vault-border rounded text-[10px] text-text-primary">
+                        {p} <X size={10} className="cursor-pointer hover:text-coral" onClick={() => togglePlatform(p)} />
+                      </span>
+                    ))}
+                  </div>
+                  <div 
+                    className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary cursor-text flex items-center justify-between"
+                    onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
+                  >
+                    <span className={selectedPlatforms.length === 0 ? "text-text-muted/50" : ""}>
+                      {selectedPlatforms.length === 0 ? "플랫폼 선택 (여러 개 가능)" : "플랫폼 추가 선택..."}
+                    </span>
+                  </div>
+                  {isPlatformDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-1 w-full max-h-60 flex flex-col bg-vault-surface border border-vault-border rounded-lg shadow-2xl p-2 z-[60]">
+                      <div className="pb-2 mb-2 border-b border-vault-border">
+                        <input 
+                          type="text" 
+                          placeholder="플랫폼 검색 또는 직접 입력 후 엔터..." 
+                          value={platformSearchQuery}
+                          onChange={e => setPlatformSearchQuery(e.target.value)}
+                          className="w-full bg-vault-bg border border-vault-border rounded p-2 text-xs text-text-primary focus:border-mint focus:outline-none"
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const val = platformSearchQuery.trim();
+                              if (val && !selectedPlatforms.includes(val)) {
+                                togglePlatform(val);
+                                setPlatformSearchQuery('');
+                              }
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="overflow-y-auto flex-1 custom-scrollbar">
+                        {platforms.filter(p => p.name.toLowerCase().includes(platformSearchQuery.toLowerCase())).map(p => (
+                          <div 
+                            key={p.id} 
+                            onClick={() => togglePlatform(p.name)}
+                            className="flex items-center gap-2 p-2 hover:bg-vault-surface-light rounded cursor-pointer"
+                          >
+                            <input type="checkbox" checked={selectedPlatforms.includes(p.name)} readOnly className="accent-mint" />
+                            <span className="text-sm text-text-primary">{p.name}</span>
+                          </div>
+                        ))}
+                        {platforms.filter(p => p.name.toLowerCase().includes(platformSearchQuery.toLowerCase())).length === 0 && (
+                          <div className="text-center p-2 text-text-muted text-xs">
+                            검색 결과가 없습니다. <br/>입력 후 엔터를 누르면 새 플랫폼이 추가됩니다.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <input name="developer" value={formData.developer || ''} onChange={handleChange} placeholder="개발사" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 <input name="publisher" value={formData.publisher || ''} onChange={handleChange} placeholder="유통사" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
-                <input required type="date" name="releaseDate" value={formData.releaseDate || ''} onChange={handleChange} placeholder="출시 날짜 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" title="출시 날짜" />
+                <div className="w-full col-span-2 md:col-span-1 flex gap-2">
+                  <select name="dateType" value={formData.dateType || 'EXACT'} onChange={handleChange} className="bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none shrink-0 w-32">
+                    <option value="EXACT">정확한 날짜</option>
+                    <option value="YEAR">연도만</option>
+                    <option value="UNKNOWN">불명</option>
+                  </select>
+                  {formData.dateType !== 'UNKNOWN' && (
+                    <input type="text" name="releaseDate" value={formData.releaseDate || ''} onChange={handleChange} placeholder={formData.dateType === 'YEAR' ? 'YYYY년 (예: 1990년)' : 'YYYY년 MM월 DD일'} className="flex-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  )}
+                </div>
+                <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="개발/발매 국가 (예: 일본, 미국, 한국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-6 p-4 mt-6 bg-vault-surface border border-vault-border rounded-xl">

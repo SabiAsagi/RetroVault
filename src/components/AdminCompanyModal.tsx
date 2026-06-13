@@ -12,7 +12,7 @@ export default function AdminCompanyModal({
   uploadingImage 
 }: any) {
   if (!isOpen) return null;
-  const [formData, setFormData] = useState<any>(initialData || {});
+  const [formData, setFormData] = useState<any>(initialData || { dateType: 'EXACT' });
   const [activeTab, setActiveTab] = useState<'info'>('info');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,11 +34,15 @@ export default function AdminCompanyModal({
           e.preventDefault();
           
           let finalReleaseYear = formData.releaseYear;
-          if (formData.releaseDate) {
-            finalReleaseYear = new Date(formData.releaseDate).getFullYear();
+          if (formData.dateType === 'UNKNOWN') {
+            finalReleaseYear = 0;
+          } else if (formData.releaseDate) {
+            const match = String(formData.releaseDate).match(/\d{4}/);
+            if (match) finalReleaseYear = Number(match[0]);
           }
+          const finalReleaseDate = formData.dateType === 'UNKNOWN' ? '불명' : formData.releaseDate;
 
-          onSave({ ...formData, foundedYear: finalReleaseYear });
+          onSave({ ...formData, foundedYear: finalReleaseYear, releaseDate: finalReleaseDate });
         }} className="p-6 overflow-y-auto flex-1 space-y-8">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left Column: Image Upload */}
@@ -67,7 +71,6 @@ export default function AdminCompanyModal({
             {/* Right Column */}
             <div className="flex-1 space-y-4 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="국가 (예: 일본, 미국)" className="w-32 px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none" />
                 <select name="type" value={formData.type || formData.companyType || 'DEVELOPER'} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
                   <option value="DEVELOPER">개발사</option>
                   <option value="PUBLISHER">유통사</option>
@@ -78,8 +81,18 @@ export default function AdminCompanyModal({
               <input required name="name" value={formData.name || ''} onChange={handleChange} placeholder="제작사명 입력 (필수)" className="w-full text-3xl font-black bg-transparent border-b-2 border-vault-border focus:border-mint pb-2 text-text-primary focus:outline-none placeholder:text-text-muted/50" />
               
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <input type="date" name="releaseDate" value={formData.releaseDate || ''} onChange={handleChange} placeholder="설립 날짜" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" title="설립 날짜" />
-                <input type="url" name="websiteUrl" value={formData.websiteUrl || ''} onChange={handleChange} placeholder="웹사이트 URL" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                <div className="w-full col-span-2 md:col-span-1 flex gap-2">
+                  <select name="dateType" value={formData.dateType || 'EXACT'} onChange={handleChange} className="bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none shrink-0 w-32">
+                    <option value="EXACT">정확한 날짜</option>
+                    <option value="YEAR">연도만</option>
+                    <option value="UNKNOWN">불명</option>
+                  </select>
+                  {formData.dateType !== 'UNKNOWN' && (
+                    <input type="text" name="releaseDate" value={formData.releaseDate || ''} onChange={handleChange} placeholder={formData.dateType === 'YEAR' ? 'YYYY년 (예: 1990년)' : 'YYYY년 MM월 DD일'} className="flex-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  )}
+                </div>
+                <input type="url" name="websiteUrl" value={formData.websiteUrl || ''} onChange={handleChange} placeholder="웹사이트 URL" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="설립 국가 (예: 일본, 미국, 한국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-6 p-4 mt-6 bg-vault-surface border border-vault-border rounded-xl">

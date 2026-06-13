@@ -12,7 +12,7 @@ export default function AdminPlatformModal({
   uploadingImage 
 }: any) {
   if (!isOpen) return null;
-  const [formData, setFormData] = useState<any>(initialData || {});
+  const [formData, setFormData] = useState<any>(initialData || { dateType: 'EXACT' });
   const [activeTab, setActiveTab] = useState<'info' | 'era'>('info');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,12 +34,17 @@ export default function AdminPlatformModal({
           e.preventDefault();
           
           let finalReleaseYear = formData.releaseYear;
-          if (formData.releaseDate) {
-            finalReleaseYear = new Date(formData.releaseDate).getFullYear();
+          if (formData.dateType === 'UNKNOWN') {
+            finalReleaseYear = 0;
+          } else if (formData.releaseDate) {
+            const match = String(formData.releaseDate).match(/\d{4}/);
+            if (match) finalReleaseYear = Number(match[0]);
           }
+          const finalReleaseDate = formData.dateType === 'UNKNOWN' ? '불명' : formData.releaseDate;
 
           onSave({ 
             ...formData, 
+            releaseDate: finalReleaseDate,
             releaseYear: finalReleaseYear,
             generation: formData.generation ? parseInt(formData.generation) : 1
           });
@@ -71,7 +76,6 @@ export default function AdminPlatformModal({
             {/* Right Column */}
             <div className="flex-1 space-y-4 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="국가 (예: 일본, 미국)" className="w-32 px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none" />
                 <select name="discontinued" value={formData.discontinued ? "true" : "false"} onChange={e => setFormData({...formData, discontinued: e.target.value === "true"})} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
                   <option value="false">생산중</option>
                   <option value="true">단종</option>
@@ -88,16 +92,31 @@ export default function AdminPlatformModal({
               
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <input required name="manufacturer" value={formData.manufacturer || ''} onChange={handleChange} placeholder="제조사 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
-                <input required type="date" name="releaseDate" value={formData.releaseDate || ''} onChange={handleChange} placeholder="출시 날짜 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" title="출시 날짜" />
+                <div className="w-full flex gap-2">
+                  <select name="dateType" value={formData.dateType || 'EXACT'} onChange={handleChange} className="bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none shrink-0 w-32">
+                    <option value="EXACT">정확한 날짜</option>
+                    <option value="YEAR">연도만</option>
+                    <option value="UNKNOWN">불명</option>
+                  </select>
+                  {formData.dateType !== 'UNKNOWN' && (
+                    <input type="text" name="releaseDate" value={formData.releaseDate || ''} onChange={handleChange} placeholder={formData.dateType === 'YEAR' ? 'YYYY년 (예: 1990년)' : 'YYYY년 MM월 DD일'} className="flex-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  )}
+                </div>
                 
                 <select name="type" value={formData.type || 'HOME'} onChange={handleChange} className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none">
                   <option value="HOME">가정용 (HOME)</option>
                   <option value="HANDHELD">휴대용 (HANDHELD)</option>
                   <option value="HYBRID">하이브리드 (HYBRID)</option>
                   <option value="ARCADE">아케이드 (ARCADE)</option>
-                  <option value="PC">PC</option>
+                  <option value="ETC">기타 (ETC)</option>
                 </select>
-                <input type="number" name="generation" value={formData.generation || ''} onChange={handleChange} placeholder="세대 (예: 5)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                <select name="generation" value={formData.generation || ''} onChange={handleChange} className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none">
+                  <option value="">세대 선택 안함</option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                    <option key={num} value={num}>{num}세대</option>
+                  ))}
+                </select>
+                <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="개발/발매 국가 (예: 일본, 미국, 한국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-6 p-4 mt-6 bg-vault-surface border border-vault-border rounded-xl">

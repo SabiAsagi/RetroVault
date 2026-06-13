@@ -31,6 +31,7 @@ export default function RequestItem() {
 
   const [platforms, setPlatforms] = useState<any[]>([]);
   const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false);
+  const [platformSearchQuery, setPlatformSearchQuery] = useState('');
 
   useEffect(() => {
     fetch('/api/platforms-list')
@@ -73,13 +74,19 @@ export default function RequestItem() {
 
       // If they used date, parse out the year
       let finalReleaseYear = formData.releaseYear;
-      if (formData.releaseDate) {
-        finalReleaseYear = new Date(formData.releaseDate).getFullYear().toString();
+      if (formData.dateType === 'UNKNOWN') {
+        finalReleaseYear = '0';
+      } else if (formData.releaseDate) {
+        const match = formData.releaseDate.match(/\d{4}/);
+        if (match) finalReleaseYear = match[0];
       }
+
+      const finalReleaseDate = formData.dateType === 'UNKNOWN' ? '불명' : formData.releaseDate;
 
       const submitData = { 
         requestType, 
         ...formData,
+        releaseDate: finalReleaseDate,
         releaseYear: finalReleaseYear,
         imageUrl: uploadedImageUrl,
         title: requestType === 'game' ? formData.title : formData.name,
@@ -213,54 +220,88 @@ export default function RequestItem() {
                       </span>
                     </div>
                     {isPlatformDropdownOpen && (
-                      <div className="absolute z-10 top-full left-0 mt-1 w-full max-h-48 overflow-y-auto bg-vault-surface border border-vault-border rounded-lg shadow-xl p-2">
-                        {platforms.map(p => (
-                          <div 
-                            key={p.id} 
-                            onClick={() => togglePlatform(p.name)}
-                            className="flex items-center gap-2 p-2 hover:bg-vault-surface-light rounded cursor-pointer"
-                          >
-                            <input type="checkbox" checked={selectedPlatforms.includes(p.name)} readOnly className="accent-mint" />
-                            <span className="text-sm text-text-primary">{p.name}</span>
-                          </div>
-                        ))}
-                        <div className="pt-2 mt-2 border-t border-vault-border">
+                      <div className="absolute z-10 top-full left-0 mt-1 w-full max-h-60 flex flex-col bg-vault-surface border border-vault-border rounded-lg shadow-xl p-2">
+                        <div className="pb-2 mb-2 border-b border-vault-border">
                           <input 
                             type="text" 
-                            placeholder="직접 입력 후 엔터" 
+                            placeholder="플랫폼 검색 또는 직접 입력 후 엔터..." 
+                            value={platformSearchQuery}
+                            onChange={e => setPlatformSearchQuery(e.target.value)}
                             className="w-full bg-vault-bg border border-vault-border rounded p-2 text-xs text-text-primary focus:border-mint focus:outline-none"
                             onKeyDown={e => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
-                                const val = (e.target as HTMLInputElement).value.trim();
+                                const val = platformSearchQuery.trim();
                                 if (val && !selectedPlatforms.includes(val)) {
                                   togglePlatform(val);
-                                  (e.target as HTMLInputElement).value = '';
+                                  setPlatformSearchQuery('');
                                 }
                               }
                             }}
                           />
+                        </div>
+                        <div className="overflow-y-auto flex-1 custom-scrollbar">
+                          {platforms.filter(p => p.name.toLowerCase().includes(platformSearchQuery.toLowerCase())).map(p => (
+                            <div 
+                              key={p.id} 
+                              onClick={() => togglePlatform(p.name)}
+                              className="flex items-center gap-2 p-2 hover:bg-vault-surface-light rounded cursor-pointer"
+                            >
+                              <input type="checkbox" checked={selectedPlatforms.includes(p.name)} readOnly className="accent-mint" />
+                              <span className="text-sm text-text-primary">{p.name}</span>
+                            </div>
+                          ))}
+                          {platforms.filter(p => p.name.toLowerCase().includes(platformSearchQuery.toLowerCase())).length === 0 && (
+                            <div className="text-center p-2 text-text-muted text-xs">
+                              검색 결과가 없습니다. <br/>입력 후 엔터를 누르면 새 플랫폼이 추가됩니다.
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
                   </div>
                   <input name="developer" value={formData.developer} onChange={handleChange} placeholder="개발사" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                   <input name="publisher" value={formData.publisher} onChange={handleChange} placeholder="유통사" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
-                  <input required type="date" name="releaseDate" value={formData.releaseDate} onChange={handleChange} placeholder="출시 날짜 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" title="출시 날짜" />
+                  <div className="w-full col-span-2 md:col-span-1 flex gap-2">
+                    <select name="dateType" value={formData.dateType || 'EXACT'} onChange={handleChange} className="bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none shrink-0 w-32">
+                      <option value="EXACT">정확한 날짜</option>
+                      <option value="YEAR">연도만</option>
+                      <option value="UNKNOWN">불명</option>
+                    </select>
+                    {formData.dateType !== 'UNKNOWN' && (
+                      <input type="text" name="releaseDate" value={formData.releaseDate} onChange={handleChange} placeholder={formData.dateType === 'YEAR' ? 'YYYY년 (예: 1990년)' : 'YYYY년 MM월 DD일'} className="flex-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                    )}
+                  </div>
+                  <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="발매 국가 (예: 일본, 미국, 한국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 </>
               )}
               {requestType === 'platform' && (
                 <>
                   <input required name="manufacturer" value={formData.manufacturer} onChange={handleChange} placeholder="제조사 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
-                  <input required type="date" name="releaseDate" value={formData.releaseDate} onChange={handleChange} placeholder="출시 날짜 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" title="출시 날짜" />
+                  <div className="w-full flex gap-2">
+                    <select name="dateType" value={formData.dateType || 'EXACT'} onChange={handleChange} className="bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none shrink-0 w-32">
+                      <option value="EXACT">정확한 날짜</option>
+                      <option value="YEAR">연도만</option>
+                      <option value="UNKNOWN">불명</option>
+                    </select>
+                    {formData.dateType !== 'UNKNOWN' && (
+                      <input type="text" name="releaseDate" value={formData.releaseDate} onChange={handleChange} placeholder={formData.dateType === 'YEAR' ? 'YYYY년 (예: 1990년)' : 'YYYY년 MM월 DD일'} className="flex-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                    )}
+                  </div>
                   <select name="type" value={formData.type} onChange={handleChange} className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none">
                     <option value="HOME">가정용 (HOME)</option>
                     <option value="HANDHELD">휴대용 (HANDHELD)</option>
                     <option value="HYBRID">하이브리드 (HYBRID)</option>
                     <option value="ARCADE">아케이드 (ARCADE)</option>
-                    <option value="PC">PC</option>
+                    <option value="ETC">기타 (ETC)</option>
                   </select>
-                  <input type="number" name="generation" value={formData.generation} onChange={handleChange} placeholder="세대 (예: 5)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <select name="generation" value={formData.generation || ''} onChange={handleChange} className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none">
+                    <option value="">세대 선택 안함</option>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                      <option key={num} value={num}>{num}세대</option>
+                    ))}
+                  </select>
+                  <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="개발/발매 국가 (예: 일본, 미국)" className="col-span-2 md:col-span-1 w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 </>
               )}
               {requestType === 'company' && (
@@ -270,8 +311,18 @@ export default function RequestItem() {
                     <option value="PUBLISHER">유통사</option>
                     <option value="BOTH">개발/유통 모두</option>
                   </select>
-                  <input type="date" name="releaseDate" value={formData.releaseDate} onChange={handleChange} placeholder="설립 날짜" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" title="설립 날짜" />
-                  <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} placeholder="웹사이트 URL" className="w-full col-span-2 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <div className="w-full flex gap-2">
+                    <select name="dateType" value={formData.dateType || 'EXACT'} onChange={handleChange} className="bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none shrink-0 w-32">
+                      <option value="EXACT">정확한 날짜</option>
+                      <option value="YEAR">연도만</option>
+                      <option value="UNKNOWN">불명</option>
+                    </select>
+                    {formData.dateType !== 'UNKNOWN' && (
+                      <input type="text" name="releaseDate" value={formData.releaseDate} onChange={handleChange} placeholder={formData.dateType === 'YEAR' ? 'YYYY년 (예: 1990년)' : 'YYYY년 MM월 DD일'} className="flex-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                    )}
+                  </div>
+                  <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} placeholder="웹사이트 URL" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
+                  <input name="country" value={formData.country || ''} onChange={handleChange} placeholder="설립 국가 (예: 일본, 미국)" className="w-full col-span-2 md:col-span-1 bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />
                 </>
               )}
             </div>
