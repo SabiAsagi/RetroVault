@@ -57,7 +57,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           <h1 className="text-3xl md:text-5xl font-black text-text-primary leading-tight mb-4 tracking-tight">
             {historyGame ? (
               <>
-                {historyGame.releaseYear}년 오늘,
+                {historyGame.releaseYear}년 {(historyGame as any)?.isRandom ? '출시' : '오늘'},
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
                   {historyGame.title}
@@ -104,7 +104,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           subtitle="다른 유저들이 구성한 멋진 컬렉션을 구경해보세요."
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {popularCollections.slice(0, 6).map(col => {
+          {[...popularCollections].sort((a, b) => b.likes - a.likes).slice(0, 6).map(col => {
             const colGames = (col.games || []).slice(0, 3); // Show up to 3 games
             
             return (

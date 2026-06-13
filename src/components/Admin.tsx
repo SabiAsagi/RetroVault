@@ -6,6 +6,9 @@ import {
   Settings, RefreshCw, Trash2, Search, Edit, Eye, MoreVertical, Plus,
   CheckCircle, XCircle, AlertTriangle, ShieldAlert, Monitor, Shield
 } from 'lucide-react';
+import AdminGameModal from "./AdminGameModal";
+import AdminPlatformModal from "./AdminPlatformModal";
+import AdminCompanyModal from "./AdminCompanyModal";
 import { CollectionItem, Game, TimelineEvent } from '../types';
 import { createGame, updateGame, deleteGame, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from '@/app/actions/admin';
 import { resolveReport } from '@/app/actions/admin-dashboard';
@@ -334,7 +337,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
             <tr>
               <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">이름</th>
+              <th className="px-4 py-3">닉네임</th>
               <th className="px-4 py-3">이메일</th>
               <th className="px-4 py-3">권한</th>
               <th className="px-4 py-3">가입일</th>
@@ -345,7 +348,8 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           <tbody className="divide-y divide-vault-border/50">
             {(localUsers || []).map(u => (
               <tr key={u.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-text-primary font-medium">{u.name || u.nickname || '익명'}</td>
+                <td className="px-4 py-3 text-text-muted font-mono text-xs truncate" title={u.id}>{u.id}</td>
+                <td className="px-4 py-3 text-text-primary font-medium">{u.nickname || u.name || '익명'}</td>
                 <td className="px-4 py-3 text-text-secondary text-xs">{u.email}</td>
                 <td className="px-4 py-3">
                   <span className={`text-[10px] px-2 py-0.5 rounded border ${u.role === 'ADMIN' ? 'bg-neon-blue/10 border-neon-blue/30 text-neon-blue' : 'bg-vault-bg border-vault-border text-text-muted'}`}>
@@ -667,6 +671,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
             <tr>
+              <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">이름</th>
               <th className="px-4 py-3">제조사</th>
               <th className="px-4 py-3">세대</th>
@@ -870,95 +875,32 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       )}
 
       {/* ── Game Form Modal ── */}
-      {isGameModalOpen && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-              <h3 className="text-lg font-bold text-text-primary">{editingGame?.id ? '게임 수정' : '게임 추가'}</h3>
-              <button onClick={() => setIsGameModalOpen(false)} className="text-text-muted hover:text-text-primary">
-                <XCircle size={20} />
-              </button>
-            </div>
-            
-            <form onSubmit={async (e) => {
-              e.preventDefault();
-              setIsSubmitting(true);
-              try {
-                if (editingGame?.id) {
-                  await updateGame(editingGame.id, editingGame);
-                } else {
-                  await createGame(editingGame);
-                }
-                window.location.reload();
-              } catch (err: any) {
-                alert(err.message || '오류 발생');
-              } finally {
-                setIsSubmitting(false);
-              }
-            }} className="p-4 overflow-y-auto flex-1 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">타이틀</label>
-                <input required type="text" value={editingGame?.title || ''} onChange={e => setEditingGame({...editingGame, title: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">플랫폼</label>
-                  <input required type="text" value={editingGame?.platform || ''} onChange={e => setEditingGame({...editingGame, platform: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="예: Super Famicom" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">출시연도</label>
-                  <input required type="number" value={editingGame?.releaseYear || ''} onChange={e => setEditingGame({...editingGame, releaseYear: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">장르</label>
-                  <input type="text" value={editingGame?.genre || ''} onChange={e => setEditingGame({...editingGame, genre: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">제작사</label>
-                  <input type="text" value={(editingGame as any)?.developer || ''} onChange={e => setEditingGame({...editingGame, developer: e.target.value} as any)} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="예: Nintendo" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">커버 이미지 (업로드 또는 URL)</label>
-                <div className="flex gap-2 items-center">
-                  <input type="text" value={editingGame?.imageUrl || ''} onChange={e => setEditingGame({...editingGame, imageUrl: e.target.value})} className="flex-1 bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" placeholder="https://..." />
-                  <div className="relative overflow-hidden inline-block bg-vault-surface-light border border-vault-border rounded hover:bg-vault-border-light cursor-pointer">
-                    <button type="button" className="px-4 py-2 text-sm text-text-primary font-bold whitespace-nowrap min-w-[100px]" disabled={uploadingImage}>
-                      {uploadingImage ? '업로드 중...' : '파일 선택'}
-                    </button>
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, (url) => setEditingGame({...editingGame, imageUrl: url}))}
-                      className="absolute left-0 top-0 opacity-0 w-full h-full cursor-pointer"
-                      disabled={uploadingImage}
-                    />
-                  </div>
-                </div>
-                {editingGame?.imageUrl && (
-                  <div className="mt-2 w-32 aspect-[3/4] rounded-md overflow-hidden border border-vault-border">
-                    <img src={editingGame.imageUrl} alt="preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
-                <textarea rows={3} value={editingGame?.description || ''} onChange={e => setEditingGame({...editingGame, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-vault-border">
-                <button type="button" onClick={() => setIsGameModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-text-primary">취소</button>
-                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-neon-blue text-text-primary rounded text-sm font-bold disabled:opacity-50">
-                  {isSubmitting ? '저장 중...' : '저장하기'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
+      <AdminGameModal 
+        isOpen={isGameModalOpen} 
+        onClose={() => setIsGameModalOpen(false)} 
+        initialData={editingGame} 
+        onSave={async (data) => {
+          setIsSubmitting(true);
+          try {
+            if (data.id) {
+              const { updateGame } = require('@/app/actions/admin');
+              await updateGame(data.id, data);
+            } else {
+              const { createGame } = require('@/app/actions/admin');
+              await createGame(data);
+            }
+            window.location.reload();
+          } catch (err) {
+            alert(err.message || '오류 발생');
+          } finally {
+            setIsSubmitting(false);
+          }
+        }} 
+        isSubmitting={isSubmitting}
+        handleImageUpload={handleImageUpload}
+        uploadingImage={uploadingImage}
+      />
+      
       {/* ── Timeline Form Modal ── */}
       {isTimelineModalOpen && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -1113,76 +1055,32 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
       )}
 
       {/* ── Company Form Modal ── */}
-      {isCompanyModalOpen && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-              <h3 className="text-lg font-bold text-text-primary">{editingCompany?.id ? '회사 수정' : '회사 추가'}</h3>
-              <button onClick={() => setIsCompanyModalOpen(false)} className="text-text-muted hover:text-text-primary">
-                <XCircle size={20} />
-              </button>
-            </div>
-            
-            <form onSubmit={async (e) => {
-              e.preventDefault();
-              setIsSubmitting(true);
-              try {
-                if (editingCompany?.id) {
-                  await updateCompany(editingCompany.id, editingCompany);
-                } else {
-                  await createCompany(editingCompany);
-                }
-                window.location.reload();
-              } catch (err: any) {
-                alert(err.message || '오류 발생');
-              } finally {
-                setIsSubmitting(false);
-              }
-            }} className="p-4 overflow-y-auto flex-1 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">회사명</label>
-                <input required type="text" value={editingCompany?.name || ''} onChange={e => setEditingCompany({...editingCompany, name: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">유형</label>
-                  <select value={editingCompany?.type || 'DEVELOPER'} onChange={e => setEditingCompany({...editingCompany, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary">
-                    <option value="DEVELOPER">개발사</option>
-                    <option value="PUBLISHER">유통사</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">국가</label>
-                  <input type="text" value={editingCompany?.country || ''} onChange={e => setEditingCompany({...editingCompany, country: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">로고 업로드</label>
-                <div className="flex items-center gap-3">
-                  {editingCompany?.logoUrl && <img src={editingCompany.logoUrl} className="h-10 w-10 object-cover rounded bg-vault-surface border border-vault-border" />}
-                  <input type="file" accept="image/*" disabled={uploadingImage} onChange={(e) => handleImageUpload(e, (url) => setEditingCompany({...editingCompany, logoUrl: url}))} className="text-xs text-text-primary file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-vault-surface file:text-amber hover:file:bg-vault-surface-light disabled:opacity-50" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">웹사이트</label>
-                <input type="text" value={editingCompany?.websiteUrl || ''} onChange={e => setEditingCompany({...editingCompany, websiteUrl: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
-                <textarea rows={3} value={editingCompany?.description || ''} onChange={e => setEditingCompany({...editingCompany, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-vault-border">
-                <button type="button" onClick={() => setIsCompanyModalOpen(false)} className="px-4 py-2 text-sm text-text-muted hover:text-text-primary">취소</button>
-                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-amber text-text-primary rounded text-sm font-bold disabled:opacity-50">
-                  {isSubmitting ? '저장 중...' : '저장하기'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
+      <AdminCompanyModal 
+        isOpen={isCompanyModalOpen} 
+        onClose={() => setIsCompanyModalOpen(false)} 
+        initialData={editingCompany} 
+        onSave={async (data) => {
+          setIsSubmitting(true);
+          try {
+            if (data.id) {
+              const { updateCompany } = require('@/app/actions/admin-extensions');
+              await updateCompany(data.id, data);
+            } else {
+              const { createCompany } = require('@/app/actions/admin-extensions');
+              await createCompany(data);
+            }
+            window.location.reload();
+          } catch (err) {
+            alert(err.message || '오류 발생');
+          } finally {
+            setIsSubmitting(false);
+          }
+        }} 
+        isSubmitting={isSubmitting}
+        handleImageUpload={handleImageUpload}
+        uploadingImage={uploadingImage}
+      />
+      
       {/* ── Custom Confirm / Prompt Modal ── */}
       {confirmModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -1355,112 +1253,32 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         </div>
       )}
       {/* ── Platform Form Modal ── */}
-      {isPlatformModalOpen && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50">
-              <h3 className="text-lg font-bold text-text-primary">{editingPlatform?.id ? '플랫폼 수정' : '플랫폼 추가'}</h3>
-              <button onClick={() => setIsPlatformModalOpen(false)} className="text-text-muted hover:text-text-primary">
-                <XCircle size={20} />
-              </button>
-            </div>
-            
-            <form onSubmit={async (e) => {
-              e.preventDefault();
-              setIsSubmitting(true);
-              try {
-                if (editingPlatform?.id) {
-                  await updatePlatform(editingPlatform.id, editingPlatform);
-                } else {
-                  await createPlatform(editingPlatform);
-                }
-                window.location.reload();
-              } catch (err: any) {
-                alert(err.message || '오류 발생');
-              } finally {
-                setIsSubmitting(false);
-              }
-            }} className="p-4 overflow-y-auto flex-1 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">이름</label>
-                  <input required type="text" value={editingPlatform?.name || ''} onChange={e => setEditingPlatform({...editingPlatform, name: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">제조사</label>
-                  <input type="text" value={editingPlatform?.manufacturer || ''} onChange={e => setEditingPlatform({...editingPlatform, manufacturer: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">세대 (숫자)</label>
-                  <input required type="number" value={editingPlatform?.generation || 1} onChange={e => setEditingPlatform({...editingPlatform, generation: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">출시연도</label>
-                  <input required type="number" value={editingPlatform?.releaseYear || 0} onChange={e => setEditingPlatform({...editingPlatform, releaseYear: parseInt(e.target.value)})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">타입 (HOME, HANDHELD, HYBRID 등)</label>
-                  <input type="text" value={editingPlatform?.type || 'HOME'} onChange={e => setEditingPlatform({...editingPlatform, type: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">이미지 업로드</label>
-                  <div className="flex items-center gap-3">
-                    {editingPlatform?.imageUrl && <img src={editingPlatform.imageUrl} className="h-10 w-10 object-cover rounded bg-vault-surface border border-vault-border" />}
-                    <input type="file" accept="image/*" disabled={uploadingImage} onChange={(e) => handleImageUpload(e, (url) => setEditingPlatform({...editingPlatform, imageUrl: url}))} className="text-xs text-text-primary file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-vault-surface file:text-neon-purple hover:file:bg-vault-surface-light disabled:opacity-50" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">제조 국가</label>
-                  <input type="text" value={editingPlatform?.country || ''} onChange={e => setEditingPlatform({...editingPlatform, country: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">기기 스펙</label>
-                  <input type="text" value={editingPlatform?.specs || ''} onChange={e => setEditingPlatform({...editingPlatform, specs: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">보조 기기</label>
-                  <input type="text" value={editingPlatform?.additionalInput || ''} onChange={e => setEditingPlatform({...editingPlatform, additionalInput: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">내장 게임 수</label>
-                  <input type="text" value={editingPlatform?.gamesCount || ''} onChange={e => setEditingPlatform({...editingPlatform, gamesCount: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">출시 가격</label>
-                  <input type="text" value={editingPlatform?.launchPrice || ''} onChange={e => setEditingPlatform({...editingPlatform, launchPrice: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted mb-1">총 판매량</label>
-                  <input type="text" value={editingPlatform?.totalSales || ''} onChange={e => setEditingPlatform({...editingPlatform, totalSales: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary" />
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-                <label className="flex items-center gap-2 cursor-pointer text-sm text-text-primary">
-                  <input type="checkbox" checked={editingPlatform?.discontinued || false} onChange={e => setEditingPlatform({...editingPlatform, discontinued: e.target.checked})} className="rounded bg-vault-bg border-vault-border text-neon-purple focus:ring-neon-purple" />
-                  단종됨
-                </label>
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-text-muted">발매 상태:</label>
-                  <select value={editingPlatform?.releaseStatus || 'RELEASED'} onChange={e => setEditingPlatform({...editingPlatform, releaseStatus: e.target.value})} className="bg-vault-bg border border-vault-border rounded px-2 py-1 text-sm text-text-primary">
-                    <option value="RELEASED">정식 출시</option>
-                    <option value="UNRELEASED">미출시</option>
-                    <option value="CANCELLED">개발 취소</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-1">설명</label>
-                <textarea rows={4} value={editingPlatform?.description || ''} onChange={e => setEditingPlatform({...editingPlatform, description: e.target.value})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary resize-none" />
-              </div>
-              <div className="pt-4 flex justify-end gap-2 border-t border-vault-border">
-                <button type="button" onClick={() => setIsPlatformModalOpen(false)} className="px-4 py-2 text-text-muted hover:text-text-primary text-sm">취소</button>
-                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-neon-purple hover:bg-neon-purple/80 text-vault-bg rounded text-sm font-bold flex items-center gap-2 disabled:opacity-50">
-                  {isSubmitting ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
-                  저장하기
-                </button>
-              </div>
-            </form>
-          </div>
+      <AdminPlatformModal 
+        isOpen={isPlatformModalOpen} 
+        onClose={() => setIsPlatformModalOpen(false)} 
+        initialData={editingPlatform} 
+        onSave={async (data) => {
+          setIsSubmitting(true);
+          try {
+            if (data.id) {
+              const { updatePlatform } = require('@/app/actions/admin-extensions');
+              await updatePlatform(data.id, data);
+            } else {
+              const { createPlatform } = require('@/app/actions/admin-extensions');
+              await createPlatform(data);
+            }
+            window.location.reload();
+          } catch (err) {
+            alert(err.message || '오류 발생');
+          } finally {
+            setIsSubmitting(false);
+          }
+        }} 
+        isSubmitting={isSubmitting}
+        handleImageUpload={handleImageUpload}
+        uploadingImage={uploadingImage}
+      />
+      </div>
         </div>
       )}
     </div>

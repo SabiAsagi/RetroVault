@@ -42,9 +42,11 @@ export default function GameDetailClient({ game }: { game: Game }) {
         <div className="flex-1 space-y-6 min-w-0">
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
-                {game.platform}
-              </span>
+              {game.platform?.split(',').map(p => p.trim()).filter(Boolean).map(p => (
+                <span key={p} className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
+                  {p}
+                </span>
+              ))}
               <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
                 {game.releaseDate ? game.releaseDate : `${game.releaseYear}년`}
               </span>
