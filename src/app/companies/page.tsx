@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Building2, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from 'lucide-react';
 import Link from "next/link";
+import MultiSelectFilter from "@/components/MultiSelectFilter";
 
 interface Company {
   id: string;
@@ -38,9 +39,9 @@ export default function CompaniesPage() {
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('companies-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('companies-filters-open', false);
-  const [typeFilter, setTypeFilter] = useSessionStorage('companies-type', '');
-  const [countryFilter, setCountryFilter] = useSessionStorage('companies-country', '');
-  const [statusFilter, setStatusFilter] = useSessionStorage('companies-status', '');
+  const [typeFilter, setTypeFilter] = useSessionStorage<string[]>('companies-type', []);
+  const [countryFilter, setCountryFilter] = useSessionStorage<string[]>('companies-country', []);
+  const [statusFilter, setStatusFilter] = useSessionStorage<string[]>('companies-status', []);
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('companies-sort', 'name-asc');
   const [activeTypeTab, setActiveTypeTab] = useSessionStorage('companies-tab', '');
 
@@ -76,9 +77,9 @@ export default function CompaniesPage() {
     }
     if (activeTypeTab === 'DEVELOPER') result = result.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH');
     if (activeTypeTab === 'PUBLISHER') result = result.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH');
-    if (typeFilter) result = result.filter(c => c.type === typeFilter);
-    if (countryFilter) result = result.filter(c => c.country === countryFilter);
-    if (statusFilter) result = result.filter(c => c.companyStatus === statusFilter);
+    if (typeFilter.length > 0) result = result.filter(c => typeFilter.includes(c.type));
+    if (countryFilter.length > 0) result = result.filter(c => countryFilter.includes(c.country || ''));
+    if (statusFilter.length > 0) result = result.filter(c => statusFilter.includes(c.companyStatus || ''));
 
     switch (sortBy) {
       case 'name-asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
@@ -91,8 +92,8 @@ export default function CompaniesPage() {
   }, [companies, searchQuery, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);
 
 
-  const hasFilters = typeFilter || countryFilter || statusFilter;
-  const clearFilters = () => { setTypeFilter(''); setCountryFilter(''); setStatusFilter(''); };
+  const hasFilters = typeFilter.length > 0 || countryFilter.length > 0 || statusFilter.length > 0;
+  const clearFilters = () => { setTypeFilter([]); setCountryFilter([]); setStatusFilter([]); };
 
   const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
 
@@ -112,29 +113,9 @@ export default function CompaniesPage() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Sidebar Filters */}
-        {showFilters && (
-          <aside className="w-full md:w-56 shrink-0 space-y-6">
-            <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
-              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
-                <Filter size={16} className="text-amber" /> 상세 필터
-              </h3>
-              {hasFilters && (
-                <button onClick={clearFilters} className="text-[10px] text-text-muted hover:text-amber transition-colors cursor-pointer">초기화</button>
-              )}
-            </div>
-            
-            <div className="bg-vault-surface border border-vault-border rounded-xl p-4 space-y-4 shadow-sm sticky top-20">
-              <FilterSelect label="타입" value={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
-              <FilterSelect label="국가" value={countryFilter} onChange={setCountryFilter} options={allCountries} />
-              <FilterSelect label="상태" value={statusFilter} onChange={setStatusFilter} options={allStatuses} />
-            </div>
-          </aside>
-        )}
-
+      <div className="flex flex-col gap-6">
         {/* Main Content */}
-        <main className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
 
       {/* Header */}
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
@@ -190,8 +171,25 @@ export default function CompaniesPage() {
               <List size={14} />
             </button>
           </div>
+          </div>
         </div>
-      </div>
+
+        {/* Horizontal Filters */}
+        {showFilters && (
+          <div className="mb-6 p-4 bg-vault-surface border border-vault-border rounded-xl shadow-sm">
+            <div className="flex flex-wrap gap-4 items-end">
+              <MultiSelectFilter label="타입" values={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
+              <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries} />
+              <MultiSelectFilter label="상태" values={statusFilter} onChange={setStatusFilter} options={allStatuses} />
+              
+              {hasFilters && (
+                <button onClick={clearFilters} className="text-xs px-3 py-1.5 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors h-7 mb-0.5 cursor-pointer">
+                  초기화
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
       {/* Results */}
       {loading ? (
@@ -279,7 +277,7 @@ export default function CompaniesPage() {
           </>
         );
       })()}
-        </main>
+        </div>
       </div>
     </div>
   );
@@ -293,7 +291,7 @@ function CompanyCard({ company }: { company: Company }) {
     <Link href={`/companies/${company.slug}`} className="block group">
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
         <div className="relative">
-          <div className="w-full aspect-square bg-vault-surface-light flex items-center justify-center p-4" style={{ background: 'linear-gradient(145deg, #3a2a10 0%, #1a1a2e 100%)' }}>
+          <div className="w-full aspect-square bg-vault-surface-light dark:bg-vault-surface flex items-center justify-center p-4">
             {company.logoUrl ? (
               <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
             ) : (

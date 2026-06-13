@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Database, Calendar, Monitor, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from "lucide-react";
 import Link from "next/link";
+import MultiSelectFilter from "@/components/MultiSelectFilter";
 
 interface Platform {
   id: string;
@@ -39,9 +40,9 @@ export default function PlatformsPage() {
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('platforms-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('platforms-filters-open', false);
-  const [manufacturerFilter, setManufacturerFilter] = useSessionStorage('platforms-manufacturer', '');
-  const [generationFilter, setGenerationFilter] = useSessionStorage('platforms-gen', '');
-  const [typeFilter, setTypeFilter] = useSessionStorage('platforms-type', '');
+  const [manufacturerFilter, setManufacturerFilter] = useSessionStorage<string[]>('platforms-manufacturer', []);
+  const [generationFilter, setGenerationFilter] = useSessionStorage<string[]>('platforms-gen', []);
+  const [typeFilter, setTypeFilter] = useSessionStorage<string[]>('platforms-type', []);
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('platforms-sort', 'year-asc');
   const [activeManufacturerTab, setActiveManufacturerTab] = useSessionStorage('platforms-tab', '');
   const [currentPage, setCurrentPage] = useSessionStorage('platforms-page', 1);
@@ -69,9 +70,9 @@ export default function PlatformsPage() {
       result = result.filter(p => p.name.toLowerCase().includes(q) || p.manufacturer.toLowerCase().includes(q));
     }
     if (activeManufacturerTab) result = result.filter(p => p.manufacturer === activeManufacturerTab);
-    if (manufacturerFilter) result = result.filter(p => p.manufacturer === manufacturerFilter);
-    if (generationFilter) result = result.filter(p => String(p.generation) === generationFilter);
-    if (typeFilter) result = result.filter(p => p.type === typeFilter);
+    if (manufacturerFilter.length > 0) result = result.filter(p => manufacturerFilter.includes(p.manufacturer));
+    if (generationFilter.length > 0) result = result.filter(p => generationFilter.includes(String(p.generation)));
+    if (typeFilter.length > 0) result = result.filter(p => typeFilter.includes(p.type));
 
     switch (sortBy) {
       case 'year-asc': result.sort((a, b) => a.releaseYear - b.releaseYear); break;
@@ -83,8 +84,8 @@ export default function PlatformsPage() {
     return result;
   }, [platforms, searchQuery, activeManufacturerTab, manufacturerFilter, generationFilter, typeFilter, sortBy]);
 
-  const hasFilters = manufacturerFilter || generationFilter || typeFilter || activeManufacturerTab;
-  const clearFilters = () => { setManufacturerFilter(''); setGenerationFilter(''); setTypeFilter(''); setActiveManufacturerTab(''); };
+  const hasFilters = manufacturerFilter.length > 0 || generationFilter.length > 0 || typeFilter.length > 0 || activeManufacturerTab;
+  const clearFilters = () => { setManufacturerFilter([]); setGenerationFilter([]); setTypeFilter([]); setActiveManufacturerTab(''); };
 
   // Manufacturer tabs (top 8 by platform count)
   const manufacturerTabs = useMemo(() => {
@@ -110,45 +111,7 @@ export default function PlatformsPage() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Sidebar Filters */}
-        {showFilters && (
-          <aside className="w-full md:w-56 shrink-0 space-y-6">
-            <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
-              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
-                <Filter size={16} className="text-neon-purple" /> 상세 필터
-              </h3>
-              {hasFilters && (
-                <button onClick={clearFilters} className="text-[10px] text-text-muted hover:text-neon-purple transition-colors cursor-pointer">초기화</button>
-              )}
-            </div>
-            
-            <div className="bg-vault-surface border border-vault-border rounded-xl p-4 space-y-4 shadow-sm sticky top-20">
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">제조사 (다중 선택)</label>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
-                  {allManufacturers.map(m => (
-                    <label key={m} className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={manufacturerFilter === m}
-                        onChange={(e) => {
-                          if (e.target.checked) setManufacturerFilter(m);
-                          else setManufacturerFilter('');
-                        }}
-                        className="rounded border-vault-border bg-vault-bg text-neon-purple focus:ring-neon-purple focus:ring-offset-vault-surface"
-                      />
-                      <span className="text-xs text-text-secondary group-hover:text-text-primary transition-colors">{m}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <FilterSelect label="세대" value={generationFilter} onChange={setGenerationFilter} options={allGenerations.map(String)} labelMap={Object.fromEntries(allGenerations.map(g => [String(g), `${g}세대`]))} />
-              <FilterSelect label="타입" value={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
-            </div>
-          </aside>
-        )}
-
+      <div className="flex flex-col gap-6">
         {/* Main Content */}
         <main className="flex-1 min-w-0">
 
@@ -206,8 +169,25 @@ export default function PlatformsPage() {
               <List size={14} />
             </button>
           </div>
+          </div>
         </div>
-      </div>
+
+        {/* Horizontal Filters */}
+        {showFilters && (
+          <div className="mb-6 p-4 bg-vault-surface border border-vault-border rounded-xl shadow-sm">
+            <div className="flex flex-wrap gap-4 items-end">
+              <MultiSelectFilter label="제조사" values={manufacturerFilter} onChange={setManufacturerFilter} options={allManufacturers} />
+              <MultiSelectFilter label="세대" values={generationFilter} onChange={setGenerationFilter} options={allGenerations.map(String)} labelMap={Object.fromEntries(allGenerations.map(g => [String(g), `${g}세대`]))} />
+              <MultiSelectFilter label="타입" values={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
+              
+              {hasFilters && (
+                <button onClick={clearFilters} className="text-xs px-3 py-1.5 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors h-7 mb-0.5">
+                  초기화
+                </button>
+              )}
+            </div>
+          </div>
+        )}
         {/* Results */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -308,7 +288,7 @@ function PlatformCard({ platform }: { platform: Platform }) {
           {platform.imageUrl ? (
             <img src={platform.imageUrl} alt={platform.name} className="w-full aspect-[4/3] object-cover" />
           ) : (
-            <div className="w-full aspect-[4/3] bg-vault-surface-light flex items-center justify-center" style={{ background: 'linear-gradient(145deg, #2a1a4e 0%, #1a1a3e 100%)' }}>
+            <div className="w-full aspect-[4/3] bg-vault-surface-light dark:bg-vault-surface flex items-center justify-center">
               <Monitor size={32} className="text-neon-purple/40" />
             </div>
           )}

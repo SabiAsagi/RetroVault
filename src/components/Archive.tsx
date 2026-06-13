@@ -3,6 +3,7 @@ import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Game, Rarity, SortOption, Era } from '../types';
 import { Filter, Search, X, LayoutGrid, List, Monitor } from 'lucide-react';
 import Link from 'next/link';
+import MultiSelectFilter from './MultiSelectFilter';
 import GameCard from './GameCard';
 
 interface ArchiveProps {
@@ -34,12 +35,25 @@ const eraLabels: Record<Era, string> = {
   '9th Gen (2020-)': '9세대',
 };
 
+const genreLabels: Record<string, string> = {
+  Action: '액션',
+  Adventure: '어드벤처',
+  RPG: '롤플레잉',
+  Strategy: '전략',
+  Simulation: '시뮬레이션',
+  Sports: '스포츠',
+  Racing: '레이싱',
+  Fighting: '격투',
+  Puzzle: '퍼즐',
+  Shooter: '슈팅',
+  Platformer: '플랫포머',
+};
+
 const sortOptions: { value: SortOption; label: string }[] = [
   { value: 'year-asc', label: '출시연도 ↑' },
   { value: 'year-desc', label: '출시연도 ↓' },
   { value: 'name-asc', label: '이름 A→Z' },
   { value: 'name-desc', label: '이름 Z→A' },
-  { value: 'rarity', label: '희귀도순' },
   { value: 'popularity', label: '인기도순' },
   { value: 'rating', label: '평점순' },
 ];
@@ -57,23 +71,38 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', true);
   const [platformFilters, setPlatformFilters] = useSessionStorage<string[]>('archive-platforms', []);
-  const [genreFilter, setGenreFilter] = useSessionStorage('archive-genre', '');
-  const [rarityFilter, setRarityFilter] = useSessionStorage('archive-rarity', '');
-  const [eraFilter, setEraFilter] = useSessionStorage<string>('archive-era', initialEra || '');
-  const [countryFilter, setCountryFilter] = useSessionStorage('archive-country', '');
-  const [developerFilter, setDeveloperFilter] = useSessionStorage('archive-developer', '');
-  const [installSizeFilter, setInstallSizeFilter] = useSessionStorage('archive-installsize', '');
+  const [genreFilter, setGenreFilter] = useSessionStorage<string[]>('archive-genre', []);
+  const [countryFilter, setCountryFilter] = useSessionStorage<string[]>('archive-country', []);
+  const [developerFilter, setDeveloperFilter] = useSessionStorage<string[]>('archive-developer', []);
+  
+  const [installSizeMin, setInstallSizeMin] = useSessionStorage<string>('archive-size-min', '');
+  const [installSizeMax, setInstallSizeMax] = useSessionStorage<string>('archive-size-max', '');
+  const [installSizeUnit, setInstallSizeUnit] = useSessionStorage<string>('archive-size-unit', 'MB');
+  
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, platformFilters, genreFilter, rarityFilter, eraFilter, sortBy, countryFilter, installSizeFilter, developerFilter]);
+  }, [searchQuery, platformFilters, genreFilter, sortBy, countryFilter, developerFilter, installSizeMin, installSizeMax, installSizeUnit]);
 
   useEffect(() => {
-    if (initialEra) { setEraFilter(initialEra); setShowFilters(true); }
+    if (initialEra) { setShowFilters(true); }
   }, [initialEra]);
+
+  const parseInstallSizeToMB = (sizeStr: string | null | undefined): number | null => {
+    if (!sizeStr) return null;
+    const match = sizeStr.match(/([\d.]+)\s*(MB|GB|KB|TB)/i);
+    if (!match) return null;
+    const value = parseFloat(match[1]);
+    const unit = match[2].toUpperCase();
+    if (unit === 'KB') return value / 1024;
+    if (unit === 'MB') return value;
+    if (unit === 'GB') return value * 1024;
+    if (unit === 'TB') return value * 1024 * 1024;
+    return null;
+  };
 
   const filtered = useMemo(() => {
     let result = [...games];
@@ -82,29 +111,35 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
       result = result.filter(g => g.title.toLowerCase().includes(q) || g.developer?.toLowerCase().includes(q) || g.publisher?.toLowerCase().includes(q));
     }
     if (platformFilters.length > 0) result = result.filter(g => platformFilters.includes(g.platform));
-    if (genreFilter) result = result.filter(g => g.genre === genreFilter);
-    if (rarityFilter) result = result.filter(g => g.rarity === rarityFilter);
-    if (eraFilter) result = result.filter(g => g.era === eraFilter);
-    if (countryFilter) result = result.filter(g => g.country === countryFilter);
-    if (developerFilter) result = result.filter(g => g.developer === developerFilter);
-    if (installSizeFilter) result = result.filter(g => g.installSize === installSizeFilter);
+    if (genreFilter.length > 0) result = result.filter(g => genreFilter.includes(g.genre));
+    if (countryFilter.length > 0) result = result.filter(g => countryFilter.includes(g.country || ''));
+    if (developerFilter.length > 0) result = result.filter(g => developerFilter.includes(g.developer || ''));
+    
+    if (installSizeMin || installSizeMax) {
+      const minVal = installSizeMin ? parseFloat(installSizeMin) * (installSizeUnit === 'GB' ? 1024 : 1) : 0;
+      const maxVal = installSizeMax ? parseFloat(installSizeMax) * (installSizeUnit === 'GB' ? 1024 : 1) : Infinity;
+      
+      result = result.filter(g => {
+        const sizeMB = parseInstallSizeToMB(g.installSize);
+        if (sizeMB === null) return false;
+        return sizeMB >= minVal && sizeMB <= maxVal;
+      });
+    }
 
-    const rarityOrder: Record<Rarity, number> = { Legendary: 0, Rare: 1, Uncommon: 2, Common: 3 };
     switch (sortBy) {
       case 'year-asc':    result.sort((a, b) => a.releaseYear - b.releaseYear); break;
       case 'year-desc':   result.sort((a, b) => b.releaseYear - a.releaseYear); break;
       case 'name-asc':    result.sort((a, b) => a.title.localeCompare(b.title)); break;
       case 'name-desc':   result.sort((a, b) => b.title.localeCompare(a.title)); break;
-      case 'rarity':      result.sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]); break;
       case 'popularity':  result.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0)); break;
       case 'rating':      result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return result;
-  }, [games, searchQuery, platformFilters, genreFilter, rarityFilter, eraFilter, sortBy, countryFilter, installSizeFilter]);
+  }, [games, searchQuery, platformFilters, genreFilter, sortBy, countryFilter, developerFilter, installSizeMin, installSizeMax, installSizeUnit]);
 
-  const hasFilters = platformFilters.length > 0 || genreFilter || rarityFilter || eraFilter || countryFilter || developerFilter || installSizeFilter;
+  const hasFilters = platformFilters.length > 0 || genreFilter.length > 0 || countryFilter.length > 0 || developerFilter.length > 0 || installSizeMin || installSizeMax;
 
-  const clearFilters = () => { setPlatformFilters([]); setGenreFilter(''); setRarityFilter(''); setEraFilter(''); setCountryFilter(''); setDeveloperFilter(''); setInstallSizeFilter(''); };
+  const clearFilters = () => { setPlatformFilters([]); setGenreFilter([]); setCountryFilter([]); setDeveloperFilter([]); setInstallSizeMin(''); setInstallSizeMax(''); };
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6">
@@ -123,67 +158,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Sidebar Filters */}
-        {showFilters && (
-          <aside className="w-full md:w-56 shrink-0 space-y-6">
-            <div className="flex items-center justify-between bg-vault-surface border border-vault-border p-3 rounded-lg">
-              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
-                <Filter size={16} className="text-mint" /> 상세 필터
-              </h3>
-              {hasFilters && (
-                <button onClick={clearFilters} className="text-xs text-text-muted hover:text-coral transition-colors">초기화</button>
-              )}
-            </div>
-            
-            <div className="bg-vault-surface border border-vault-border rounded-xl p-4 space-y-4 shadow-sm sticky top-20">
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">플랫폼 (다중 선택)</label>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
-                  {allPlatforms.map(p => (
-                    <label key={p} className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={platformFilters.includes(p)}
-                        onChange={(e) => {
-                          if (e.target.checked) setPlatformFilters([...platformFilters, p]);
-                          else setPlatformFilters(platformFilters.filter(f => f !== p));
-                        }}
-                        className="rounded border-vault-border bg-vault-bg text-mint focus:ring-mint focus:ring-offset-vault-surface"
-                      />
-                      <span className="text-xs text-text-secondary group-hover:text-text-primary transition-colors">{p}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">장르</label>
-                <FilterSelect value={genreFilter} onChange={setGenreFilter} options={allGenres} />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">개발사</label>
-                <FilterSelect value={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">희귀도</label>
-                <FilterSelect value={rarityFilter} onChange={setRarityFilter} options={rarities} />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">시대</label>
-                <FilterSelect value={eraFilter} onChange={setEraFilter} options={eraList} labelMap={eraLabels} />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">국가</label>
-                <FilterSelect value={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-text-muted mb-2">용량</label>
-                <FilterSelect value={installSizeFilter} onChange={setInstallSizeFilter} options={allInstallSizes as string[]} />
-              </div>
-            </div>
-          </aside>
-        )}
-
+      <div className="flex flex-col gap-6">
         {/* Main Content */}
         <main className="flex-1 min-w-0">
           {/* Header */}
@@ -203,54 +178,99 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
               </Link>
             </div>
             <div className="flex items-center gap-2">
-          {/* Filter toggle */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
-              showFilters || hasFilters
-                ? 'bg-mint/10 text-mint border-mint/30'
-                : 'bg-vault-surface text-text-secondary border-vault-border hover:border-vault-border-light'
-            }`}
-          >
-            <Filter size={12} />
-            필터
-            {hasFilters && (
-              <button onClick={e => { e.stopPropagation(); clearFilters(); }} className="ml-0.5 cursor-pointer">
-                <X size={10} />
+              {/* Filter toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
+                  showFilters || hasFilters
+                    ? 'bg-mint/10 text-mint border-mint/30'
+                    : 'bg-vault-surface text-text-secondary border-vault-border hover:border-vault-border-light'
+                }`}
+              >
+                <Filter size={12} />
+                필터
+                {hasFilters && (
+                  <button onClick={e => { e.stopPropagation(); clearFilters(); }} className="ml-0.5 cursor-pointer hover:text-coral transition-colors">
+                    <X size={10} />
+                  </button>
+                )}
               </button>
-            )}
-          </button>
 
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value as SortOption)}
-            className="bg-vault-surface border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-secondary focus:outline-none focus:border-mint/50 cursor-pointer"
-          >
-            {sortOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value as SortOption)}
+                className="bg-vault-surface border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-secondary focus:outline-none focus:border-mint/50 cursor-pointer"
+              >
+                {sortOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
 
-          {/* View mode */}
-          <div className="flex bg-vault-surface border border-vault-border rounded-lg overflow-hidden">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-secondary'}`}
-              title="그리드 뷰"
-            >
-              <LayoutGrid size={14} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-secondary'}`}
-              title="리스트 뷰"
-            >
-              <List size={14} />
-            </button>
+              {/* View mode */}
+              <div className="flex bg-vault-surface border border-vault-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-secondary'}`}
+                  title="그리드 뷰"
+                >
+                  <LayoutGrid size={14} />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-1.5 transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-secondary'}`}
+                  title="리스트 뷰"
+                >
+                  <List size={14} />
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-
+          {/* Horizontal Filters */}
+          {showFilters && (
+            <div className="mb-6 p-4 bg-vault-surface border border-vault-border rounded-xl shadow-sm">
+              <div className="flex flex-wrap gap-4 items-end">
+                <MultiSelectFilter label="플랫폼" values={platformFilters} onChange={setPlatformFilters} options={allPlatforms} />
+                <MultiSelectFilter label="장르" values={genreFilter} onChange={setGenreFilter} options={allGenres} labelMap={genreLabels} />
+                <MultiSelectFilter label="개발사" values={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
+                <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
+                
+                <div className="flex flex-col min-w-[200px]">
+                  <label className="text-[10px] text-text-muted block mb-1 font-medium">용량 (MB/GB)</label>
+                  <div className="flex items-center gap-1 bg-vault-bg border border-vault-border rounded-lg px-2 py-1 focus-within:border-mint/50 transition-colors">
+                    <input
+                      type="number"
+                      placeholder="최소"
+                      value={installSizeMin}
+                      onChange={e => setInstallSizeMin(e.target.value)}
+                      className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
+                    />
+                    <span className="text-text-muted text-xs">~</span>
+                    <input
+                      type="number"
+                      placeholder="최대"
+                      value={installSizeMax}
+                      onChange={e => setInstallSizeMax(e.target.value)}
+                      className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
+                    />
+                    <select
+                      value={installSizeUnit}
+                      onChange={e => setInstallSizeUnit(e.target.value)}
+                      className="bg-transparent text-xs text-text-secondary focus:outline-none cursor-pointer border-l border-vault-border pl-1"
+                    >
+                      <option value="MB">MB</option>
+                      <option value="GB">GB</option>
+                    </select>
+                  </div>
+                </div>
+                
+                {hasFilters && (
+                  <button onClick={clearFilters} className="text-xs px-3 py-1.5 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors h-7 mb-0.5">
+                    초기화
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
       {/* Results */}
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">

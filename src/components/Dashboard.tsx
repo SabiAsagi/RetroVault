@@ -79,7 +79,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
             {historyGame && !(historyGame as any)?.isRandom 
               ? `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`
-              : 'RetroVault는 고전 게임, 콘솔 기기, 게임 제작사에 대한 상세한 정보를 검색하고 열람할 수 있는 레트로 게임 아카이브입니다. 누구나 정보를 기여하고 수정할 수 있습니다.'}
+              : '각종 게임 관련 정보들을 검색하고 열람할 수 있는 종합 레트로 아카이브입니다! 나만의 멋진 컬렉션을 만들어 다른 유저들에게 자랑도 해보세요!'}
           </p>
           
           <div className="flex flex-wrap gap-3">
