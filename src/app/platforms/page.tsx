@@ -76,7 +76,12 @@ export default function PlatformsPage() {
     if (typeFilter.length > 0) result = result.filter(p => typeFilter.includes(p.type));
 
     switch (sortBy) {
-      case 'popularity': result.sort((a, b) => (b.views || 0) - (a.views || 0)); break;
+      case 'popularity': 
+        result.sort((a, b) => {
+          const viewDiff = (b.views || 0) - (a.views || 0);
+          if (viewDiff !== 0) return viewDiff;
+          return (b._count?.games || 0) - (a._count?.games || 0);
+        }); break;
       case 'year-asc': result.sort((a, b) => a.releaseYear - b.releaseYear); break;
       case 'year-desc': result.sort((a, b) => b.releaseYear - a.releaseYear); break;
       case 'name-asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;

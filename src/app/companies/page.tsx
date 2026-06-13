@@ -83,7 +83,12 @@ export default function CompaniesPage() {
     if (statusFilter.length > 0) result = result.filter(c => statusFilter.includes(c.companyStatus || ''));
 
     switch (sortBy) {
-      case 'popularity': result.sort((a, b) => (b.views || 0) - (a.views || 0)); break;
+      case 'popularity': 
+        result.sort((a, b) => {
+          const viewDiff = (b.views || 0) - (a.views || 0);
+          if (viewDiff !== 0) return viewDiff;
+          return (b._count?.developedGames || 0) + (b._count?.publishedGames || 0) - ((a._count?.developedGames || 0) + (a._count?.publishedGames || 0));
+        }); break;
       case 'name-asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
       case 'name-desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
       case 'games-desc': result.sort((a, b) => (b._count.developedGames + b._count.publishedGames) - (a._count.developedGames + a._count.publishedGames)); break;
