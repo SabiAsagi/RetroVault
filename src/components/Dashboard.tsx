@@ -67,8 +67,11 @@ export default function Dashboard({ games, collection, historyGame, popularColle
               </>
             ) : (
               <>
-                과거와 현재를 잇는 디지털 게임 박물관, RetroVault에 오신 것을 환영합니다.
-                <br className="hidden sm:block" /> 방대한 게임 역사를 탐험하고, 나만의 컬렉션을 진열해 전 세계 유저들과 소중한 추억을 공유해 보세요.
+                방대한 게임 데이터베이스,
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
+                  RetroVault 아카이브
+                </span>
               </>
             )}
           </h1>
