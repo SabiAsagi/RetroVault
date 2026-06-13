@@ -131,7 +131,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
       case 'year-desc':   result.sort((a, b) => b.releaseYear - a.releaseYear); break;
       case 'name-asc':    result.sort((a, b) => a.title.localeCompare(b.title)); break;
       case 'name-desc':   result.sort((a, b) => b.title.localeCompare(a.title)); break;
-      case 'popularity':  result.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0)); break;
+      case 'popularity':  result.sort((a, b) => (b.views ?? 0) - (a.views ?? 0)); break;
       case 'rating':      result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return result;
