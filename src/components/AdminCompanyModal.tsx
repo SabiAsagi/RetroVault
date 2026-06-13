@@ -71,6 +71,11 @@ export default function AdminCompanyModal({
             {/* Right Column */}
             <div className="flex-1 space-y-4 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-2">
+                <select name="companyStatus" value={formData.companyStatus || 'ACTIVE'} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
+                  <option value="ACTIVE">운영중</option>
+                  <option value="DEFUNCT">폐업</option>
+                  <option value="ACQUIRED">인수합병</option>
+                </select>
                 <select name="type" value={formData.type || formData.companyType || 'DEVELOPER'} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
                   <option value="DEVELOPER">개발사</option>
                   <option value="PUBLISHER">유통사</option>

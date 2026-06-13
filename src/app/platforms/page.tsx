@@ -44,11 +44,12 @@ export default function PlatformsPage() {
   const [typeFilter, setTypeFilter] = useSessionStorage('platforms-type', '');
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('platforms-sort', 'year-asc');
   const [activeManufacturerTab, setActiveManufacturerTab] = useSessionStorage('platforms-tab', '');
-  const [visibleCount, setVisibleCount] = useState(30);
+  const [currentPage, setCurrentPage] = useSessionStorage('platforms-page', 1);
+  const itemsPerPage = 30;
 
   useEffect(() => {
-    setVisibleCount(30);
-  }, [searchQuery, manufacturerFilter, generationFilter, typeFilter, sortBy, activeManufacturerTab]);
+    setCurrentPage(1);
+  }, [searchQuery, manufacturerFilter, generationFilter, typeFilter, sortBy, activeManufacturerTab, setCurrentPage]);
 
   useEffect(() => {
     fetch('/api/platforms-list')
@@ -233,30 +234,66 @@ export default function PlatformsPage() {
             </button>
           )}
         </div>
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filtered.slice(0, visibleCount).map(p => (
-            <PlatformCard key={p.id} platform={p} />
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {filtered.slice(0, visibleCount).map(p => (
-            <PlatformListRow key={p.id} platform={p} />
-          ))}
-        </div>
-      )}
-      
-      {filtered.length > visibleCount && (
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={() => setVisibleCount(prev => prev + 30)}
-            className="px-6 py-2.5 bg-vault-surface border border-vault-border rounded-lg text-sm font-bold text-text-primary hover:border-neon-purple hover:text-neon-purple transition-colors"
-          >
-            더보기 ({visibleCount} / {filtered.length})
-          </button>
-        </div>
-      )}
+      ) : (() => {
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        const paginatedPlatforms = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+        return (
+          <>
+            {viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {paginatedPlatforms.map(p => (
+                  <PlatformCard key={p.id} platform={p} />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {paginatedPlatforms.map(p => (
+                  <PlatformListRow key={p.id} platform={p} />
+                ))}
+              </div>
+            )}
+            
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors cursor-pointer"
+                >
+                  이전
+                </button>
+                <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] sm:max-w-md no-scrollbar">
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const p = i + 1;
+                    if (p === 1 || p === totalPages || (p >= currentPage - 2 && p <= currentPage + 2)) {
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setCurrentPage(p)}
+                          className={`min-w-[32px] h-8 px-2 flex items-center justify-center rounded-lg text-sm transition-colors cursor-pointer ${currentPage === p ? 'bg-neon-purple text-vault-bg font-bold' : 'bg-vault-surface text-text-secondary border border-vault-border hover:border-neon-purple/50'}`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    } else if (p === currentPage - 3 || p === currentPage + 3) {
+                      return <span key={i} className="text-text-muted px-1">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors cursor-pointer"
+                >
+                  다음
+                </button>
+              </div>
+            )}
+          </>
+        );
+      })()}
         </main>
       </div>
     </div>

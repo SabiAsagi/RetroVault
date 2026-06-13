@@ -12,8 +12,7 @@ import {
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
-  
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "MODERATOR" && session?.user?.role !== "MANAGER") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "MODERATOR" && session?.user?.role !== "MANAGER" && session?.user?.role !== "INFO_MANAGER" && session?.user?.role !== "USER_MANAGER") {
     redirect("/");
   }
 
@@ -48,6 +47,7 @@ export default async function AdminPage() {
       platformRequests={platformRequests}
       companyRequests={companyRequests}
       editRequests={editRequests}
+      userRole={session?.user?.role || 'USER'}
     />
   );
 }

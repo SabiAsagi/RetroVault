@@ -253,7 +253,7 @@ export default function NavigationApp() {
         <nav className="hidden lg:flex items-center gap-0 px-4 max-w-screen-2xl mx-auto border-t border-vault-border/40 overflow-x-auto">
           {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
-            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
+            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'INFO_MANAGER' && user?.role !== 'USER_MANAGER' && user?.role !== 'MODERATOR') return null;
             return (
               <Link
                 href={item.path}
@@ -297,7 +297,7 @@ export default function NavigationApp() {
         <nav className="py-3 px-3 space-y-0.5 overflow-y-auto">
           {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
-            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') return null;
+            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'INFO_MANAGER' && user?.role !== 'USER_MANAGER' && user?.role !== 'MODERATOR') return null;
             return (
               <Link
                 href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path}

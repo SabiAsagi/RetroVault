@@ -28,13 +28,14 @@ interface AdminProps {
   platformRequests?: any[];
   companyRequests?: any[];
   editRequests?: any[];
+  userRole?: string;
   onResetToSample?: () => void;
   onClearAll?: () => void;
 }
 
 type Tab = 'dashboard' | 'games' | 'requests' | 'companies' | 'platforms' | 'users' | 'reports' | 'logs' | 'settings' | 'timeline';
 
-export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, platforms, gameRequests, platformRequests, companyRequests, editRequests, onResetToSample, onClearAll }: AdminProps) {
+export default function Admin({ collection, games, timelineEvents, stats, users, reports, logs, companies, platforms, gameRequests, platformRequests, companyRequests, editRequests, userRole = 'USER', onResetToSample, onClearAll }: AdminProps) {
   const [activeTab, setActiveTab] = useSessionStorage<Tab>('admin-tab', 'dashboard');
   const [confirmAction, setConfirmAction] = useState<'reset' | 'clear' | null>(null);
 
@@ -725,16 +726,16 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
           
           <nav className="space-y-1">
             {[
-              { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
-              { id: 'games', label: '게임 관리', icon: Gamepad2 },
-              { id: 'platforms', label: '콘솔 관리', icon: Monitor },
-              { id: 'companies', label: '회사 관리', icon: Building2 },
-              { id: 'requests', label: '추가 요청', icon: Plus },
-              { id: 'users', label: '회원 관리', icon: Users },
-              { id: 'reports', label: '신고 관리', icon: AlertOctagon },
-              { id: 'logs', label: '시스템 로그', icon: History },
-              { id: 'settings', label: '설정', icon: Settings },
-            ].map(tab => {
+              { id: 'dashboard', label: '대시보드', icon: LayoutDashboard, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER', 'USER_MANAGER'] },
+              { id: 'games', label: '게임 관리', icon: Gamepad2, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
+              { id: 'platforms', label: '콘솔 관리', icon: Monitor, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
+              { id: 'companies', label: '회사 관리', icon: Building2, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
+              { id: 'requests', label: '추가 요청', icon: Plus, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
+              { id: 'users', label: '회원 관리', icon: Users, roles: ['ADMIN', 'MODERATOR', 'USER_MANAGER'] },
+              { id: 'reports', label: '신고 관리', icon: AlertOctagon, roles: ['ADMIN', 'MODERATOR', 'USER_MANAGER'] },
+              { id: 'logs', label: '시스템 로그', icon: History, roles: ['ADMIN', 'MODERATOR'] },
+              { id: 'settings', label: '설정', icon: Settings, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER', 'USER_MANAGER'] },
+            ].filter(tab => tab.roles.includes(userRole)).map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (

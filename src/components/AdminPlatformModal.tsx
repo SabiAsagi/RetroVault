@@ -80,12 +80,6 @@ export default function AdminPlatformModal({
                   <option value="false">생산중</option>
                   <option value="true">단종</option>
                 </select>
-                <select name="releaseStatus" value={formData.releaseStatus || 'RELEASED'} onChange={handleChange} className="px-2 py-1 bg-vault-surface border border-vault-border rounded text-xs font-bold text-text-primary focus:border-mint focus:outline-none">
-                  <option value="RELEASED">정식 출시 (RELEASED)</option>
-                  <option value="UNRELEASED">미출시 (UNRELEASED)</option>
-                  <option value="EARLY_ACCESS">얼리억세스 (EARLY_ACCESS)</option>
-                  <option value="CANCELLED">개발 취소 (CANCELLED)</option>
-                </select>
               </div>
 
               <input required name="name" value={formData.name || ''} onChange={handleChange} placeholder="콘솔명 입력 (필수)" className="w-full text-3xl font-black bg-transparent border-b-2 border-vault-border focus:border-mint pb-2 text-text-primary focus:outline-none placeholder:text-text-muted/50" />

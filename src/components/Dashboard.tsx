@@ -67,10 +67,10 @@ export default function Dashboard({ games, collection, historyGame, popularColle
               </>
             ) : (
               <>
-                모든 시대를 아우르는,
+                방대한 레트로 게임 데이터베이스,
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
-                  당신만의 레트로 아카이브
+                  RetroVault 아카이브
                 </span>
               </>
             )}
@@ -79,17 +79,10 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
             {historyGame && !(historyGame as any)?.isRandom 
               ? `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`
-              : 'RetroVault는 레트로 비디오 게임의 역사와 데이터베이스를 보존하고, 전 세계의 명작들을 함께 발굴하고 기록하는 공간입니다.'}
+              : 'RetroVault는 고전 게임, 콘솔 기기, 게임 제작사에 대한 상세한 정보를 검색하고 열람할 수 있는 레트로 게임 아카이브입니다. 누구나 정보를 기여하고 수정할 수 있습니다.'}
           </p>
           
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={historyGame ? `/games/${getGameSlug(historyGame)}` : '/games'}
-              className="flex items-center gap-2 px-5 py-2.5 bg-mint text-vault-bg text-sm font-bold rounded-lg hover:bg-mint-dim transition-all shadow-[0_0_15px_rgba(74,237,196,0.3)] hover:shadow-[0_0_25px_rgba(74,237,196,0.5)]"
-            >
-              <History size={16} />
-              관련 아카이브 보기
-            </Link>
           </div>
         </div>
       </div>

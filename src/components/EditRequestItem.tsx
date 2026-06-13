@@ -37,7 +37,8 @@ export default function EditRequestItem() {
           const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&type=${requestType}`);
           if (res.ok) {
             const data = await res.json();
-            setSearchResults(data);
+            const results = requestType === 'game' ? data.games : requestType === 'platform' ? data.platforms : data.companies;
+            setSearchResults(results || []);
           }
         } catch (e) {
           console.error(e);
@@ -54,8 +55,8 @@ export default function EditRequestItem() {
 
   const handleSelect = (item: any) => {
     setSelectedItem(item);
-    setFormData({ ...item.data });
-    setSearchQuery(item.name);
+    setFormData({ ...item });
+    setSearchQuery(item.name || item.title);
     setSearchResults([]);
   };
 
@@ -139,7 +140,7 @@ export default function EditRequestItem() {
                     onClick={() => handleSelect(item)}
                     className="w-full text-left px-4 py-3 text-sm text-text-primary hover:bg-vault-surface border-b border-vault-border last:border-0"
                   >
-                    {item.name}
+                    {item.name || item.title}
                   </button>
                 ))}
               </div>
@@ -150,7 +151,7 @@ export default function EditRequestItem() {
         {selectedItem && (
           <div>
             <div className="flex items-center justify-between mb-4 bg-vault-bg p-3 rounded-lg border border-vault-border">
-              <span className="text-sm font-bold text-text-primary">수정 대상: <span className="text-neon-purple">{selectedItem.name}</span></span>
+              <span className="text-sm font-bold text-text-primary">수정 대상: <span className="text-neon-purple">{selectedItem.name || selectedItem.title}</span></span>
               <button onClick={() => setSelectedItem(null)} className="text-xs text-text-muted hover:text-text-primary underline">다른 대상 선택</button>
             </div>
 
