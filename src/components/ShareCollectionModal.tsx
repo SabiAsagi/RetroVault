@@ -21,7 +21,7 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
     }
   }, []);
 
-  const shareUrl = `${origin}/vault/${username.toLowerCase().replace(/\s/g, '_')}`;
+  const shareUrl = `${origin}/profile/${encodeURIComponent(username)}`;
 
   if (!isOpen) return null;
 

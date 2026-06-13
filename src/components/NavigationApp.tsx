@@ -224,21 +224,24 @@ export default function NavigationApp() {
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>
                 {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
-                    <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
-                      <p className="text-sm font-bold text-text-primary truncate">{(user as any)?.nickname || user?.name}</p>
-                      <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
+                      <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
+                        <p className="text-sm font-bold text-text-primary truncate">{(user as any)?.nickname || user?.name}</p>
+                        <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
+                      </div>
+                      {navItems.filter(item => item.group === 'user').map(item => (
+                        <Link key={item.id} href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
+                          {item.icon} {item.label}
+                        </Link>
+                      ))}
+                      <div className="h-px bg-vault-border/50 my-1" />
+                      <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2 cursor-pointer">
+                        <LogIn size={14} className="rotate-180" /> 로그아웃
+                      </button>
                     </div>
-                    {navItems.filter(item => item.group === 'user').map(item => (
-                      <Link key={item.id} href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
-                        {item.icon} {item.label}
-                      </Link>
-                    ))}
-                    <div className="h-px bg-vault-border/50 my-1" />
-                    <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2">
-                      <LogIn size={14} className="rotate-180" /> 로그아웃
-                    </button>
-                  </div>
+                  </>
                 )}
               </div>
             )}
