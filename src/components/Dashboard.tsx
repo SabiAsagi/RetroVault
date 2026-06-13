@@ -1,5 +1,5 @@
 import { Game, CollectionItem, Era } from '../types';
-import { Calendar, Heart, Eye, ChevronRight, Star, History, Disc, Trophy, ArrowRight } from 'lucide-react';
+import { Calendar, Heart, Eye, ChevronRight, Star, History, Disc, Trophy, ArrowRight, Gamepad2 } from 'lucide-react';
 import GameCard, { BoxArtPlaceholder } from './GameCard';
 import Link from 'next/link';
 import { getGameSlug } from '@/lib/slug';
