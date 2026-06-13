@@ -102,6 +102,10 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
                 <span className="text-text-muted text-sm font-bold">총 판매량</span>
                 <span className="text-text-primary text-sm font-bold">{platform.totalSales || '불명'}</span>
               </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">콘솔 사양</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs || ''}>{platform.specs || '불명'}</span>
+              </div>
             </div>
 
             <div className="mt-auto">

@@ -105,49 +105,35 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 <span className="text-text-primary font-bold text-right">{company.type}</span>
               </div>
               
-              {company.country && (
-                <div className="flex justify-between items-start gap-4">
-                  <span className="text-text-muted shrink-0">소재지</span>
-                  <span className="text-text-primary font-bold text-right">{company.country}</span>
-                </div>
-              )}
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">소재지</span>
+                <span className="text-text-primary font-bold text-right">{company.country || '불명'}</span>
+              </div>
               
-              {company.foundedAt && (
-                <div className="flex justify-between items-start gap-4">
-                  <span className="text-text-muted shrink-0">설립일</span>
-                  <span className="text-text-primary font-bold text-right">
-                    {company.foundedAt}
-                  </span>
-                </div>
-              )}
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">설립일</span>
+                <span className="text-text-primary font-bold text-right">{company.foundedAt || '불명'}</span>
+              </div>
               
-              {company.keyFigures && (
-                <div className="flex justify-between items-start gap-4">
-                  <span className="text-text-muted shrink-0">주요 인물</span>
-                  <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.keyFigures}</span>
-                </div>
-              )}
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">주요 인물</span>
+                <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.keyFigures || '불명'}</span>
+              </div>
 
-              {company.flagshipFranchises && (
-                <div className="flex justify-between items-start gap-4">
-                  <span className="text-text-muted shrink-0">대표작</span>
-                  <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.flagshipFranchises}</span>
-                </div>
-              )}
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">대표작</span>
+                <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.flagshipFranchises || '불명'}</span>
+              </div>
 
-              {company.companyStatus && (
-                <div className="flex justify-between items-start gap-4">
-                  <span className="text-text-muted shrink-0">현재 상태</span>
-                  <span className="text-text-primary font-bold text-right">{company.companyStatus === 'ACTIVE' ? '운영중' : company.companyStatus === 'DEFUNCT' ? '폐업' : company.companyStatus === 'ACQUIRED' ? '인수합병' : company.companyStatus}</span>
-                </div>
-              )}
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">현재 상태</span>
+                <span className="text-text-primary font-bold text-right">{company.companyStatus === 'ACTIVE' ? '운영중' : company.companyStatus === 'DEFUNCT' ? '폐업' : company.companyStatus === 'ACQUIRED' ? '인수합병' : (company.companyStatus || '불명')}</span>
+              </div>
 
-              {company.subsidiaries && (
-                <div className="flex justify-between items-start gap-4">
-                  <span className="text-text-muted shrink-0">산하 스튜디오</span>
-                  <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.subsidiaries}</span>
-                </div>
-              )}
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-text-muted shrink-0">산하 스튜디오</span>
+                <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.subsidiaries || '불명'}</span>
+              </div>
 
               {company.websiteUrl && (
                 <div className="flex justify-between items-center gap-4 pt-3 border-t border-vault-border/50">

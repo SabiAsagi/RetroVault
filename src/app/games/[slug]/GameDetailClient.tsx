@@ -48,13 +48,14 @@ export default function GameDetailClient({ game }: { game: Game }) {
                 </span>
               ))}
               <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
-                {game.releaseDate ? game.releaseDate : `${game.releaseYear}년`}
+                {game.releaseDate ? game.releaseDate : (game.releaseYear ? `${game.releaseYear}년` : '출시일 불명')}
               </span>
-              {game.country && (
-                <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
-                  {game.country}
-                </span>
-              )}
+              <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
+                {game.genre || '장르 불명'}
+              </span>
+              <span className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
+                {game.country || '국가 불명'}
+              </span>
               {game.releaseStatus && game.releaseStatus !== 'RELEASED' && (
                 <span className={`px-2 py-1 border rounded text-xs font-bold ${
                   game.releaseStatus === 'UNRELEASED' ? 'bg-amber/10 border-amber/30 text-amber' : 
@@ -76,8 +77,8 @@ export default function GameDetailClient({ game }: { game: Game }) {
               )}
             </div>
             <h1 className="text-3xl font-black text-text-primary leading-tight break-words">{game.title}</h1>
-            {game.originalTitle && <h2 className="text-xl font-bold text-text-secondary mt-1 break-words">{game.originalTitle}</h2>}
-            <p className="text-sm text-text-muted mt-2">{game.developer ? `${game.developer} / ` : ''}{game.publisher}</p>
+            <h2 className="text-xl font-bold text-text-secondary mt-1 break-words">{game.originalTitle || '원제 불명'}</h2>
+            <p className="text-sm text-text-muted mt-2">{game.developer || '개발사 불명'} / {game.publisher || '유통사 불명'}</p>
           </div>
 
           {/* Quick Stats */}
@@ -155,29 +156,27 @@ export default function GameDetailClient({ game }: { game: Game }) {
                     </div>
                   )}
 
-                  {(game.pcSpecsMin || game.pcSpecsRec || game.installSize) && (
-                    <div className="mt-6 pt-4 border-t border-vault-border space-y-3 bg-vault-bg p-4 rounded-lg">
-                      <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2">시스템 요구사항 및 설치 정보</h3>
-                      {game.installSize && (
-                        <div className="flex gap-4">
-                          <span className="text-text-muted w-20 shrink-0">설치 용량</span>
-                          <span className="text-text-primary break-words">{game.installSize}</span>
-                        </div>
-                      )}
-                      {game.pcSpecsMin && (
+                  <div className="mt-6 pt-4 border-t border-vault-border space-y-3 bg-vault-bg p-4 rounded-lg">
+                    <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2">시스템 요구사항 및 설치 정보</h3>
+                    
+                    <div className="flex gap-4">
+                      <span className="text-text-muted w-20 shrink-0">설치 용량</span>
+                      <span className="text-text-primary break-words">{game.installSize || '불명'}</span>
+                    </div>
+
+                    {(game.platform.toLowerCase().includes('pc') || game.platform.toLowerCase().includes('windows') || game.platform.toLowerCase().includes('mac') || game.pcSpecsMin || game.pcSpecsRec) && (
+                      <>
                         <div className="flex gap-4">
                           <span className="text-text-muted w-20 shrink-0">최소 사양</span>
-                          <span className="text-text-primary break-words">{game.pcSpecsMin}</span>
+                          <span className="text-text-primary break-words">{game.pcSpecsMin || '불명'}</span>
                         </div>
-                      )}
-                      {game.pcSpecsRec && (
                         <div className="flex gap-4">
                           <span className="text-text-muted w-20 shrink-0">권장 사양</span>
-                          <span className="text-text-primary break-words">{game.pcSpecsRec}</span>
+                          <span className="text-text-primary break-words">{game.pcSpecsRec || '불명'}</span>
                         </div>
-                      )}
-                    </div>
-                  )}
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
               {activeTab === 'era' && (
