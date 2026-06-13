@@ -63,8 +63,8 @@ export default function MyVault({
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
-        setItemsPerRow(4);
-        setItemsPerSpineRow(6);
+        setItemsPerRow(3);
+        setItemsPerSpineRow(5);
       } else if (window.innerWidth < 1024) {
         setItemsPerRow(8);
         setItemsPerSpineRow(10);
@@ -215,38 +215,38 @@ export default function MyVault({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+        <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 md:gap-3 w-full md:w-auto">
           {/* Action Buttons */}
-          <div className="flex gap-2 mr-2">
+          <div className="flex flex-wrap justify-center gap-2">
             <button 
               onClick={() => setSearchModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-amber/10 border border-amber/20 text-amber text-xs font-bold rounded-lg hover:bg-amber/20 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber/10 border border-amber/20 text-amber text-xs font-bold rounded-lg hover:bg-amber/20 transition-colors whitespace-nowrap"
             >
               <Search size={14} /> 추가하기
             </button>
 
             <button 
               onClick={() => setGroupModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-text-secondary/10 border border-text-secondary/20 text-text-primary text-xs font-bold rounded-lg hover:bg-text-secondary/20 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-text-secondary/10 border border-text-secondary/20 text-text-primary text-xs font-bold rounded-lg hover:bg-text-secondary/20 transition-colors whitespace-nowrap"
             >
               <Folder size={14} /> 그룹 관리
             </button>
 
             <button 
               onClick={() => setShareOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-xs font-bold rounded-lg hover:bg-neon-blue/20 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-xs font-bold rounded-lg hover:bg-neon-blue/20 transition-colors whitespace-nowrap"
             >
               <Share2 size={14} /> 공유하기
             </button>
           </div>
 
           {/* Visibility Filter */}
-          <div className="flex bg-vault-bg rounded-lg border border-vault-border p-1">
+          <div className="flex flex-wrap justify-center bg-vault-bg rounded-lg border border-vault-border p-1 w-full sm:w-auto max-w-full">
             {(['all', 'public', 'friends', 'private'] as const).map(v => (
               <button
                 key={v}
                 onClick={() => setVisibilityFilter(v)}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                className={`px-2.5 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                   visibilityFilter === v ? 'bg-vault-surface-light text-text-primary shadow-sm' : 'text-text-muted hover:text-text-secondary'
                 }`}
               >

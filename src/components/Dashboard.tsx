@@ -79,7 +79,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/5 dark:bg-black/20 p-4 rounded-lg border border-black/5 dark:border-white/5 backdrop-blur-sm">
             {historyGame && !(historyGame as any)?.isRandom 
               ? `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`
-              : '각종 게임 관련 정보들을 검색하고 열람할 수 있는 종합 레트로 아카이브입니다! 나만의 멋진 컬렉션을 만들어 다른 유저들에게 자랑도 해보세요!'}
+              : '과거와 현재를 잇는 디지털 게임 박물관, RetroVault에 오신 것을 환영합니다. 방대한 게임 역사를 탐험하고, 나만의 컬렉션을 진열해 전 세계 유저들과 소중한 추억을 공유해 보세요.'}
           </p>
           
           <div className="flex flex-wrap gap-3">

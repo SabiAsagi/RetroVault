@@ -138,18 +138,18 @@ export default function CompaniesPage() {
 
         {/* Main Content */}
         <main className="flex-1 min-w-0 w-full">
-          <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-text-primary">게임 제작사 아카이브</h2>
+              <h2 className="text-lg font-bold text-text-primary whitespace-nowrap">게임 제작사 아카이브</h2>
               <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
                 {filtered.length}개
               </span>
             </div>
-            <Link href="/request?tab=company" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors">
+            <Link href="/request?tab=company" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors whitespace-nowrap">
               + 추가 건의
             </Link>
-            <Link href="/request/edit?tab=company" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1">
+            <Link href="/request/edit?tab=company" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1 whitespace-nowrap">
               ✏️ 수정 건의
             </Link>
           </div>
