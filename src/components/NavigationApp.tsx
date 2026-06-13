@@ -90,26 +90,21 @@ export default function NavigationApp() {
             <Menu size={17} />
           </button>
 
-          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow-md neon-mint">
-              <span className="font-pixel text-[8px] text-vault-bg font-bold">RV</span>
+          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer pl-1 sm:pl-0">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow-md neon-mint">
+              <span className="font-pixel text-[10px] text-vault-bg font-bold">RV</span>
             </div>
             <div className="hidden sm:block">
-              <h1 className="font-pixel text-[9px] text-text-primary group-hover:text-mint transition-colors leading-none">
+              <h1 className="font-pixel text-xs text-text-primary group-hover:text-mint transition-colors leading-none mb-1">
                 RetroVault
               </h1>
-              <p className="text-[8px] text-text-muted leading-none mt-0.5 tracking-wider">DIGITAL MUSEUM</p>
+              <p className="text-[9px] text-text-muted leading-none tracking-wider">DIGITAL MUSEUM</p>
             </div>
           </Link>
 
-          <span className="sm:hidden text-sm font-semibold text-text-secondary truncate flex-1">
-            {activeItem?.label}
-          </span>
-
-          {/* Global Search Bar Removed - Search is now handled per-archive page */}
-          {!pathname.startsWith('/games') && !pathname.startsWith('/archive') && !pathname.startsWith('/platforms') && !pathname.startsWith('/companies') && false && (
-          <div className="relative flex-1 max-w-lg hidden sm:block z-[80]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
+          {/* Global Search Bar */}
+          <div className="relative flex-1 max-w-xl mx-2 sm:mx-6 z-[80]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
             <input
               type="text"
               placeholder="게임명, 회사, 유저 등 통합 검색..."
@@ -210,7 +205,6 @@ export default function NavigationApp() {
               </div>
             )}
           </div>
-          )}
 
           <div className="flex items-center gap-2 ml-auto shrink-0">
             <ThemeToggle />
@@ -315,28 +309,6 @@ export default function NavigationApp() {
           })}
         </nav>
       </aside>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-50 sm:hidden glass-panel border-t border-vault-border safe-area-inset-bottom">
-        <div className="flex items-stretch h-14">
-          {bottomTabIds.map(tabId => {
-            const item = navItems.find(n => n.id === tabId)!;
-            const isActive = activeTabId === tabId;
-            return (
-              <Link href={item.path} key={tabId} className="flex-1 flex flex-col items-center justify-center gap-0.5 cursor-pointer relative">
-                {isActive && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-b" style={{ background: item.color }} />}
-                <span style={isActive ? { color: item.color } : { color: 'var(--color-text-muted)' }} className="scale-125 inline-flex">{item.icon}</span>
-                <span className="text-[9px] font-medium" style={isActive ? { color: item.color } : { color: 'var(--color-text-muted)' }}>
-                  {item.label.replace('게임 아카이브', '아카이브').replace('레트로 타임라인', '타임라인')}
-                </span>
-              </Link>
-            );
-          })}
-          <button onClick={() => setSidebarOpen(true)} className="flex-1 flex flex-col items-center justify-center gap-0.5 cursor-pointer text-text-muted">
-            <Menu size={19} />
-            <span className="text-[9px] font-medium">더보기</span>
-          </button>
-        </div>
-      </nav>
     </>
   );
 }

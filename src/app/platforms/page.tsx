@@ -111,11 +111,31 @@ export default function PlatformsPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6">
-        {/* Main Content */}
-        <main className="flex-1 min-w-0">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* Left Sidebar Filters */}
+        <aside className={`w-full md:w-64 shrink-0 bg-vault-surface border border-vault-border rounded-xl p-5 ${showFilters ? 'block' : 'hidden md:block'}`}>
+          <div className="flex justify-between items-center mb-6 md:hidden">
+            <h3 className="font-bold text-text-primary">카테고리</h3>
+            <button onClick={() => setShowFilters(false)} className="p-1 hover:bg-vault-surface-light rounded transition-colors text-text-muted hover:text-text-primary">
+              <X size={18} />
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <MultiSelectFilter label="제조사" values={manufacturerFilter} onChange={setManufacturerFilter} options={allManufacturers} />
+            <MultiSelectFilter label="세대" values={generationFilter} onChange={setGenerationFilter} options={allGenerations.map(String)} labelMap={Object.fromEntries(allGenerations.map(g => [String(g), `${g}세대`]))} />
+            <MultiSelectFilter label="타입" values={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
+            
+            {hasFilters && (
+              <button onClick={clearFilters} className="w-full text-xs px-3 py-2 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors font-bold mt-4 cursor-pointer">
+                초기화
+              </button>
+            )}
+          </div>
+        </aside>
 
-      {/* Header */}
+        {/* Main Content */}
+        <main className="flex-1 min-w-0 w-full">
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -134,12 +154,12 @@ export default function PlatformsPage() {
           <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
+            className={`flex md:hidden items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
               showFilters || hasFilters ? 'bg-neon-purple/10 text-neon-purple border-neon-purple/30' : 'bg-vault-surface text-text-secondary border-vault-border hover:border-vault-border-light'
             }`}
           >
             <Filter size={12} />
-            필터
+            카테고리
             {hasFilters && (
               <button onClick={e => { e.stopPropagation(); clearFilters(); }} className="ml-0.5 cursor-pointer">
                 <X size={10} />
@@ -171,24 +191,7 @@ export default function PlatformsPage() {
           </div>
           </div>
         </div>
-
-        {/* Horizontal Filters */}
-        {showFilters && (
-          <div className="mb-6 p-4 bg-vault-surface border border-vault-border rounded-xl shadow-sm">
-            <div className="flex flex-wrap gap-4 items-end">
-              <MultiSelectFilter label="제조사" values={manufacturerFilter} onChange={setManufacturerFilter} options={allManufacturers} />
-              <MultiSelectFilter label="세대" values={generationFilter} onChange={setGenerationFilter} options={allGenerations.map(String)} labelMap={Object.fromEntries(allGenerations.map(g => [String(g), `${g}세대`]))} />
-              <MultiSelectFilter label="타입" values={typeFilter} onChange={setTypeFilter} options={allTypes} labelMap={typeLabels} />
-              
-              {hasFilters && (
-                <button onClick={clearFilters} className="text-xs px-3 py-1.5 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors h-7 mb-0.5">
-                  초기화
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-        {/* Results */}
+      {/* Results */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (

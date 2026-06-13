@@ -158,9 +158,61 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         </div>
       )}
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* Left Sidebar Filters */}
+        <aside className={`w-full md:w-64 shrink-0 bg-vault-surface border border-vault-border rounded-xl p-5 ${showFilters ? 'block' : 'hidden md:block'}`}>
+          <div className="flex justify-between items-center mb-6 md:hidden">
+            <h3 className="font-bold text-text-primary">카테고리</h3>
+            <button onClick={() => setShowFilters(false)} className="p-1 hover:bg-vault-surface-light rounded transition-colors text-text-muted hover:text-text-primary">
+              <X size={18} />
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <MultiSelectFilter label="플랫폼" values={platformFilters} onChange={setPlatformFilters} options={allPlatforms} />
+            <MultiSelectFilter label="장르" values={genreFilter} onChange={setGenreFilter} options={allGenres} labelMap={genreLabels} />
+            <MultiSelectFilter label="개발사" values={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
+            <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
+            
+            <div className="flex flex-col">
+              <label className="text-[10px] text-text-muted block mb-1 font-medium">용량 (MB/GB)</label>
+              <div className="flex items-center gap-1 bg-vault-bg border border-vault-border rounded-lg px-2 py-1 focus-within:border-mint/50 transition-colors">
+                <input
+                  type="number"
+                  placeholder="최소"
+                  value={installSizeMin}
+                  onChange={e => setInstallSizeMin(e.target.value)}
+                  className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
+                />
+                <span className="text-text-muted text-xs">~</span>
+                <input
+                  type="number"
+                  placeholder="최대"
+                  value={installSizeMax}
+                  onChange={e => setInstallSizeMax(e.target.value)}
+                  className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
+                />
+                <select
+                  value={installSizeUnit}
+                  onChange={e => setInstallSizeUnit(e.target.value)}
+                  className="bg-transparent text-xs text-text-secondary focus:outline-none cursor-pointer border-l border-vault-border pl-1"
+                >
+                  <option value="MB">MB</option>
+                  <option value="GB">GB</option>
+                </select>
+              </div>
+            </div>
+            
+            {hasFilters && (
+              <button onClick={clearFilters} className="w-full text-xs px-3 py-2 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors font-bold mt-4">
+                초기화
+              </button>
+            )}
+          </div>
+        </aside>
+
         {/* Main Content */}
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 w-full">
           {/* Header */}
           <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
             <div className="flex items-center gap-4">
@@ -181,14 +233,14 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
               {/* Filter toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
+                className={`flex md:hidden items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border transition-all cursor-pointer ${
                   showFilters || hasFilters
                     ? 'bg-mint/10 text-mint border-mint/30'
                     : 'bg-vault-surface text-text-secondary border-vault-border hover:border-vault-border-light'
                 }`}
               >
                 <Filter size={12} />
-                필터
+                카테고리
                 {hasFilters && (
                   <button onClick={e => { e.stopPropagation(); clearFilters(); }} className="ml-0.5 cursor-pointer hover:text-coral transition-colors">
                     <X size={10} />
@@ -225,53 +277,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
             </div>
           </div>
 
-          {/* Horizontal Filters */}
-          {showFilters && (
-            <div className="mb-6 p-4 bg-vault-surface border border-vault-border rounded-xl shadow-sm">
-              <div className="flex flex-wrap gap-4 items-end">
-                <MultiSelectFilter label="플랫폼" values={platformFilters} onChange={setPlatformFilters} options={allPlatforms} />
-                <MultiSelectFilter label="장르" values={genreFilter} onChange={setGenreFilter} options={allGenres} labelMap={genreLabels} />
-                <MultiSelectFilter label="개발사" values={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
-                <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
-                
-                <div className="flex flex-col min-w-[200px]">
-                  <label className="text-[10px] text-text-muted block mb-1 font-medium">용량 (MB/GB)</label>
-                  <div className="flex items-center gap-1 bg-vault-bg border border-vault-border rounded-lg px-2 py-1 focus-within:border-mint/50 transition-colors">
-                    <input
-                      type="number"
-                      placeholder="최소"
-                      value={installSizeMin}
-                      onChange={e => setInstallSizeMin(e.target.value)}
-                      className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
-                    />
-                    <span className="text-text-muted text-xs">~</span>
-                    <input
-                      type="number"
-                      placeholder="최대"
-                      value={installSizeMax}
-                      onChange={e => setInstallSizeMax(e.target.value)}
-                      className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
-                    />
-                    <select
-                      value={installSizeUnit}
-                      onChange={e => setInstallSizeUnit(e.target.value)}
-                      className="bg-transparent text-xs text-text-secondary focus:outline-none cursor-pointer border-l border-vault-border pl-1"
-                    >
-                      <option value="MB">MB</option>
-                      <option value="GB">GB</option>
-                    </select>
-                  </div>
-                </div>
-                
-                {hasFilters && (
-                  <button onClick={clearFilters} className="text-xs px-3 py-1.5 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors h-7 mb-0.5">
-                    초기화
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-      {/* Results */}
+          {/* Results */}
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {Array.from({ length: 12 }).map((_, i) => (
@@ -365,6 +371,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
         );
       })()
       )}
+
         </main>
       </div>
     </div>

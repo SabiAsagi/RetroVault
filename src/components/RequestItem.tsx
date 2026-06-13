@@ -205,7 +205,7 @@ export default function RequestItem() {
               <input name="originalTitle" value={formData.originalTitle} onChange={handleChange} placeholder="원제 (선택)" className="w-full text-xl font-bold bg-transparent border-b border-vault-border focus:border-mint pb-1 text-text-secondary focus:outline-none placeholder:text-text-muted/50 mt-2" />
             )}
 
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {requestType === 'game' && (
                 <>
                   <div className="relative col-span-2 md:col-span-1">

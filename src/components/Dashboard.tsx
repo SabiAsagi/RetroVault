@@ -39,7 +39,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
       
       {/* ── 1. Hero Banner (Today in History) ────────────────────────────── */}
       <div className="relative rounded-xl overflow-hidden bg-vault-surface border border-vault-border shadow-2xl p-6 md:p-10 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#020617]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:from-[#1E293B] dark:via-[#0F172A] dark:to-[#020617]" />
         <div className="absolute inset-0 hero-gradient opacity-60 mix-blend-overlay" />
         <div className="absolute inset-0 crt-lines opacity-40 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-mint/10 to-transparent pointer-events-none" />
@@ -76,7 +76,7 @@ export default function Dashboard({ games, collection, historyGame, popularColle
             )}
           </h1>
           
-          <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm">
+          <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/5 dark:bg-black/20 p-4 rounded-lg border border-black/5 dark:border-white/5 backdrop-blur-sm">
             {historyGame && !(historyGame as any)?.isRandom 
               ? `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`
               : '각종 게임 관련 정보들을 검색하고 열람할 수 있는 종합 레트로 아카이브입니다! 나만의 멋진 컬렉션을 만들어 다른 유저들에게 자랑도 해보세요!'}

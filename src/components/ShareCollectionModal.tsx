@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Copy, Check, ExternalLink, Image as ImageIcon, Twitter, Facebook, MessageCircle } from 'lucide-react';
 import { Visibility } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,7 +13,15 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
   const [copied, setCopied] = useState(false);
   const { user } = useAuth();
   const username = user?.nickname || 'retro_master';
-  const shareUrl = `https://retrovault.io/vault/${username.toLowerCase().replace(/\s/g, '_')}`;
+  
+  const [origin, setOrigin] = useState('https://retrovault.io');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+  }, []);
+
+  const shareUrl = `${origin}/vault/${username.toLowerCase().replace(/\s/g, '_')}`;
 
   if (!isOpen) return null;
 

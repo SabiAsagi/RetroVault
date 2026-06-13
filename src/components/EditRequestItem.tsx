@@ -164,7 +164,7 @@ export default function EditRequestItem() {
                     <label className="block text-xs font-bold text-text-muted uppercase mb-1">게임명</label>
                     <input type="text" value={formData.title || ''} onChange={e => handleChange('title', e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-blue transition-colors" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-text-muted uppercase mb-1">출시연도</label>
                       <input type="number" value={formData.releaseYear || ''} onChange={e => handleChange('releaseYear', parseInt(e.target.value))} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-blue transition-colors" />
@@ -187,7 +187,7 @@ export default function EditRequestItem() {
                     <label className="block text-xs font-bold text-text-muted uppercase mb-1">콘솔명</label>
                     <input type="text" value={formData.name || ''} onChange={e => handleChange('name', e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-purple transition-colors" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-text-muted uppercase mb-1">제조사</label>
                       <input type="text" value={formData.manufacturer || ''} onChange={e => handleChange('manufacturer', e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-purple transition-colors" />
@@ -197,7 +197,7 @@ export default function EditRequestItem() {
                       <input type="number" value={formData.releaseYear || ''} onChange={e => handleChange('releaseYear', parseInt(e.target.value))} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-purple transition-colors" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-text-muted uppercase mb-1">세대</label>
                       <input type="number" value={formData.generation || ''} onChange={e => handleChange('generation', parseInt(e.target.value))} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-purple transition-colors" />
@@ -220,7 +220,7 @@ export default function EditRequestItem() {
                     <label className="block text-xs font-bold text-text-muted uppercase mb-1">회사명</label>
                     <input type="text" value={formData.name || ''} onChange={e => handleChange('name', e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-amber transition-colors" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-text-muted uppercase mb-1">국가</label>
                       <input type="text" value={formData.country || ''} onChange={e => handleChange('country', e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-amber transition-colors" />
