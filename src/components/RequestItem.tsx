@@ -198,7 +198,7 @@ export default function RequestItem() {
                 <>
                   <div className="relative col-span-2 md:col-span-1">
                     <div className="flex flex-wrap gap-1 mb-1">
-                      {selectedPlatforms.map(p => (
+                      {selectedPlatforms.map((p: string) => (
                         <span key={p} className="flex items-center gap-1 px-2 py-0.5 bg-vault-surface border border-vault-border rounded text-[10px] text-text-primary">
                           {p} <X size={10} className="cursor-pointer hover:text-coral" onClick={() => togglePlatform(p)} />
                         </span>

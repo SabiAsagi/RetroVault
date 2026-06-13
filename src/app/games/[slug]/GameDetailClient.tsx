@@ -42,7 +42,7 @@ export default function GameDetailClient({ game }: { game: Game }) {
         <div className="flex-1 space-y-6 min-w-0">
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              {game.platform?.split(',').map(p => p.trim()).filter(Boolean).map(p => (
+              {game.platform?.split(',').map((p: string) => p.trim()).filter(Boolean).map((p: string) => (
                 <span key={p} className="px-2 py-1 bg-vault-surface-light border border-vault-border rounded text-xs font-bold text-text-secondary">
                   {p}
                 </span>

@@ -879,7 +879,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         isOpen={isGameModalOpen} 
         onClose={() => setIsGameModalOpen(false)} 
         initialData={editingGame} 
-        onSave={async (data) => {
+        onSave={async (data: any) => {
           setIsSubmitting(true);
           try {
             if (data.id) {
@@ -890,7 +890,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               await createGame(data);
             }
             window.location.reload();
-          } catch (err) {
+          } catch (err: any) {
             alert(err.message || '오류 발생');
           } finally {
             setIsSubmitting(false);
@@ -1059,7 +1059,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         isOpen={isCompanyModalOpen} 
         onClose={() => setIsCompanyModalOpen(false)} 
         initialData={editingCompany} 
-        onSave={async (data) => {
+        onSave={async (data: any) => {
           setIsSubmitting(true);
           try {
             if (data.id) {
@@ -1070,7 +1070,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               await createCompany(data);
             }
             window.location.reload();
-          } catch (err) {
+          } catch (err: any) {
             alert(err.message || '오류 발생');
           } finally {
             setIsSubmitting(false);
@@ -1257,7 +1257,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         isOpen={isPlatformModalOpen} 
         onClose={() => setIsPlatformModalOpen(false)} 
         initialData={editingPlatform} 
-        onSave={async (data) => {
+        onSave={async (data: any) => {
           setIsSubmitting(true);
           try {
             if (data.id) {
@@ -1268,7 +1268,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
               await createPlatform(data);
             }
             window.location.reload();
-          } catch (err) {
+          } catch (err: any) {
             alert(err.message || '오류 발생');
           } finally {
             setIsSubmitting(false);
