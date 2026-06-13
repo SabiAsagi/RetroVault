@@ -289,7 +289,7 @@ function PlatformCard({ platform }: { platform: Platform }) {
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
         <div className="relative">
           {platform.imageUrl ? (
-            <img src={platform.imageUrl} alt={platform.name} className="w-full aspect-[4/3] object-cover" />
+            <img src={platform.imageUrl} alt={platform.name} className="w-full aspect-[4/3] object-contain p-4" />
           ) : (
             <div className="w-full aspect-[4/3] bg-vault-surface-light dark:bg-vault-surface flex items-center justify-center">
               <Monitor size={32} className="text-neon-purple/40" />
@@ -346,7 +346,7 @@ function PlatformListRow({ platform }: { platform: Platform }) {
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
         <div className="w-10 h-10 rounded shrink-0 overflow-hidden bg-vault-surface-light flex items-center justify-center">
           {platform.imageUrl ? (
-            <img src={platform.imageUrl} alt={platform.name} className="w-full h-full object-cover" />
+            <img src={platform.imageUrl} alt={platform.name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" />
           ) : (
             <Monitor size={16} className="text-text-muted" />
           )}

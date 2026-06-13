@@ -46,90 +46,65 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
         <ArrowLeft size={16} /> 콘솔 목록으로 돌아가기
       </Link>
 
-      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden mb-8">
-        <div className="h-64 bg-vault-surface-light relative">
-          {platform.imageUrl ? (
-            <img src={platform.imageUrl} alt={platform.name} className="w-full h-full object-cover opacity-60" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-text-muted">
-              <Monitor size={64} className="opacity-20" />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-vault-surface to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-neon-purple/20 border border-neon-purple/30 text-neon-purple rounded text-xs font-bold">
-                  {platform.manufacturer}
-                </span>
-                <span className="px-2 py-1 bg-vault-bg border border-vault-border text-text-secondary rounded text-xs font-bold">
-                  {platform.generation}
-                </span>
-              </div>
-              <h1 className="text-4xl font-black text-text-primary">{platform.name}</h1>
+      <div className="bg-vault-surface border border-vault-border rounded-xl p-6 md:p-8 mb-8">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
+          {/* Left Column: Image */}
+          <div className="w-full md:w-80 shrink-0">
+            <div className="aspect-[4/3] bg-vault-surface-light border border-vault-border rounded-xl overflow-hidden flex items-center justify-center p-6">
+              {platform.imageUrl ? (
+                <img src={platform.imageUrl} alt={platform.name} className="w-full h-full object-contain drop-shadow-xl hover:scale-110 transition-transform duration-500" />
+              ) : (
+                <Monitor size={64} className="text-text-muted opacity-20" />
+              )}
             </div>
           </div>
-        </div>
 
-        <div className="p-6 md:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-6">
-              <div>
-                <h3 className="text-sm font-bold text-text-muted mb-2 uppercase tracking-wider">소개</h3>
-                <p className="text-text-primary leading-relaxed whitespace-pre-wrap">{platform.description || '상세 정보가 없습니다.'}</p>
+          {/* Right Column: Title and Info */}
+          <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              {platform.manufacturer && (
+                <span className="px-3 py-1 bg-neon-purple/10 border border-neon-purple/30 text-neon-purple rounded-lg text-xs font-bold">
+                  {platform.manufacturer}
+                </span>
+              )}
+              {platform.generation && (
+                <span className="px-3 py-1 bg-vault-bg border border-vault-border text-text-secondary rounded-lg text-xs font-bold">
+                  {platform.generation}
+                </span>
+              )}
+              {platform.discontinued !== null && (
+                <span className={`px-3 py-1 border rounded-lg text-xs font-bold ${platform.discontinued ? 'bg-coral/10 border-coral/30 text-coral' : 'bg-mint/10 border-mint/30 text-mint'}`}>
+                  {platform.discontinued ? '단종됨' : '생산중'}
+                </span>
+              )}
+            </div>
+            
+            <h1 className="text-3xl md:text-4xl font-black text-text-primary mb-6">{platform.name}</h1>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">출시년도</span>
+                <span className="text-text-primary text-sm font-bold">{platform.releaseYear === 0 ? '불명' : `${platform.releaseYear}년`}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">제조 국가</span>
+                <span className="text-text-primary text-sm font-bold">{platform.country || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">출시가격</span>
+                <span className="text-text-primary text-sm font-bold">{platform.launchPrice || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">총 판매량</span>
+                <span className="text-text-primary text-sm font-bold">{platform.totalSales || '불명'}</span>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="bg-vault-bg border border-vault-border rounded-xl p-4 space-y-3 text-sm">
-                <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2 mb-3">콘솔 정보</h3>
-                
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted shrink-0 w-28">출시년도</span>
-                  <span className="text-text-primary font-bold text-right break-words">{platform.releaseYear === 0 ? '[출시 연도 불명]' : `${platform.releaseYear}년`}</span>
-                </div>
-                
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted shrink-0 w-28">제조 국가</span>
-                  <span className="text-text-primary font-bold text-right break-words">{platform.country || '제조 국가 불명'}</span>
-                </div>
-
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted shrink-0 w-28">기기 스펙</span>
-                  <span className="text-text-primary font-bold text-right break-words">{platform.specs || '기기 스펙 불명'}</span>
-                </div>
-
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted shrink-0 w-28">보조 기기</span>
-                  <span className="text-text-primary font-bold text-right break-words">{platform.additionalInput || '보조 기기 불명'}</span>
-                </div>
-
-                {(platform.generation === null || platform.generation === 1) && (
-                  <div className="flex justify-between gap-4">
-                    <span className="text-text-muted shrink-0 w-28">내장 게임 수</span>
-                    <span className="text-text-primary font-bold text-right break-words">{platform.gamesCount || '내장 게임 수 불명'}</span>
-                  </div>
-                )}
-                
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted shrink-0 w-28">출시가격</span>
-                  <span className="text-text-primary font-bold text-right break-words">{platform.launchPrice || '출시 가격 불명'}</span>
-                </div>
-                
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted shrink-0 w-28">총 판매량</span>
-                  <span className="text-text-primary font-bold text-right break-words">{platform.totalSales || '총 판매량 불명'}</span>
-                </div>
-
-                {platform.discontinued !== null && (
-                  <div className="flex justify-between gap-4">
-                    <span className="text-text-muted shrink-0 w-28">상태</span>
-                    <span className={`font-bold ${platform.discontinued ? 'text-coral' : 'text-mint'}`}>
-                      {platform.discontinued ? '단종됨' : '생산중'}
-                    </span>
-                  </div>
-                )}
-              </div>
+            <div className="mt-auto">
+              <h3 className="text-sm font-bold text-text-muted mb-2 uppercase tracking-wider">소개</h3>
+              <p className="text-text-secondary leading-relaxed whitespace-pre-wrap text-sm">
+                {platform.description || '상세 정보가 없습니다.'}
+              </p>
             </div>
           </div>
         </div>

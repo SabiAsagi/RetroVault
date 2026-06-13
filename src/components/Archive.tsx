@@ -50,11 +50,11 @@ const genreLabels: Record<string, string> = {
 };
 
 const sortOptions: { value: SortOption; label: string }[] = [
-  { value: 'year-asc', label: '출시연도 ↑' },
-  { value: 'year-desc', label: '출시연도 ↓' },
+  { value: 'popularity', label: '인기도순' },
   { value: 'name-asc', label: '이름 A→Z' },
   { value: 'name-desc', label: '이름 Z→A' },
-  { value: 'popularity', label: '인기도순 (기본)' },
+  { value: 'year-desc', label: '최신순' },
+  { value: 'year-asc', label: '오래된순' },
   { value: 'rating', label: '평점순' },
 ];
 
@@ -223,7 +223,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
                 </span>
               </div>
               <Link href="/request?tab=game" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors whitespace-nowrap">
-                + 게임 추가 건의
+                + 추가 건의
               </Link>
               <Link href="/request/edit?tab=game" className="text-xs px-3 py-1.5 bg-vault-surface text-text-secondary font-bold border border-vault-border rounded-lg hover:text-text-primary transition-colors flex items-center gap-1 whitespace-nowrap">
                 ✏️ 수정 건의
