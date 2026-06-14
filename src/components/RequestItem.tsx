@@ -138,7 +138,7 @@ export default function RequestItem() {
         </div>
         <div className="flex bg-vault-surface border border-vault-border rounded-lg p-1">
           <button type="button" onClick={() => setRequestType('game')} className={`px-6 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'game' ? 'bg-mint text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>게임</button>
-          <button type="button" onClick={() => setRequestType('platform')} className={`px-6 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔</button>
+          <button type="button" onClick={() => setRequestType('platform')} className={`px-6 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔/플랫폼</button>
           <button type="button" onClick={() => setRequestType('company')} className={`px-6 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'company' ? 'bg-amber text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>제작사</button>
         </div>
       </div>
@@ -199,7 +199,7 @@ export default function RequestItem() {
               )}
             </div>
 
-            <input required name={requestType === 'game' ? 'title' : 'name'} value={requestType === 'game' ? formData.title : formData.name} onChange={handleChange} placeholder={`${requestType === 'game' ? '게임명' : requestType === 'platform' ? '콘솔명' : '회사명'} 입력 (필수)`} className="w-full text-3xl font-black bg-transparent border-b-2 border-vault-border focus:border-mint pb-2 text-text-primary focus:outline-none placeholder:text-text-muted/50" />
+            <input required name={requestType === 'game' ? 'title' : 'name'} value={requestType === 'game' ? formData.title : formData.name} onChange={handleChange} placeholder={`${requestType === 'game' ? '게임명' : requestType === 'platform' ? '콘솔/플랫폼명' : '회사명'} 입력 (필수)`} className="w-full text-3xl font-black bg-transparent border-b-2 border-vault-border focus:border-mint pb-2 text-text-primary focus:outline-none placeholder:text-text-muted/50" />
             
             {requestType === 'game' && (
               <input name="originalTitle" value={formData.originalTitle} onChange={handleChange} placeholder="원제 (선택)" className="w-full text-xl font-bold bg-transparent border-b border-vault-border focus:border-mint pb-1 text-text-secondary focus:outline-none placeholder:text-text-muted/50 mt-2" />

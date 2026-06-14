@@ -43,7 +43,7 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
       <Link href="/platforms" className="inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-text-primary transition-colors mb-6">
-        <ArrowLeft size={16} /> 콘솔 목록으로 돌아가기
+        <ArrowLeft size={16} /> 콘솔/플랫폼 목록으로 돌아가기
       </Link>
 
       <div className="bg-vault-surface border border-vault-border rounded-xl p-6 md:p-8 mb-8">
@@ -108,7 +108,7 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
                 <span className="text-text-primary text-sm font-bold">{platform.totalSales || '불명'}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
-                <span className="text-text-muted text-sm font-bold w-24 shrink-0">콘솔 사양</span>
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">기기 사양</span>
                 <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs || ''}>{platform.specs || '불명'}</span>
               </div>
             </div>

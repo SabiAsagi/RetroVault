@@ -112,7 +112,7 @@ export default function EditRequestItem() {
 
       <div className="flex bg-vault-surface border border-vault-border rounded-lg p-1 mb-6">
         <button onClick={() => setRequestType('game')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'game' ? 'bg-neon-blue text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>게임</button>
-        <button onClick={() => setRequestType('platform')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔</button>
+        <button onClick={() => setRequestType('platform')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'platform' ? 'bg-neon-purple text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>콘솔/플랫폼</button>
         <button onClick={() => setRequestType('company')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-colors ${requestType === 'company' ? 'bg-amber text-vault-bg' : 'text-text-muted hover:text-text-primary'}`}>제작사</button>
       </div>
 
@@ -184,7 +184,7 @@ export default function EditRequestItem() {
               {requestType === 'platform' && (
                 <>
                   <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase mb-1">콘솔명</label>
+                    <label className="block text-xs font-bold text-text-muted uppercase mb-1">콘솔/플랫폼명</label>
                     <input type="text" value={formData.name || ''} onChange={e => handleChange('name', e.target.value)} className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-neon-purple transition-colors" />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

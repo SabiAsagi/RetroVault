@@ -24,7 +24,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: '#4AEDC4', group: 'main' },
   { id: 'archive', path: '/games', label: '게임 아카이브', icon: <Archive size={16} />, color: '#4EA8FF', group: 'main' },
-  { id: 'consoles', path: '/platforms', label: '콘솔 아카이브', icon: <Database size={16} />, color: '#A78BFA', group: 'main' },
+  { id: 'consoles', path: '/platforms', label: '콘솔/플랫폼 아카이브', icon: <Database size={16} />, color: '#A78BFA', group: 'main' },
   { id: 'companies', path: '/companies', label: '게임 제작사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
   { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
   { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
@@ -164,7 +164,7 @@ export default function NavigationApp() {
                 
                 {searchResults.platforms?.length > 0 && (
                   <div className="p-2 border-b border-vault-border/50">
-                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">콘솔</h3>
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">콘솔/플랫폼</h3>
                     {searchResults.platforms.map((p: any) => (
                       <Link href={`/platforms/${getPlatformSlug(p)}`} key={p.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
                         <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border flex items-center justify-center">

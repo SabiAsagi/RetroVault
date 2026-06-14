@@ -112,7 +112,7 @@ export default function PlatformsPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="콘솔 검색..."
+            placeholder="콘솔/플랫폼 검색..."
             className="w-full bg-vault-surface border border-vault-border rounded-xl px-10 py-3 text-text-primary focus:outline-none focus:border-neon-purple transition-colors"
           />
         </div>
@@ -146,7 +146,7 @@ export default function PlatformsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-text-primary whitespace-nowrap">콘솔 아카이브</h2>
+              <h2 className="text-lg font-bold text-text-primary whitespace-nowrap">콘솔/플랫폼 아카이브</h2>
               <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
                 {filtered.length}개
               </span>

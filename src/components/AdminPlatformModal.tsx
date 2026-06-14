@@ -24,7 +24,7 @@ export default function AdminPlatformModal({
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-[1000px] overflow-hidden flex flex-col max-h-[95vh]">
         <div className="flex items-center justify-between p-4 border-b border-vault-border bg-vault-bg/50 shrink-0">
-          <h3 className="text-lg font-bold text-text-primary">{formData.id ? '콘솔 수정' : '콘솔 추가'}</h3>
+          <h3 className="text-lg font-bold text-text-primary">{formData.id ? '콘솔/플랫폼 수정' : '콘솔/플랫폼 추가'}</h3>
           <button onClick={onClose} className="text-text-muted hover:text-text-primary">
             <XCircle size={20} />
           </button>
@@ -82,7 +82,7 @@ export default function AdminPlatformModal({
                 </select>
               </div>
 
-              <input required name="name" value={formData.name || ''} onChange={handleChange} placeholder="콘솔명 입력 (필수)" className="w-full text-3xl font-black bg-transparent border-b-2 border-vault-border focus:border-mint pb-2 text-text-primary focus:outline-none placeholder:text-text-muted/50" />
+              <input required name="name" value={formData.name || ''} onChange={handleChange} placeholder="콘솔/플랫폼명 입력 (필수)" className="w-full text-3xl font-black bg-transparent border-b-2 border-vault-border focus:border-mint pb-2 text-text-primary focus:outline-none placeholder:text-text-muted/50" />
               
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <input required name="manufacturer" value={formData.manufacturer || ''} onChange={handleChange} placeholder="제조사 (필수)" className="w-full bg-vault-surface border border-vault-border rounded-lg p-3 text-sm text-text-primary focus:border-mint focus:outline-none" />

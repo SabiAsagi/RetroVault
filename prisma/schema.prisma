@@ -84,6 +84,7 @@ model Game {
   releaseDate       String?
   releaseYear       Int
   genre             String
+  genre_ko          String?
   country           String?
   coverImageUrl     String?
   description       String?
@@ -123,12 +124,15 @@ model Game {
 model Platform {
   id              String          @id @default(uuid())
   name            String          @unique
+  name_ko         String?
   manufacturer    String
+  manufacturer_ko String?
   generation      Int?
   releaseYear     Int
   imageUrl        String?
   logoUrl         String?
   description     String?
+  description_ko  String?
   innovationPoint String?
   type            String          @default("HOME")
   variants        String?
@@ -143,10 +147,12 @@ model Platform {
   additionalInput String?
   country         String?
   specs           String?
+  specs_ko        String?
   releaseStatus   String?         @default("RELEASED")
   views           Int             @default(0)
   gamesCount      Int             @default(0)
   mediaFormat     String?
+  mediaFormat_ko  String?
   releaseDate     String?
   games           Game[]
   requestedBy     User?           @relation("RequestedPlatforms", fields: [requestedById], references: [id])
@@ -156,10 +162,13 @@ model Platform {
 model Company {
   id                 String   @id @default(uuid())
   name               String   @unique
+  name_ko            String?
   type               String
   country            String?
+  country_ko         String?
   logoUrl            String?
   description        String?
+  description_ko     String?
   foundedAt          String?
   websiteUrl         String?
   createdAt          DateTime @default(now())
@@ -167,12 +176,16 @@ model Company {
   requestedById      String?
   status             String   @default("APPROVED")
   updatedAt          DateTime @default(now()) @updatedAt
-  companyStatus      String?
-  flagshipFranchises String?
-  keyFigures         String?
-  views              Int      @default(0)
-  subsidiaries       String?
-  requestedBy        User?    @relation("RequestedCompanies", fields: [requestedById], references: [id])
+  companyStatus         String?
+  companyStatus_ko      String?
+  flagshipFranchises    String?
+  flagshipFranchises_ko String?
+  keyFigures            String?
+  keyFigures_ko         String?
+  views                 Int      @default(0)
+  subsidiaries          String?
+  subsidiaries_ko       String?
+  requestedBy           User?    @relation("RequestedCompanies", fields: [requestedById], references: [id])
   developedGames     Game[]   @relation("DevelopedGames")
   publishedGames     Game[]   @relation("PublishedGames")
 }

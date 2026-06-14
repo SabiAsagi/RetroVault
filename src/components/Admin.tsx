@@ -728,7 +728,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             {[
               { id: 'dashboard', label: '대시보드', icon: LayoutDashboard, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER', 'USER_MANAGER'] },
               { id: 'games', label: '게임 관리', icon: Gamepad2, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
-              { id: 'platforms', label: '콘솔 관리', icon: Monitor, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
+              { id: 'platforms', label: '콘솔/플랫폼 관리', icon: Monitor, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
               { id: 'companies', label: '회사 관리', icon: Building2, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
               { id: 'requests', label: '추가 요청', icon: Plus, roles: ['ADMIN', 'MODERATOR', 'INFO_MANAGER'] },
               { id: 'users', label: '회원 관리', icon: Users, roles: ['ADMIN', 'MODERATOR', 'USER_MANAGER'] },
@@ -936,7 +936,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
                 <label className="block text-xs font-bold text-text-muted mb-1">유형</label>
                 <select value={editingTimeline?.type || 'event'} onChange={e => setEditingTimeline({...editingTimeline, type: e.target.value as any})} className="w-full bg-vault-bg border border-vault-border rounded px-3 py-2 text-sm text-text-primary">
                   <option value="event">일반 이벤트</option>
-                  <option value="console">콘솔 출시</option>
+                  <option value="console">콘솔/플랫폼 출시</option>
                   <option value="game">게임 출시</option>
                 </select>
               </div>
