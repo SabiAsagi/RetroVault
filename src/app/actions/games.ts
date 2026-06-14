@@ -5,7 +5,7 @@ import { parseGameSlug } from "@/lib/slug";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function getGamesFromDB(query: string = ""): Promise<Game[]> {
+export async function getGamesFromDB(query: string = "", limit: number = 1000): Promise<Game[]> {
   const games = await prisma.game.findMany({
     where: query ? {
       OR: [
@@ -19,8 +19,9 @@ export async function getGamesFromDB(query: string = ""): Promise<Game[]> {
       publisher: true,
     },
     orderBy: {
-      releaseYear: 'asc'
-    }
+      createdAt: 'desc'
+    },
+    take: limit
   });
 
   return games.map(g => ({

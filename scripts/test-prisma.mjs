@@ -4,36 +4,35 @@ const prisma = new PrismaClient();
 
 async function main() {
   try {
-    console.log("Testing getUsers...");
-    await prisma.user.findMany({ orderBy: { createdAt: 'desc' } });
+    console.log("Testing getGamesFromDB...");
+    const games = await prisma.game.findMany({
+      include: { platform: true, developer: true, publisher: true },
+      orderBy: { releaseYear: 'asc' }
+    });
     
-    console.log("Testing getReports...");
-    await prisma.report.findMany({ include: { reporter: true } });
-
-    console.log("Testing getAdminLogs...");
-    await prisma.adminLog.findMany({ include: { admin: true } });
-
-    console.log("Testing getCompanies...");
-    await prisma.company.findMany({ include: { _count: { select: { developedGames: true, publishedGames: true } } } });
-
-    console.log("Testing getGameRequests...");
-    await prisma.game.findMany({ where: { status: "PENDING" }, include: { requestedBy: true, platform: true } });
-
-    console.log("Testing getPlatformRequests...");
-    await prisma.platform.findMany({ where: { status: "PENDING" }, include: { requestedBy: true } });
-
-    console.log("Testing getCompanyRequests...");
-    await prisma.company.findMany({ where: { status: "PENDING" }, include: { requestedBy: true } });
-
-    console.log("Testing getPlatforms...");
-    await prisma.platform.findMany({ orderBy: { name: 'asc' }, include: { _count: { select: { games: true } } } });
-
-    console.log("Testing getEditRequests...");
-    await prisma.editRequest.findMany({ where: { status: "PENDING" }, include: { requestedBy: true } });
-
-    console.log("All queries executed successfully!");
+    games.map(g => ({
+      id: g.id,
+      title: g.title,
+      releaseYear: g.releaseYear,
+      platform: g.platform.name,
+      genre: g.genre,
+      country: g.country || '',
+      developer: g.developer?.name || '',
+      publisher: g.publisher?.name || '',
+      era: `${Math.floor(g.releaseYear / 10) * 10}s`,
+      imageUrl: g.coverImageUrl || '',
+      description: g.description || '',
+      popularity: g.popularity,
+      views: g.views,
+      rating: g.rating || 0,
+      rarity: 'Common',
+      releaseStatus: g.releaseStatus,
+      platformType: g.platform.type,
+      platformDiscontinued: g.platform.discontinued || false
+    }));
+    console.log("getGamesFromDB works! Games count:", games.length);
   } catch (e) {
-    console.error("Prisma error:", e);
+    console.error("Prisma error in getGamesFromDB:", e);
   } finally {
     await prisma.$disconnect();
   }
