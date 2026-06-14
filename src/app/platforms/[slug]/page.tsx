@@ -52,7 +52,12 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
           <div className="w-full md:w-80 shrink-0">
             <div className="aspect-[4/3] bg-vault-surface-light border border-vault-border rounded-xl overflow-hidden flex items-center justify-center p-6">
               {platform.imageUrl ? (
-                <img src={platform.imageUrl} alt={platform.name} className="w-full h-full object-contain drop-shadow-xl hover:scale-110 transition-transform duration-500" />
+                <img 
+                  src={platform.imageUrl} 
+                  alt={platform.name} 
+                  className="w-full h-full object-contain drop-shadow-xl hover:scale-110 transition-transform duration-500" 
+                  style={{ filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.1))' }}
+                />
               ) : (
                 <Monitor size={64} className="text-text-muted opacity-20" />
               )}

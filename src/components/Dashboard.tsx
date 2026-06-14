@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { getGameSlug } from '@/lib/slug';
 
 interface DashboardProps {
-  games: Game[];
   collection: CollectionItem[];
   historyGame?: Game | null;
+  recentGames?: Game[];
+  popularGames?: Game[];
   popularCollections?: {
     id: string;
     user: string;
@@ -26,13 +27,11 @@ interface DashboardProps {
   onSelectGame?: (game: Game) => void;
 }
 
-export default function Dashboard({ games, collection, historyGame, popularCollections = [], isOwned, onAddToCollection, onSelectGame, onTabChange, onSelectCollection }: DashboardProps) {
+export default function Dashboard({ collection, historyGame, recentGames = [], popularGames = [], popularCollections = [], isOwned, onAddToCollection, onSelectGame, onTabChange, onSelectCollection }: DashboardProps) {
   
-  // Get recent 6 games from the complete game list to mock "Recently Added" across the platform
-  const recentlyAddedGames = [...(games || [])].sort((a, b) => b.releaseYear - a.releaseYear).slice(0, 6);
-  
-  // Get legendary/rare games for "Popular Games"
-  const recommendedGames = [...(games || [])].sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 4);
+  // Data is pre-fetched from server - no need for client-side sorting
+  const recentlyAddedGames = recentGames;
+  const recommendedGames = popularGames;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-8 page-enter">

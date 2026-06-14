@@ -12,6 +12,14 @@ export async function getDashboardData() {
   let historyGame = await prisma.game.findFirst({
     where: { 
       releaseDate: { contains: dateStr } 
+    },
+    select: {
+      id: true, title: true, releaseYear: true, releaseDate: true,
+      coverImageUrl: true, genre: true, country: true, popularity: true, views: true,
+      releaseStatus: true,
+      platform: { select: { name: true, type: true, discontinued: true } },
+      developer: { select: { name: true } },
+      publisher: { select: { name: true } },
     }
   });
 
@@ -24,23 +32,96 @@ export async function getDashboardData() {
     
     historyGame = await prisma.game.findFirst({
       skip,
-      take: 1
+      take: 1,
+      select: {
+        id: true, title: true, releaseYear: true, releaseDate: true,
+        coverImageUrl: true, genre: true, country: true, popularity: true, views: true,
+        releaseStatus: true,
+        platform: { select: { name: true, type: true, discontinued: true } },
+        developer: { select: { name: true } },
+        publisher: { select: { name: true } },
+      }
     });
     isRandom = true;
   }
 
-  // Get most popular collection groups (sorted by likes + views)
-  const allGroups = await prisma.collectionGroup.findMany({
+  // Recent games (최신 출시연도 6개)
+  const recentGamesRaw = await prisma.game.findMany({
+    orderBy: { releaseYear: 'desc' },
+    take: 6,
+    select: {
+      id: true, title: true, releaseYear: true, coverImageUrl: true,
+      genre: true, popularity: true, views: true, releaseStatus: true,
+      platform: { select: { name: true, type: true, discontinued: true } },
+      developer: { select: { name: true } },
+      publisher: { select: { name: true } },
+    }
+  });
+
+  const recentGames = recentGamesRaw.map(g => ({
+    id: g.id,
+    title: g.title,
+    releaseYear: g.releaseYear,
+    platform: g.platform.name,
+    genre: g.genre,
+    imageUrl: g.coverImageUrl || '',
+    popularity: g.popularity,
+    views: g.views,
+    releaseStatus: g.releaseStatus,
+    platformType: g.platform.type,
+    platformDiscontinued: g.platform.discontinued || false,
+    developer: g.developer?.name || '',
+    publisher: g.publisher?.name || '',
+  }));
+
+  // Popular games (인기도 상위 4개)
+  const popularGamesRaw = await prisma.game.findMany({
+    orderBy: { popularity: 'desc' },
+    take: 4,
+    select: {
+      id: true, title: true, releaseYear: true, coverImageUrl: true,
+      genre: true, popularity: true, views: true, rating: true, releaseStatus: true,
+      platform: { select: { name: true, type: true, discontinued: true } },
+      developer: { select: { name: true } },
+      publisher: { select: { name: true } },
+    }
+  });
+
+  const popularGames = popularGamesRaw.map(g => ({
+    id: g.id,
+    title: g.title,
+    releaseYear: g.releaseYear,
+    platform: g.platform.name,
+    genre: g.genre,
+    imageUrl: g.coverImageUrl || '',
+    popularity: g.popularity,
+    views: g.views,
+    rating: g.rating || 0,
+    rarity: 'Common',
+    releaseStatus: g.releaseStatus,
+    platformType: g.platform.type,
+    platformDiscontinued: g.platform.discontinued || false,
+    developer: g.developer?.name || '',
+    publisher: g.publisher?.name || '',
+  }));
+
+  // Get most popular collection groups (sorted by likes + views) - use DB ordering
+  const popularGroups = await prisma.collectionGroup.findMany({
     where: { isPublic: true },
+    orderBy: [{ likes: 'desc' }, { views: 'desc' }],
+    take: 12,
     include: {
-      user: true,
+      user: { select: { id: true, nickname: true, name: true, image: true } },
       items: {
         take: 3,
         include: {
           item: {
             include: {
               game: {
-                include: { platform: true }
+                select: {
+                  id: true, title: true, coverImageUrl: true, releaseYear: true, genre: true,
+                  platform: { select: { name: true } }
+                }
               }
             }
           }
@@ -49,18 +130,24 @@ export async function getDashboardData() {
     }
   });
 
-  const popularGroups = allGroups
-    .sort((a, b) => (b.likes + b.views) - (a.likes + a.views))
-    .slice(0, 12);
-
   // Get users who have public collections but maybe no public group
   const usersWithPublicItems = await prisma.user.findMany({
     where: { collections: { some: { visibility: 'public' } } },
-    include: {
+    take: 12,
+    select: {
+      id: true, nickname: true, name: true, image: true,
+      profileLikes: true, profileViews: true,
       collections: {
         where: { visibility: 'public' },
         take: 3,
-        include: { game: { include: { platform: true } } }
+        include: { 
+          game: { 
+            select: { 
+              id: true, title: true, coverImageUrl: true, releaseYear: true, genre: true,
+              platform: { select: { name: true } } 
+            } 
+          } 
+        }
       }
     }
   });
@@ -86,8 +173,8 @@ export async function getDashboardData() {
         user: u.nickname || u.name || 'User',
         userImage: u.image || null,
         title: `${u.nickname || u.name}님의 기본 컬렉션`,
-        likes: (u as any).profileLikes || 0,
-        views: (u as any).profileViews || 0,
+        likes: u.profileLikes || 0,
+        views: u.profileViews || 0,
         type: 'user', // mark as user profile collection
         games: u.collections.map(c => ({
           ...c.game,
@@ -97,5 +184,23 @@ export async function getDashboardData() {
       }))
   ].slice(0, 12);
 
-  return { historyGame: { ...historyGame, isRandom }, popularCollections };
+  const formattedHistoryGame = historyGame ? {
+    id: historyGame.id,
+    title: historyGame.title,
+    releaseYear: historyGame.releaseYear,
+    platform: historyGame.platform.name,
+    genre: historyGame.genre,
+    country: historyGame.country || '',
+    imageUrl: historyGame.coverImageUrl || '',
+    popularity: historyGame.popularity,
+    views: historyGame.views,
+    releaseStatus: historyGame.releaseStatus,
+    platformType: historyGame.platform.type,
+    platformDiscontinued: historyGame.platform.discontinued || false,
+    developer: historyGame.developer?.name || '',
+    publisher: historyGame.publisher?.name || '',
+    isRandom,
+  } : null;
+
+  return { historyGame: formattedHistoryGame, recentGames, popularGames, popularCollections };
 }

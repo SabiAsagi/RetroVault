@@ -7,13 +7,14 @@ import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 
 interface Props {
-  initialGames: Game[];
   initialCollection: CollectionItem[];
   historyGame?: Game | null;
+  recentGames?: Game[];
+  popularGames?: Game[];
   popularCollections?: any[];
 }
 
-export default function DashboardWrapper({ initialGames, initialCollection, historyGame, popularCollections }: Props) {
+export default function DashboardWrapper({ initialCollection, historyGame, recentGames = [], popularGames = [], popularCollections }: Props) {
   const [collection, setCollection] = useState<CollectionItem[]>(initialCollection);
   const router = useRouter();
 
@@ -61,9 +62,10 @@ export default function DashboardWrapper({ initialGames, initialCollection, hist
 
   return (
     <Dashboard
-      games={initialGames}
       collection={collection}
       historyGame={historyGame}
+      recentGames={recentGames}
+      popularGames={popularGames}
       popularCollections={popularCollections}
       isOwned={isOwned}
       onAddToCollection={handleAddToCollection}

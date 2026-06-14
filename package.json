@@ -16,7 +16,11 @@
     "sync:games": "tsx scripts/sync-games.ts",
     "sync:platforms": "tsx scripts/sync-platforms.ts",
     "sync:companies": "tsx scripts/sync-companies.ts",
-    "sync:all": "npm run sync:platforms && npm run sync:companies && npm run sync:games"
+    "sync:all": "npm run sync:platforms && npm run sync:companies && npm run sync:games",
+    "translate:platforms": "tsx scripts/translate-platforms.ts",
+    "translate:companies": "tsx scripts/translate-companies.ts",
+    "translate:genres": "tsx scripts/translate-genres.ts",
+    "translate:all": "npm run translate:platforms && npm run translate:companies && npm run translate:genres"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",

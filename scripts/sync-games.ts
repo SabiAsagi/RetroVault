@@ -110,13 +110,23 @@ async function syncGames() {
 
         } else {
           if (!platformId) {
-            console.log(`[SKIPPED] ${title} - No matching platform found in DB.`);
-            continue;
-          }
-
-          if (!developerId && !publisherId) {
-            console.log(`[SKIPPED] ${title} - No matching developer or publisher found in DB.`);
-            continue;
+            // Find or create 'Unknown' platform
+            let unknownPlatformId = platformMap.get('unknown');
+            if (!unknownPlatformId) {
+              const unknownPlatform = await prisma.platform.upsert({
+                where: { name: 'Unknown' },
+                update: {},
+                create: {
+                  name: 'Unknown',
+                  manufacturer: 'Unknown',
+                  releaseYear: 1970,
+                  type: 'OTHER',
+                }
+              });
+              unknownPlatformId = unknownPlatform.id;
+              platformMap.set('unknown', unknownPlatformId);
+            }
+            platformId = unknownPlatformId;
           }
 
           const newGame = await prisma.game.create({

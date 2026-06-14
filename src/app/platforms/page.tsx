@@ -353,7 +353,12 @@ function PlatformListRow({ platform }: { platform: Platform }) {
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
         <div className="w-10 h-10 rounded shrink-0 overflow-hidden bg-vault-surface-light flex items-center justify-center">
           {platform.imageUrl ? (
-            <img src={platform.imageUrl} alt={platform.name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" />
+            <img 
+              src={platform.imageUrl} 
+              alt={platform.name} 
+              className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" 
+              style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.1))' }}
+            />
           ) : (
             <Monitor size={16} className="text-text-muted" />
           )}

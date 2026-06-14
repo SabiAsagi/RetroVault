@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { Game, Rarity, SortOption, Era } from '../types';
 import { Filter, Search, X, LayoutGrid, List, Monitor } from 'lucide-react';
@@ -8,6 +8,7 @@ import GameCard from './GameCard';
 
 interface ArchiveProps {
   games: Game[];
+  total: number;
   isLoading: boolean;
   searchQuery: string;
   isOwned: (gameId: string) => boolean;
@@ -15,25 +16,22 @@ interface ArchiveProps {
   onSelectGame: (game: Game) => void;
   initialEra?: Era | null;
   onSearchChange?: (q: string) => void;
+  onFetchGames: (params: {
+    page: number;
+    sort: string;
+    search: string;
+    platforms: string[];
+    genres: string[];
+    countries: string[];
+    developers: string[];
+  }) => void;
+  filterOptions?: {
+    platforms: string[];
+    genres: string[];
+    countries: string[];
+    developers: string[];
+  };
 }
-
-const rarities: Rarity[] = ['Common', 'Uncommon', 'Rare', 'Legendary'];
-const eraList: Era[] = [
-  '2nd Gen (1976-1992)', '3rd Gen (1983-2003)', '4th Gen (1987-2004)',
-  '5th Gen (1993-2006)', '6th Gen (1998-2013)', '7th Gen (2005-2017)',
-  '8th Gen (2012-2020)', '9th Gen (2020-)',
-];
-const eraLabels: Record<Era, string> = {
-  '1st Gen (1972-1980)': '1세대',
-  '2nd Gen (1976-1992)': '2세대',
-  '3rd Gen (1983-2003)': '3세대',
-  '4th Gen (1987-2004)': '4세대',
-  '5th Gen (1993-2006)': '5세대',
-  '6th Gen (1998-2013)': '6세대',
-  '7th Gen (2005-2017)': '7세대',
-  '8th Gen (2012-2020)': '8세대',
-  '9th Gen (2020-)': '9세대',
-};
 
 const genreLabels: Record<string, string> = {
   Action: '액션',
@@ -47,6 +45,17 @@ const genreLabels: Record<string, string> = {
   Puzzle: '퍼즐',
   Shooter: '슈팅',
   Platformer: '플랫포머',
+  '액션': '액션',
+  '어드벤처': '어드벤처',
+  '롤플레잉': '롤플레잉',
+  '전략': '전략',
+  '시뮬레이션': '시뮬레이션',
+  '스포츠': '스포츠',
+  '레이싱': '레이싱',
+  '격투': '격투',
+  '퍼즐': '퍼즐',
+  '슈팅': '슈팅',
+  '플랫포머': '플랫포머',
 };
 
 const sortOptions: { value: SortOption; label: string }[] = [
@@ -60,13 +69,11 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 type ViewMode = 'grid' | 'list';
 
-export default function Archive({ games, isLoading, searchQuery, isOwned, onAddToCollection, onSelectGame, initialEra, onSearchChange }: ArchiveProps) {
-  const allPlatforms = useMemo(() => [...new Set(games.map(g => g.platform))].filter(Boolean).sort(), [games]);
-  const allGenres = useMemo(() => [...new Set(games.map(g => g.genre))].filter(Boolean).sort(), [games]);
-  const allCountries = useMemo(() => [...new Set(games.map(g => g.country).filter(Boolean))].sort(), [games]);
-  const allDevelopers = useMemo(() => [...new Set(games.map(g => g.developer).filter(Boolean))].sort(), [games]);
-
-  const allInstallSizes = useMemo(() => [...new Set(games.map(g => g.installSize).filter(Boolean))].sort(), [games]);
+export default function Archive({ games, total, isLoading, searchQuery, isOwned, onAddToCollection, onSelectGame, initialEra, onSearchChange, onFetchGames, filterOptions }: ArchiveProps) {
+  const allPlatforms = useMemo(() => filterOptions?.platforms || [], [filterOptions]);
+  const allGenres = useMemo(() => filterOptions?.genres || [], [filterOptions]);
+  const allCountries = useMemo(() => filterOptions?.countries || [], [filterOptions]);
+  const allDevelopers = useMemo(() => filterOptions?.developers || [], [filterOptions]);
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', true);
@@ -75,77 +82,54 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
   const [countryFilter, setCountryFilter] = useSessionStorage<string[]>('archive-country', []);
   const [developerFilter, setDeveloperFilter] = useSessionStorage<string[]>('archive-developer', []);
   
-  const [installSizeMin, setInstallSizeMin] = useSessionStorage<string>('archive-size-min', '');
-  const [installSizeMax, setInstallSizeMax] = useSessionStorage<string>('archive-size-max', '');
-  const [installSizeUnit, setInstallSizeUnit] = useSessionStorage<string>('archive-size-unit', 'MB');
-  
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
 
+  // Debounce search
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
+  }, [searchQuery]);
+
+  // Reset page on filter change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, platformFilters, genreFilter, sortBy, countryFilter, developerFilter, installSizeMin, installSizeMax, installSizeUnit]);
+  }, [debouncedSearch, platformFilters, genreFilter, sortBy, countryFilter, developerFilter]);
+
+  // Fetch games from server when filters/sort/page change
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    onFetchGames({
+      page: currentPage,
+      sort: sortBy,
+      search: debouncedSearch,
+      platforms: platformFilters,
+      genres: genreFilter,
+      countries: countryFilter,
+      developers: developerFilter,
+    });
+  }, [currentPage, sortBy, debouncedSearch, platformFilters, genreFilter, countryFilter, developerFilter, onFetchGames]);
 
   useEffect(() => {
     if (initialEra) { setShowFilters(true); }
   }, [initialEra]);
 
-  const parseInstallSizeToMB = (sizeStr: string | null | undefined): number | null => {
-    if (!sizeStr) return null;
-    const match = sizeStr.match(/([\d.]+)\s*(MB|GB|KB|TB)/i);
-    if (!match) return null;
-    const value = parseFloat(match[1]);
-    const unit = match[2].toUpperCase();
-    if (unit === 'KB') return value / 1024;
-    if (unit === 'MB') return value;
-    if (unit === 'GB') return value * 1024;
-    if (unit === 'TB') return value * 1024 * 1024;
-    return null;
-  };
+  const hasFilters = platformFilters.length > 0 || genreFilter.length > 0 || countryFilter.length > 0 || developerFilter.length > 0;
 
-  const filtered = useMemo(() => {
-    let result = [...games];
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(g => g.title.toLowerCase().includes(q) || g.developer?.toLowerCase().includes(q) || g.publisher?.toLowerCase().includes(q));
-    }
-    if (platformFilters.length > 0) result = result.filter(g => platformFilters.includes(g.platform));
-    if (genreFilter.length > 0) result = result.filter(g => genreFilter.includes(g.genre));
-    if (countryFilter.length > 0) result = result.filter(g => countryFilter.includes(g.country || ''));
-    if (developerFilter.length > 0) result = result.filter(g => developerFilter.includes(g.developer || ''));
-    
-    if (installSizeMin || installSizeMax) {
-      const minVal = installSizeMin ? parseFloat(installSizeMin) * (installSizeUnit === 'GB' ? 1024 : 1) : 0;
-      const maxVal = installSizeMax ? parseFloat(installSizeMax) * (installSizeUnit === 'GB' ? 1024 : 1) : Infinity;
-      
-      result = result.filter(g => {
-        const sizeMB = parseInstallSizeToMB(g.installSize);
-        if (sizeMB === null) return false;
-        return sizeMB >= minVal && sizeMB <= maxVal;
-      });
-    }
+  const clearFilters = () => { setPlatformFilters([]); setGenreFilter([]); setCountryFilter([]); setDeveloperFilter([]); };
 
-    switch (sortBy) {
-      case 'year-asc':    result.sort((a, b) => a.releaseYear - b.releaseYear); break;
-      case 'year-desc':   result.sort((a, b) => b.releaseYear - a.releaseYear); break;
-      case 'name-asc':    result.sort((a, b) => a.title.localeCompare(b.title)); break;
-      case 'name-desc':   result.sort((a, b) => b.title.localeCompare(a.title)); break;
-      case 'popularity':  
-        result.sort((a, b) => {
-          const viewDiff = (b.views ?? 0) - (a.views ?? 0);
-          if (viewDiff !== 0) return viewDiff;
-          return (b.popularity ?? 0) - (a.popularity ?? 0);
-        }); 
-        break;
-      case 'rating':      result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
-    }
-    return result;
-  }, [games, searchQuery, platformFilters, genreFilter, sortBy, countryFilter, developerFilter, installSizeMin, installSizeMax, installSizeUnit]);
-
-  const hasFilters = platformFilters.length > 0 || genreFilter.length > 0 || countryFilter.length > 0 || developerFilter.length > 0 || installSizeMin || installSizeMax;
-
-  const clearFilters = () => { setPlatformFilters([]); setGenreFilter([]); setCountryFilter([]); setDeveloperFilter([]); setInstallSizeMin(''); setInstallSizeMax(''); };
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6">
@@ -180,35 +164,6 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
             <MultiSelectFilter label="개발사" values={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
             <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
             
-            <div className="flex flex-col">
-              <label className="text-[10px] text-text-muted block mb-1 font-medium">용량 (MB/GB)</label>
-              <div className="flex items-center gap-1 bg-vault-bg border border-vault-border rounded-lg px-2 py-1 focus-within:border-mint/50 transition-colors">
-                <input
-                  type="number"
-                  placeholder="최소"
-                  value={installSizeMin}
-                  onChange={e => setInstallSizeMin(e.target.value)}
-                  className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
-                />
-                <span className="text-text-muted text-xs">~</span>
-                <input
-                  type="number"
-                  placeholder="최대"
-                  value={installSizeMax}
-                  onChange={e => setInstallSizeMax(e.target.value)}
-                  className="w-16 bg-transparent text-xs text-text-primary focus:outline-none text-center"
-                />
-                <select
-                  value={installSizeUnit}
-                  onChange={e => setInstallSizeUnit(e.target.value)}
-                  className="bg-transparent text-xs text-text-secondary focus:outline-none cursor-pointer border-l border-vault-border pl-1"
-                >
-                  <option value="MB">MB</option>
-                  <option value="GB">GB</option>
-                </select>
-              </div>
-            </div>
-            
             {hasFilters && (
               <button onClick={clearFilters} className="w-full text-xs px-3 py-2 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors font-bold mt-4">
                 초기화
@@ -225,7 +180,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-text-primary whitespace-nowrap">게임 아카이브</h2>
                 <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
-                  {filtered.length}개
+                  {total}개
                 </span>
               </div>
               <Link href="/request?tab=game" className="text-xs px-3 py-1.5 bg-amber/10 text-amber font-bold border border-amber/30 rounded-lg hover:bg-amber/20 transition-colors whitespace-nowrap">
@@ -296,7 +251,7 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
             </div>
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : games.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="w-16 h-16 rounded-full bg-vault-surface border border-vault-border flex items-center justify-center mb-4">
             <Search className="text-text-muted" size={28} />
@@ -315,67 +270,60 @@ export default function Archive({ games, isLoading, searchQuery, isOwned, onAddT
           </div>
         </div>
       ) : (
-        (() => {
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-        const paginatedGames = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+        <>
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              {games.map(game => (
+                <GameCard key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {games.map(game => (
+                <ListRow key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
+              ))}
+            </div>
+          )}
 
-        return (
-          <>
-            {viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {paginatedGames.map(game => (
-                  <GameCard key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
-                ))}
+          {totalPages > 1 && (
+            <div className="mt-8 flex justify-center gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors"
+              >
+                이전
+              </button>
+              <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] sm:max-w-md no-scrollbar">
+                {Array.from({ length: totalPages }).map((_, i) => {
+                  const p = i + 1;
+                  // Show current page, first, last, and +/- 2 pages around current
+                  if (p === 1 || p === totalPages || (p >= currentPage - 2 && p <= currentPage + 2)) {
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(p)}
+                        className={`min-w-[32px] h-8 px-2 flex items-center justify-center rounded-lg text-sm transition-colors ${currentPage === p ? 'bg-mint text-vault-bg font-bold' : 'bg-vault-surface text-text-secondary border border-vault-border hover:border-mint/50'}`}
+                      >
+                        {p}
+                      </button>
+                    );
+                  } else if (p === currentPage - 3 || p === currentPage + 3) {
+                    return <span key={i} className="text-text-muted px-1">...</span>;
+                  }
+                  return null;
+                })}
               </div>
-            ) : (
-              <div className="space-y-2">
-                {paginatedGames.map(game => (
-                  <ListRow key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
-                ))}
-              </div>
-            )}
-
-            {totalPages > 1 && (
-              <div className="mt-8 flex justify-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors"
-                >
-                  이전
-                </button>
-                <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] sm:max-w-md no-scrollbar">
-                  {Array.from({ length: totalPages }).map((_, i) => {
-                    const p = i + 1;
-                    // Show current page, first, last, and +/- 2 pages around current
-                    if (p === 1 || p === totalPages || (p >= currentPage - 2 && p <= currentPage + 2)) {
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentPage(p)}
-                          className={`min-w-[32px] h-8 px-2 flex items-center justify-center rounded-lg text-sm transition-colors ${currentPage === p ? 'bg-mint text-vault-bg font-bold' : 'bg-vault-surface text-text-secondary border border-vault-border hover:border-mint/50'}`}
-                        >
-                          {p}
-                        </button>
-                      );
-                    } else if (p === currentPage - 3 || p === currentPage + 3) {
-                      return <span key={i} className="text-text-muted px-1">...</span>;
-                    }
-                    return null;
-                  })}
-                </div>
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors"
-                >
-                  다음
-                </button>
-              </div>
-            )}
-          </>
-        );
-      })()
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors"
+              >
+                다음
+              </button>
+            </div>
+          )}
+        </>
       )}
 
         </main>
@@ -416,25 +364,6 @@ function ListRow({ game, isOwned, onAddToCollection, onClick }: { game: Game; is
           {isOwned ? '보유' : '+ 추가'}
         </button>
       </div>
-    </div>
-  );
-}
-
-function FilterSelect({ value, onChange, options, labelMap, label }: any) {
-  return (
-    <div className="flex flex-col">
-      <select
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        className="w-full bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
-      >
-        <option value="">전체 {label || ''}</option>
-        {options.map((o: any) => (
-          <option key={o} value={o}>
-            {labelMap ? labelMap[o] || o : o}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }
