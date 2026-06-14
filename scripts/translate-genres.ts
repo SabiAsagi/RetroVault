@@ -61,8 +61,6 @@ const GENRE_TRANSLATIONS: Record<string, string> = {
   'MMO': 'MMO',
   'MMORPG': 'MMORPG',
   // 형식별 구분
-  'Card Game': '카드 게임',
-  'Board Game': '보드 게임',
   'TCG': 'TCG',
   'Console Game': '콘솔 게임',
   'PC Game': 'PC 게임',
