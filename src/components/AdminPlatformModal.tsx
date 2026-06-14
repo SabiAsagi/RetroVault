@@ -149,12 +149,24 @@ export default function AdminPlatformModal({
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">기기 스펙</label>
-                      <textarea name="specs" value={formData.specs || formData.cpuSpec || ''} onChange={handleChange} placeholder="예: CPU: Custom RISC 3GHz, RAM: 8GB..." className="w-full bg-vault-bg border border-vault-border rounded-lg p-4 text-text-primary focus:border-mint focus:outline-none h-24 resize-none" />
+                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">CPU 사양</label>
+                      <input name="specs_cpu" value={formData.specs_cpu || ''} onChange={handleChange} placeholder="예: Custom RISC 3GHz" className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-text-primary focus:border-mint focus:outline-none" />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">보조 입력 기기</label>
-                      <textarea name="additionalInput" value={formData.additionalInput || ''} onChange={handleChange} placeholder="예: 듀얼쇼크, 키넥트 등" className="w-full bg-vault-bg border border-vault-border rounded-lg p-4 text-text-primary focus:border-mint focus:outline-none h-24 resize-none" />
+                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">GPU 사양</label>
+                      <input name="specs_gpu" value={formData.specs_gpu || ''} onChange={handleChange} placeholder="예: Custom AMD RDNA 2" className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-text-primary focus:border-mint focus:outline-none" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">메모리 사양</label>
+                      <input name="specs_memory" value={formData.specs_memory || ''} onChange={handleChange} placeholder="예: 16GB GDDR6" className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-text-primary focus:border-mint focus:outline-none" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">주변기기</label>
+                      <input name="peripherals" value={formData.peripherals || ''} onChange={handleChange} placeholder="예: 듀얼쇼크, 키넥트 등" className="w-full bg-vault-bg border border-vault-border rounded-lg p-3 text-text-primary focus:border-mint focus:outline-none" />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
+                      <label className="block text-xs font-bold text-text-muted uppercase mb-1">기타 기기 스펙</label>
+                      <textarea name="specs" value={formData.specs || ''} onChange={handleChange} placeholder="기존 사양 데이터 및 기타 사양" className="w-full bg-vault-bg border border-vault-border rounded-lg p-4 text-text-primary focus:border-mint focus:outline-none h-20 resize-none" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-text-muted uppercase mb-1">출시 가격</label>

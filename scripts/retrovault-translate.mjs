@@ -29,8 +29,8 @@ const pool = new Pool({ connectionString: dbUrl, ssl: { rejectUnauthorized: fals
 const TABLE_CONFIG = {
   platforms: {
     table: 'Platform',
-    sourceColumns: ['id', 'name', 'manufacturer', 'description', 'specs', 'mediaFormat'],
-    targetColumns: ['name_ko', 'manufacturer_ko', 'description_ko', 'specs_ko', 'mediaFormat_ko'],
+    sourceColumns: ['id', 'name', 'manufacturer', 'description', 'specs', 'mediaFormat', 'specs_cpu', 'specs_gpu', 'specs_memory', 'peripherals'],
+    targetColumns: ['name_ko', 'manufacturer_ko', 'description_ko', 'specs_ko', 'mediaFormat_ko', 'specs_cpu_ko', 'specs_gpu_ko', 'specs_memory_ko', 'peripherals_ko'],
     filterClause: `"name_ko" IS NULL`,
     promptTitle: 'Video Game Consoles (Platforms)',
     jsonSchema: {
@@ -42,7 +42,11 @@ const TABLE_CONFIG = {
           "name_ko": { "type": "string" },
           "manufacturer_ko": { "type": "string" },
           "description_ko": { "type": "string" },
-          "specs_ko": { "type": "string", "description": "Translate or deduce specs" },
+          "specs_ko": { "type": "string", "description": "Translate or deduce general specs" },
+          "specs_cpu_ko": { "type": "string", "description": "Translate or deduce CPU specs" },
+          "specs_gpu_ko": { "type": "string", "description": "Translate or deduce GPU specs" },
+          "specs_memory_ko": { "type": "string", "description": "Translate or deduce Memory specs" },
+          "peripherals_ko": { "type": "string", "description": "Translate or deduce peripherals" },
           "mediaFormat_ko": { "type": "string", "description": "Translate or deduce media format" }
         },
         "required": ["id", "name_ko", "manufacturer_ko", "description_ko"]

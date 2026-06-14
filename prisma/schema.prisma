@@ -148,6 +148,14 @@ model Platform {
   country         String?
   specs           String?
   specs_ko        String?
+  specs_cpu       String?
+  specs_cpu_ko    String?
+  specs_gpu       String?
+  specs_gpu_ko    String?
+  specs_memory    String?
+  specs_memory_ko String?
+  peripherals     String?
+  peripherals_ko  String?
   releaseStatus   String?         @default("RELEASED")
   views           Int             @default(0)
   gamesCount      Int             @default(0)

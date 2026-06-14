@@ -78,8 +78,9 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
                 </span>
               )}
               {platform.discontinued !== null && (
-                <span className={`px-3 py-1 border rounded-lg text-xs font-bold ${platform.discontinued ? 'bg-coral/10 border-coral/30 text-coral' : 'bg-mint/10 border-mint/30 text-mint'}`}>
-                  {platform.discontinued ? '단종됨' : '생산중'}
+                <span className={`px-3 py-1 border rounded-lg text-xs font-bold flex items-center gap-1 ${platform.discontinued ? 'bg-coral/10 border-coral/30 text-coral' : 'bg-mint/10 border-mint/30 text-mint'}`}>
+                  <span className={`w-2 h-2 rounded-full ${platform.discontinued ? 'bg-coral animate-pulse' : 'bg-mint animate-pulse'}`}></span>
+                  {platform.discontinued ? '단종 (Discontinued)' : '생산 중 (In Production)'}
                 </span>
               )}
             </div>
@@ -108,9 +109,27 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
                 <span className="text-text-primary text-sm font-bold">{platform.totalSales || '불명'}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
-                <span className="text-text-muted text-sm font-bold w-24 shrink-0">기기 사양</span>
-                <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs || ''}>{platform.specs || '불명'}</span>
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">CPU</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs_cpu || ''}>{platform.specs_cpu || '불명'}</span>
               </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">GPU</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs_gpu || ''}>{platform.specs_gpu || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">Memory</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs_memory || ''}>{platform.specs_memory || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">주변기기</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.peripherals || ''}>{platform.peripherals || '없음'}</span>
+              </div>
+              {platform.specs && (
+                <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                  <span className="text-text-muted text-sm font-bold w-24 shrink-0">기타 사양</span>
+                  <span className="text-text-primary text-sm font-bold text-right truncate" title={platform.specs}>{platform.specs}</span>
+                </div>
+              )}
             </div>
 
             <div className="mt-auto">
