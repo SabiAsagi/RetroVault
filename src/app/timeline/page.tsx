@@ -1,9 +1,8 @@
 import TimelineWrapper from "@/components/wrappers/TimelineWrapper";
-import { getGamesFromDB } from "@/app/actions/games";
-import { getTimelineEvents, getPlatformsForTimeline } from "@/app/actions/timeline";
+import { getTimelineEvents, getPlatformsForTimeline, getTopGamesForTimeline } from "@/app/actions/timeline";
 
 export default async function TimelinePage() {
-  const games = await getGamesFromDB();
+  const games = await getTopGamesForTimeline();
   const timelineEvents = await getTimelineEvents();
   const platforms = await getPlatformsForTimeline();
 
