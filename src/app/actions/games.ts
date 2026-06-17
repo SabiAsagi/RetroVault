@@ -46,6 +46,38 @@ export async function getGamesFromDB(query: string = "", limit: number = 1000): 
   })) as unknown as Game[];
 }
 
+export async function getGamesByIds(ids: string[]): Promise<Game[]> {
+  const games = await prisma.game.findMany({
+    where: { id: { in: ids } },
+    include: {
+      platform: true,
+      developer: true,
+      publisher: true,
+    }
+  });
+
+  return games.map(g => ({
+    id: g.id,
+    title: g.title,
+    releaseYear: g.releaseYear,
+    platform: g.platform.name,
+    genre: g.genre,
+    country: g.country || '',
+    developer: g.developer?.name || '',
+    publisher: g.publisher?.name || '',
+    era: `${Math.floor(g.releaseYear / 10) * 10}s`,
+    imageUrl: g.coverImageUrl || '',
+    description: g.description || '',
+    popularity: g.popularity,
+    views: g.views,
+    rating: g.rating || 0,
+    rarity: 'Common',
+    releaseStatus: g.releaseStatus,
+    platformType: g.platform.type,
+    platformDiscontinued: g.platform.discontinued || false
+  })) as unknown as Game[];
+}
+
 export async function getGameById(id: string): Promise<Game | null> {
   const g = await prisma.game.findUnique({
     where: { id },

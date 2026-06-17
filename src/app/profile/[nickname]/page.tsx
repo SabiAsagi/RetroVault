@@ -1,4 +1,4 @@
-import { getGamesFromDB } from "@/app/actions/games";
+import { getGamesByIds } from "@/app/actions/games";
 import { getUserCollection } from "@/app/actions/collection";
 import { getUserProfileByNickname } from "@/app/actions/profile";
 import Profile from "@/components/Profile";
@@ -13,8 +13,6 @@ export default async function ProfilePage({ params, searchParams }: { params: Pr
   const decodedNickname = decodeURIComponent(rawNickname);
   const session = await getServerSession(authOptions);
   
-  const games = await getGamesFromDB();
-
   const targetIdentifier = decodedNickname === "me" ? session?.user?.id : decodedNickname;
   
   if (!targetIdentifier) {
@@ -50,11 +48,15 @@ export default async function ProfilePage({ params, searchParams }: { params: Pr
 
   const isOwnProfile = decodedNickname === "me" || profileData.user.id === session?.user?.id;
 
+  let collectionToRender = publicCollection;
+  
   if (isOwnProfile) {
     // For own profile, we might want to show private items as well, so we fetch their full collection
-    const fullCollection = await getUserCollection();
-    return <Profile games={games} collection={fullCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} initialGroupId={groupId} />;
+    collectionToRender = await getUserCollection();
   }
 
-  return <Profile games={games} collection={publicCollection} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} initialGroupId={groupId} />;
+  const gameIds = Array.from(new Set(collectionToRender.map(c => c.gameId)));
+  const games = await getGamesByIds(gameIds);
+
+  return <Profile games={games} collection={collectionToRender} viewedUser={profileData.user as any} collectionGroups={profileData.collectionGroups} initialGroupId={groupId} />;
 }

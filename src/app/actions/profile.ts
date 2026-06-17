@@ -52,7 +52,10 @@ export async function getUserProfile(userId: string) {
   const publicCollection = await prisma.collectionItem.findMany({
     where: { 
       userId, 
-      visibility: { not: 'private' } // public and friends
+      OR: [
+        { visibility: { not: 'private' } },
+        { visibility: null }
+      ]
     },
     orderBy: { sortOrder: 'asc' }
   });
@@ -94,7 +97,10 @@ export async function getUserProfileByNickname(nickname: string) {
   const publicCollection = await prisma.collectionItem.findMany({
     where: { 
       userId: user.id, 
-      visibility: { not: 'private' } // public and friends
+      OR: [
+        { visibility: { not: 'private' } },
+        { visibility: null }
+      ]
     },
     orderBy: { sortOrder: 'asc' }
   });
