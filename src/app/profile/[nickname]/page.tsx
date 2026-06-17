@@ -26,7 +26,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pr
   }
 
   // Convert prisma items to standard items for Profile component
-  const publicCollection = profileData.collection.map(item => ({
+  const publicCollection: any[] = profileData.collection.map(item => ({
     id: item.id,
     gameId: item.gameId,
     status: item.ownershipStatus as any,
@@ -48,7 +48,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pr
 
   const isOwnProfile = decodedNickname === "me" || profileData.user.id === session?.user?.id;
 
-  let collectionToRender = publicCollection;
+  let collectionToRender: any[] = publicCollection;
   
   if (isOwnProfile) {
     // For own profile, we might want to show private items as well, so we fetch their full collection
