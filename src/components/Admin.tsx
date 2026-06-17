@@ -875,10 +875,13 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             if (data.id) {
               const { updateGame } = require('@/app/actions/admin');
               await updateGame(data.id, data);
+              alert('수정이 완료되었습니다.');
             } else {
               const { createGame } = require('@/app/actions/admin');
               await createGame(data);
+              alert('저장이 완료되었습니다.');
             }
+            setIsGameModalOpen(false);
             window.location.reload();
           } catch (err: any) {
             alert(err.message || '오류 발생');
@@ -1055,10 +1058,13 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             if (data.id) {
               const { updateCompany } = require('@/app/actions/admin-extensions');
               await updateCompany(data.id, data);
+              alert('수정이 완료되었습니다.');
             } else {
               const { createCompany } = require('@/app/actions/admin-extensions');
               await createCompany(data);
+              alert('저장이 완료되었습니다.');
             }
+            setIsCompanyModalOpen(false);
             window.location.reload();
           } catch (err: any) {
             alert(err.message || '오류 발생');
@@ -1253,10 +1259,13 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
             if (data.id) {
               const { updatePlatform } = require('@/app/actions/admin-extensions');
               await updatePlatform(data.id, data);
+              alert('수정이 완료되었습니다.');
             } else {
               const { createPlatform } = require('@/app/actions/admin-extensions');
               await createPlatform(data);
+              alert('저장이 완료되었습니다.');
             }
+            setIsPlatformModalOpen(false);
             window.location.reload();
           } catch (err: any) {
             alert(err.message || '오류 발생');
