@@ -61,7 +61,8 @@ export default function MyVault({
   const [itemsPerSpineRow, setItemsPerSpineRow] = useState(12);
 
   useEffect(() => {
-    const handleResize = () => {
+    let timeoutId: NodeJS.Timeout;
+    const updateLayout = () => {
       if (window.innerWidth < 640) {
         setItemsPerRow(3);
         setItemsPerSpineRow(5);
@@ -73,9 +74,18 @@ export default function MyVault({
         setItemsPerSpineRow(12);
       }
     };
-    handleResize();
+
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateLayout, 150);
+    };
+
+    updateLayout();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
   const [shareOpen, setShareOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);

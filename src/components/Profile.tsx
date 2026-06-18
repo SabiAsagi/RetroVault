@@ -114,7 +114,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
   };
 
   // Initialize editData when user loads
-  useMemo(() => {
+  useEffect(() => {
     if (isOwnProfile && displayUser && !isEditing) {
       setEditData({
         nickname: displayUser.nickname || (displayUser as any).name || '',

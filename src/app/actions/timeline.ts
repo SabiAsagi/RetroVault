@@ -19,21 +19,32 @@ export async function getPlatformsForTimeline() {
 }
 
 export async function getTopGamesForTimeline() {
-  const minYear = 1970;
-  const maxYear = new Date().getFullYear();
-  const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
-  
-  const results = await Promise.all(years.map(year => 
-    prisma.game.findMany({
-      where: { releaseYear: year },
-      orderBy: { popularity: 'desc' },
-      take: 20, // Top 20 games per year
-      include: { platform: true }
-    })
-  ));
-  
-  const games = results.flat();
-  return games.map(g => ({
+  // Single query: fetch all games ordered by year+popularity, then group in JS
+  const allGames = await prisma.game.findMany({
+    where: { releaseYear: { gte: 1970 } },
+    orderBy: [{ releaseYear: 'asc' }, { popularity: 'desc' }],
+    select: {
+      id: true,
+      title: true,
+      releaseYear: true,
+      genre: true,
+      coverImageUrl: true,
+      popularity: true,
+      views: true,
+      platform: { select: { name: true } },
+    },
+  });
+
+  // Group by year, keep top 20 per year
+  const yearCountMap = new Map<number, number>();
+  const filtered = allGames.filter(g => {
+    const count = yearCountMap.get(g.releaseYear) || 0;
+    if (count >= 20) return false;
+    yearCountMap.set(g.releaseYear, count + 1);
+    return true;
+  });
+
+  return filtered.map(g => ({
     id: g.id,
     title: g.title,
     releaseYear: g.releaseYear,

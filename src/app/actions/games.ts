@@ -5,6 +5,56 @@ import { parseGameSlug } from "@/lib/slug";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+// Shared select fields for game queries
+const gameSelect = {
+  id: true, title: true, releaseYear: true, releaseDate: true,
+  genre: true, country: true, coverImageUrl: true,
+  description: true, historicalContext: true,
+  popularity: true, views: true, rating: true,
+  releaseStatus: true, originalTitle: true,
+  shortDescription: true, pcSpecsMin: true, pcSpecsRec: true, installSize: true,
+  platform: { select: { name: true, type: true, discontinued: true } },
+  developer: { select: { name: true } },
+  publisher: { select: { name: true } },
+} as const;
+
+// Shared mapping function to avoid duplication across 4+ functions
+function mapGameToDTO(g: any, opts?: { includeDetail?: boolean }): Game {
+  const base = {
+    id: g.id,
+    title: g.title,
+    releaseYear: g.releaseYear,
+    platform: g.platform.name,
+    genre: g.genre,
+    country: g.country || '',
+    developer: g.developer?.name || '',
+    publisher: g.publisher?.name || '',
+    era: `${Math.floor(g.releaseYear / 10) * 10}s`,
+    imageUrl: g.coverImageUrl || '',
+    description: g.description || '',
+    popularity: g.popularity,
+    views: g.views,
+    rating: g.rating || 0,
+    rarity: 'Common' as const,
+    releaseStatus: g.releaseStatus,
+    platformType: g.platform.type,
+    platformDiscontinued: g.platform.discontinued || false,
+  };
+  if (opts?.includeDetail) {
+    return {
+      ...base,
+      releaseDate: g.releaseDate || undefined,
+      historicalContext: g.historicalContext || '',
+      originalTitle: g.originalTitle || undefined,
+      shortDescription: g.shortDescription || undefined,
+      pcSpecsMin: g.pcSpecsMin || undefined,
+      pcSpecsRec: g.pcSpecsRec || undefined,
+      installSize: g.installSize || undefined,
+    } as unknown as Game;
+  }
+  return base as unknown as Game;
+}
+
 export async function getGamesFromDB(query: string = "", limit: number = 1000): Promise<Game[]> {
   const games = await prisma.game.findMany({
     where: query ? {
@@ -13,110 +63,31 @@ export async function getGamesFromDB(query: string = "", limit: number = 1000): 
         { platform: { name: { contains: query } } }
       ]
     } : undefined,
-    include: {
-      platform: true,
-      developer: true,
-      publisher: true,
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
+    select: gameSelect,
+    orderBy: { createdAt: 'desc' },
     take: limit
   });
 
-  return games.map(g => ({
-    id: g.id,
-    title: g.title,
-    releaseYear: g.releaseYear,
-    platform: g.platform.name,
-    genre: g.genre,
-    country: g.country || '',
-    developer: g.developer?.name || '',
-    publisher: g.publisher?.name || '',
-    era: `${Math.floor(g.releaseYear / 10) * 10}s`,
-    imageUrl: g.coverImageUrl || '',
-    description: g.description || '',
-    popularity: g.popularity,
-    views: g.views,
-    rating: g.rating || 0,
-    rarity: 'Common',
-    releaseStatus: g.releaseStatus,
-    platformType: g.platform.type,
-    platformDiscontinued: g.platform.discontinued || false
-  })) as unknown as Game[];
+  return games.map(g => mapGameToDTO(g));
 }
 
 export async function getGamesByIds(ids: string[]): Promise<Game[]> {
   const games = await prisma.game.findMany({
     where: { id: { in: ids } },
-    include: {
-      platform: true,
-      developer: true,
-      publisher: true,
-    }
+    select: gameSelect,
   });
 
-  return games.map(g => ({
-    id: g.id,
-    title: g.title,
-    releaseYear: g.releaseYear,
-    platform: g.platform.name,
-    genre: g.genre,
-    country: g.country || '',
-    developer: g.developer?.name || '',
-    publisher: g.publisher?.name || '',
-    era: `${Math.floor(g.releaseYear / 10) * 10}s`,
-    imageUrl: g.coverImageUrl || '',
-    description: g.description || '',
-    popularity: g.popularity,
-    views: g.views,
-    rating: g.rating || 0,
-    rarity: 'Common',
-    releaseStatus: g.releaseStatus,
-    platformType: g.platform.type,
-    platformDiscontinued: g.platform.discontinued || false
-  })) as unknown as Game[];
+  return games.map(g => mapGameToDTO(g));
 }
 
 export async function getGameById(id: string): Promise<Game | null> {
   const g = await prisma.game.findUnique({
     where: { id },
-    include: {
-      platform: true,
-      developer: true,
-      publisher: true,
-    }
+    select: gameSelect,
   });
 
   if (!g) return null;
-
-  return {
-    id: g.id,
-    title: g.title,
-    releaseYear: g.releaseYear,
-    releaseDate: g.releaseDate || undefined,
-    platform: g.platform.name,
-    genre: g.genre,
-    country: g.country || '',
-    developer: g.developer?.name || '',
-    publisher: g.publisher?.name || '',
-    era: `${Math.floor(g.releaseYear / 10) * 10}s`,
-    imageUrl: g.coverImageUrl || '',
-    description: g.description || '',
-    historicalContext: g.historicalContext || '',
-    popularity: g.popularity,
-    views: g.views,
-    rating: g.rating || 0,
-    rarity: 'Common',
-    releaseStatus: g.releaseStatus,
-    platformType: g.platform.type,
-    platformDiscontinued: g.platform.discontinued || false,
-    originalTitle: g.originalTitle || undefined,
-    shortDescription: g.shortDescription || undefined,
-    pcSpecsMin: g.pcSpecsMin || undefined,
-    pcSpecsRec: g.pcSpecsRec || undefined,
-    installSize: g.installSize || undefined
-  } as unknown as Game;
+  return mapGameToDTO(g, { includeDetail: true });
 }
 
 export async function getGameBySlug(slug: string): Promise<Game | null> {
@@ -127,11 +98,7 @@ export async function getGameBySlug(slug: string): Promise<Game | null> {
       title,
       ...(year !== null ? { releaseYear: year } : {})
     },
-    include: {
-      platform: true,
-      developer: true,
-      publisher: true,
-    }
+    select: gameSelect,
   });
 
   if (g) {
@@ -142,34 +109,7 @@ export async function getGameBySlug(slug: string): Promise<Game | null> {
   }
 
   if (!g) return null;
-
-  return {
-    id: g.id,
-    title: g.title,
-    releaseYear: g.releaseYear,
-    releaseDate: g.releaseDate || undefined,
-    platform: g.platform.name,
-    genre: g.genre,
-    country: g.country || '',
-    developer: g.developer?.name || '',
-    publisher: g.publisher?.name || '',
-    era: `${Math.floor(g.releaseYear / 10) * 10}s`,
-    imageUrl: g.coverImageUrl || '',
-    description: g.description || '',
-    historicalContext: g.historicalContext || '',
-    popularity: g.popularity,
-    views: g.views,
-    rating: g.rating || 0,
-    rarity: 'Common',
-    releaseStatus: g.releaseStatus,
-    platformType: g.platform.type,
-    platformDiscontinued: g.platform.discontinued || false,
-    originalTitle: g.originalTitle || undefined,
-    shortDescription: g.shortDescription || undefined,
-    pcSpecsMin: g.pcSpecsMin || undefined,
-    pcSpecsRec: g.pcSpecsRec || undefined,
-    installSize: g.installSize || undefined
-  } as unknown as Game;
+  return mapGameToDTO(g, { includeDetail: true });
 }
 
 export async function getGameReviews(gameId: string) {

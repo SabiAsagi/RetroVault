@@ -127,8 +127,6 @@ export default function NavigationApp() {
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchQuery.trim()) {
-                  const router = require('next/navigation').useRouter;
-                  // actually, we already have router from top
                   window.location.href = `/games?q=${encodeURIComponent(searchQuery.trim())}`;
                   setSearchFocused(false);
                 }

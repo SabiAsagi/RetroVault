@@ -9,6 +9,7 @@ import {
 import AdminGameModal from "./AdminGameModal";
 import AdminPlatformModal from "./AdminPlatformModal";
 import AdminCompanyModal from "./AdminCompanyModal";
+import AdminPaginatedTable from "./admin/AdminPaginatedTable";
 import { CollectionItem, Game, TimelineEvent } from '../types';
 import { createGame, updateGame, deleteGame, createTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from '@/app/actions/admin';
 import { resolveReport } from '@/app/actions/admin-dashboard';
@@ -239,84 +240,35 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   );
 
   const renderGames = () => (
-    <div className="space-y-4 animate-in fade-in">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-text-primary">마스터 게임 데이터</h3>
-        <button 
-          onClick={() => { setEditingGame({}); setIsGameModalOpen(true); }}
-          className="bg-neon-blue hover:bg-neon-blue/80 text-text-primary px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2"
-        >
-          <Plus size={14} /> 게임 추가
-        </button>
-      </div>
-
-      <div className="flex gap-2 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input type="text" placeholder="게임 검색..." value={gamesSearch} onChange={e => {setGamesSearch(e.target.value); setGamesPage(1);}} className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-blue" />
-        </div>
-      </div>
-
-      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
-        <table className="w-full text-left text-sm table-fixed">
-          <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
-            <tr>
-              <th className="px-4 py-3 w-40">ID</th>
-              <th className="px-4 py-3">타이틀</th>
-              <th className="px-4 py-3">플랫폼</th>
-              <th className="px-4 py-3">출시연도</th>
-              <th className="px-4 py-3">제작사</th>
-              <th className="px-4 py-3 text-right">관리</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-vault-border/50">
-            {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).slice((gamesPage - 1) * gamesPerPage, gamesPage * gamesPerPage).map(g => (
-              <tr key={g.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-text-muted font-mono text-xs truncate" title={g.id}>{g.id}</td>
-                <td className="px-4 py-3 text-text-primary font-medium truncate" title={g.title}>{g.title}</td>
-                <td className="px-4 py-3 text-text-secondary truncate">{g.platform}</td>
-                <td className="px-4 py-3 text-text-secondary">{g.releaseYear}</td>
-                <td className="px-4 py-3 text-text-secondary truncate">{g.developer || '-'}</td>
-                <td className="px-4 py-3 text-right space-x-2">
-                  <button 
-                    onClick={() => { setEditingGame(g); setIsGameModalOpen(true); }}
-                    className="p-1.5 text-text-muted hover:text-neon-blue rounded transition-colors" title="수정"
-                  >
-                    <Edit size={14} />
-                  </button>
-                  <button 
-                    onClick={async () => {
-                      if (window.confirm(`'${g.title}' 데이터를 삭제하시겠습니까?`)) {
-                        try {
-                          await deleteGame(g.id);
-                          window.location.reload();
-                        } catch (e) {
-                          alert('삭제 실패');
-                        }
-                      }
-                    }}
-                    className="p-1.5 text-text-muted hover:text-coral rounded transition-colors" title="삭제"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length > 0 && (
-          <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
-            <span className="text-xs text-text-muted">총 {games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length}개 게임</span>
-            <div className="flex gap-2">
-              <button disabled={gamesPage === 1} onClick={() => setGamesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
-              <span className="px-3 py-1 text-xs text-text-primary">{gamesPage} / {Math.ceil(games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length / gamesPerPage)}</span>
-              <button disabled={gamesPage >= Math.ceil(games.filter(g => g.title.toLowerCase().includes(gamesSearch.toLowerCase())).length / gamesPerPage)} onClick={() => setGamesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <AdminPaginatedTable
+      title="마스터 게임 데이터"
+      items={games}
+      search={gamesSearch}
+      onSearch={setGamesSearch}
+      page={gamesPage}
+      onPageChange={setGamesPage}
+      itemsPerPage={gamesPerPage}
+      searchFilter={(g, s) => g.title.toLowerCase().includes(s.toLowerCase())}
+      onAdd={() => { setEditingGame({}); setIsGameModalOpen(true); }}
+      addLabel="게임 추가"
+      getItemId={g => g.id}
+      columns={[
+        { key: 'id', label: 'ID', width: 'w-40', render: g => <span className="font-mono text-xs truncate" title={g.id}>{g.id}</span> },
+        { key: 'title', label: '타이틀', render: g => <span className="font-medium truncate" title={g.title}>{g.title}</span> },
+        { key: 'platform', label: '플랫폼', render: g => g.platform },
+        { key: 'releaseYear', label: '출시연도', render: g => g.releaseYear },
+        { key: 'developer', label: '제작사', render: g => g.developer || '-' },
+      ]}
+      onEdit={g => { setEditingGame(g); setIsGameModalOpen(true); }}
+      onDelete={async g => {
+        if (window.confirm(`'${g.title}' 데이터를 삭제하시겠습니까?`)) {
+          try {
+            await deleteGame(g.id);
+            window.location.reload();
+          } catch (e) { alert('삭제 실패'); }
+        }
+      }}
+    />
   );
 
   const renderUsers = () => (
@@ -521,77 +473,34 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
   );
 
   const renderCompanies = () => (
-    <div className="space-y-4 animate-in fade-in">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-text-primary">회사 관리</h3>
-        <button onClick={handleAddCompany} className="bg-neon-blue hover:bg-neon-blue/80 text-text-primary px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
-          <Plus size={14} /> 회사 추가
-        </button>
-      </div>
-
-      <div className="flex gap-2 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input 
-            type="text" 
-            placeholder="회사 검색..." 
-            value={companiesSearch} 
-            onChange={e => {setCompaniesSearch(e.target.value); setCompaniesPage(1);}} 
-            className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-amber" 
-          />
-        </div>
-      </div>
-
-      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">회사명</th>
-              <th className="px-4 py-3">구분</th>
-              <th className="px-4 py-3">등록 게임 수</th>
-              <th className="px-4 py-3">소재지</th>
-              <th className="px-4 py-3 text-right">관리</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-vault-border/50">
-            {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-text-muted">등록된 회사가 없습니다.</td></tr>
-            )}
-            {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).slice((companiesPage - 1) * companiesPerPage, companiesPage * companiesPerPage).map(c => (
-              <tr key={c.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-text-muted font-mono text-xs">{c.id}</td>
-                <td className="px-4 py-3 text-text-primary font-medium">{c.name}</td>
-                <td className="px-4 py-3 text-text-secondary text-xs">{c.type}</td>
-                <td className="px-4 py-3 text-mint font-mono text-xs">{c.gamesCount}</td>
-                <td className="px-4 py-3 text-text-secondary text-xs">{c.hq}</td>
-                <td className="px-4 py-3 text-right space-x-2">
-                  <button onClick={() => { setEditingCompany(c); setIsCompanyModalOpen(true); }} className="p-1.5 text-text-muted hover:text-neon-blue rounded transition-colors" title="수정"><Edit size={14} /></button>
-                  <button onClick={() => {
-                    setConfirmConfig({
-                      message: '정말 삭제하시겠습니까?',
-                      onConfirm: async () => { await deleteCompany(c.id); window.location.reload(); }
-                    });
-                    setConfirmModalOpen(true);
-                  }} className="p-1.5 text-text-muted hover:text-coral rounded transition-colors" title="삭제"><Trash2 size={14} /></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length > 0 && (
-          <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
-            <span className="text-xs text-text-muted">총 {(companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length}개 회사</span>
-            <div className="flex gap-2">
-              <button disabled={companiesPage === 1} onClick={() => setCompaniesPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
-              <span className="px-3 py-1 text-xs text-text-primary">{companiesPage} / {Math.ceil((companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length / companiesPerPage)}</span>
-              <button disabled={companiesPage >= Math.ceil((companies || []).filter(c => c.name.toLowerCase().includes(companiesSearch.toLowerCase())).length / companiesPerPage)} onClick={() => setCompaniesPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <AdminPaginatedTable
+      title="회사 관리"
+      items={companies || []}
+      search={companiesSearch}
+      onSearch={setCompaniesSearch}
+      page={companiesPage}
+      onPageChange={setCompaniesPage}
+      itemsPerPage={companiesPerPage}
+      searchFilter={(c, s) => c.name.toLowerCase().includes(s.toLowerCase())}
+      onAdd={handleAddCompany}
+      addLabel="회사 추가"
+      getItemId={c => c.id}
+      columns={[
+        { key: 'id', label: 'ID', render: c => <span className="font-mono text-xs text-text-muted">{c.id}</span> },
+        { key: 'name', label: '회사명', render: c => <span className="font-medium text-text-primary">{c.name}</span> },
+        { key: 'type', label: '구분', render: c => <span className="text-xs">{c.type}</span> },
+        { key: 'gamesCount', label: '등록 게임 수', render: c => <span className="text-mint font-mono text-xs">{c.gamesCount}</span> },
+        { key: 'hq', label: '소재지', render: c => <span className="text-xs">{c.hq}</span> },
+      ]}
+      onEdit={c => { setEditingCompany(c); setIsCompanyModalOpen(true); }}
+      onDelete={async c => {
+        setConfirmConfig({
+          message: '정말 삭제하시겠습니까?',
+          onConfirm: async () => { await deleteCompany(c.id); window.location.reload(); }
+        });
+        setConfirmModalOpen(true);
+      }}
+    />
   );
 
   const renderSettings = () => (
@@ -636,81 +545,35 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
     </div>
   );
 
-  const handleAddPlatform = () => {
-    setEditingPlatform({ generation: 1, type: 'HOME' });
-    setIsPlatformModalOpen(true);
-  };
-
   const renderPlatforms = () => (
-    <div className="space-y-4 animate-in fade-in">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-text-primary">콘솔/플랫폼 관리</h3>
-        <button onClick={handleAddPlatform} className="bg-neon-purple hover:bg-neon-purple/80 text-vault-bg px-3 py-1.5 rounded text-xs font-bold flex items-center gap-2">
-          <Plus size={14} /> 플랫폼 추가
-        </button>
-      </div>
-      
-      <div className="flex gap-2 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input type="text" placeholder="플랫폼 검색..." value={platformsSearch} onChange={e => {setPlatformsSearch(e.target.value); setPlatformsPage(1);}} className="w-full bg-vault-surface border border-vault-border rounded text-sm text-text-primary px-9 py-2 focus:outline-none focus:border-neon-purple" />
-        </div>
-      </div>
-
-      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden overflow-x-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-vault-bg border-b border-vault-border text-text-muted text-xs uppercase">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">이름</th>
-              <th className="px-4 py-3">제조사</th>
-              <th className="px-4 py-3">세대</th>
-              <th className="px-4 py-3">타입</th>
-              <th className="px-4 py-3 text-right">관리</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-vault-border/50">
-            {(platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).slice((platformsPage - 1) * platformsPerPage, platformsPage * platformsPerPage).map(p => (
-              <tr key={p.id} className="hover:bg-vault-surface-light">
-                <td className="px-4 py-3 text-text-muted font-mono text-xs">{p.id}</td>
-                <td className="px-4 py-3 text-text-primary font-medium">{p.name}</td>
-                <td className="px-4 py-3 text-text-secondary text-xs">{p.manufacturer || '-'}</td>
-                <td className="px-4 py-3 text-neon-purple font-mono text-xs">{p.generation}세대</td>
-                <td className="px-4 py-3">
-                  <span className="text-[10px] px-2 py-0.5 rounded border bg-vault-bg border-vault-border text-text-muted">
-                    {p.type}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-right space-x-2">
-                  <button onClick={() => { setEditingPlatform(p); setIsPlatformModalOpen(true); }} className="p-1.5 text-text-muted hover:text-neon-purple rounded transition-colors" title="수정"><Edit size={14} /></button>
-                  <button onClick={() => {
-                    setConfirmConfig({
-                      message: `'${p.name}' 플랫폼을 삭제하시겠습니까?`,
-                      onConfirm: async () => { await deletePlatform(p.id); window.location.reload(); }
-                    });
-                    setConfirmModalOpen(true);
-                  }} className="p-1.5 text-text-muted hover:text-coral rounded transition-colors" title="삭제"><Trash2 size={14} /></button>
-                </td>
-              </tr>
-            ))}
-            {(!platforms || platforms.filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length === 0) && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-text-muted">등록된 플랫폼이 없습니다.</td></tr>
-            )}
-          </tbody>
-        </table>
-        
-        {(platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length > 0 && (
-          <div className="flex justify-between items-center p-4 bg-vault-bg border-t border-vault-border">
-            <span className="text-xs text-text-muted">총 {(platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length}개 플랫폼</span>
-            <div className="flex gap-2">
-              <button disabled={platformsPage === 1} onClick={() => setPlatformsPage(p => p - 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">이전</button>
-              <span className="px-3 py-1 text-xs text-text-primary">{platformsPage} / {Math.ceil((platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length / platformsPerPage)}</span>
-              <button disabled={platformsPage >= Math.ceil((platforms || []).filter(p => p.name.toLowerCase().includes(platformsSearch.toLowerCase())).length / platformsPerPage)} onClick={() => setPlatformsPage(p => p + 1)} className="px-3 py-1 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded text-xs text-text-primary disabled:opacity-50">다음</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <AdminPaginatedTable
+      title="콘솔/플랫폼 관리"
+      items={platforms || []}
+      search={platformsSearch}
+      onSearch={setPlatformsSearch}
+      page={platformsPage}
+      onPageChange={setPlatformsPage}
+      itemsPerPage={platformsPerPage}
+      searchFilter={(p, s) => p.name.toLowerCase().includes(s.toLowerCase())}
+      onAdd={() => { setEditingPlatform({ generation: 1, type: 'HOME' }); setIsPlatformModalOpen(true); }}
+      addLabel="플랫폼 추가"
+      getItemId={p => p.id}
+      columns={[
+        { key: 'id', label: 'ID', render: p => <span className="font-mono text-xs text-text-muted">{p.id}</span> },
+        { key: 'name', label: '플랫폼명', render: p => <span className="font-medium text-text-primary">{p.name}</span> },
+        { key: 'manufacturer', label: '제조사', render: p => <span className="text-xs">{p.manufacturer || '-'}</span> },
+        { key: 'generation', label: '세대', render: p => <span className="text-neon-purple font-mono text-xs">{p.generation}세대</span> },
+        { key: 'type', label: '타입', render: p => <span className="text-[10px] px-2 py-0.5 rounded border bg-vault-bg border-vault-border text-text-muted">{p.type}</span> },
+      ]}
+      onEdit={p => { setEditingPlatform(p); setIsPlatformModalOpen(true); }}
+      onDelete={async p => {
+        setConfirmConfig({
+          message: `'${p.name}' 플랫폼을 삭제하시겠습니까?`,
+          onConfirm: async () => { await deletePlatform(p.id); window.location.reload(); }
+        });
+        setConfirmModalOpen(true);
+      }}
+    />
   );
 
   return (

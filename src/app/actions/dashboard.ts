@@ -45,112 +45,97 @@ export async function getDashboardData() {
     isRandom = true;
   }
 
-  // Recent games (최신 출시연도 6개)
-  const recentGamesRaw = await prisma.game.findMany({
-    orderBy: { releaseYear: 'desc' },
-    take: 6,
-    select: {
-      id: true, title: true, releaseYear: true, coverImageUrl: true,
-      genre: true, popularity: true, views: true, releaseStatus: true,
-      platform: { select: { name: true, type: true, discontinued: true } },
-      developer: { select: { name: true } },
-      publisher: { select: { name: true } },
-    }
-  });
-
-  const recentGames = recentGamesRaw.map(g => ({
-    id: g.id,
-    title: g.title,
-    releaseYear: g.releaseYear,
-    platform: g.platform.name,
-    genre: g.genre,
-    imageUrl: g.coverImageUrl || '',
-    popularity: g.popularity,
-    views: g.views,
-    releaseStatus: g.releaseStatus,
-    platformType: g.platform.type,
-    platformDiscontinued: g.platform.discontinued || false,
-    developer: g.developer?.name || '',
-    publisher: g.publisher?.name || '',
-  }));
-
-  // Popular games (인기도 상위 4개)
-  const popularGamesRaw = await prisma.game.findMany({
-    orderBy: { popularity: 'desc' },
-    take: 4,
-    select: {
-      id: true, title: true, releaseYear: true, coverImageUrl: true,
-      genre: true, popularity: true, views: true, rating: true, releaseStatus: true,
-      platform: { select: { name: true, type: true, discontinued: true } },
-      developer: { select: { name: true } },
-      publisher: { select: { name: true } },
-    }
-  });
-
-  const popularGames = popularGamesRaw.map(g => ({
-    id: g.id,
-    title: g.title,
-    releaseYear: g.releaseYear,
-    platform: g.platform.name,
-    genre: g.genre,
-    imageUrl: g.coverImageUrl || '',
-    popularity: g.popularity,
-    views: g.views,
-    rating: g.rating || 0,
-    rarity: 'Common',
-    releaseStatus: g.releaseStatus,
-    platformType: g.platform.type,
-    platformDiscontinued: g.platform.discontinued || false,
-    developer: g.developer?.name || '',
-    publisher: g.publisher?.name || '',
-  }));
-
-  // Get most popular collection groups (sorted by likes + views) - use DB ordering
-  const popularGroups = await prisma.collectionGroup.findMany({
-    where: { isPublic: true },
-    orderBy: [{ likes: 'desc' }, { views: 'desc' }],
-    take: 12,
-    include: {
-      user: { select: { id: true, nickname: true, name: true, image: true } },
-      items: {
-        take: 3,
-        include: {
-          item: {
-            include: {
-              game: {
-                select: {
-                  id: true, title: true, coverImageUrl: true, releaseYear: true, genre: true,
-                  platform: { select: { name: true } }
+  // Parallelize all independent queries
+  const [recentGamesRaw, popularGamesRaw, popularGroups, usersWithPublicItems] = await Promise.all([
+    // Recent games (최신 출시연도 6개)
+    prisma.game.findMany({
+      orderBy: { releaseYear: 'desc' },
+      take: 6,
+      select: {
+        id: true, title: true, releaseYear: true, coverImageUrl: true,
+        genre: true, popularity: true, views: true, releaseStatus: true,
+        platform: { select: { name: true, type: true, discontinued: true } },
+        developer: { select: { name: true } },
+        publisher: { select: { name: true } },
+      }
+    }),
+    // Popular games (인기도 상위 4개)
+    prisma.game.findMany({
+      orderBy: { popularity: 'desc' },
+      take: 4,
+      select: {
+        id: true, title: true, releaseYear: true, coverImageUrl: true,
+        genre: true, popularity: true, views: true, rating: true, releaseStatus: true,
+        platform: { select: { name: true, type: true, discontinued: true } },
+        developer: { select: { name: true } },
+        publisher: { select: { name: true } },
+      }
+    }),
+    // Popular collection groups
+    prisma.collectionGroup.findMany({
+      where: { isPublic: true },
+      orderBy: [{ likes: 'desc' }, { views: 'desc' }],
+      take: 12,
+      include: {
+        user: { select: { id: true, nickname: true, name: true, image: true } },
+        items: {
+          take: 3,
+          include: {
+            item: {
+              include: {
+                game: {
+                  select: {
+                    id: true, title: true, coverImageUrl: true, releaseYear: true, genre: true,
+                    platform: { select: { name: true } }
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-  });
-
-  // Get users who have public collections but maybe no public group
-  const usersWithPublicItems = await prisma.user.findMany({
-    where: { collections: { some: { visibility: 'public' } } },
-    take: 12,
-    select: {
-      id: true, nickname: true, name: true, image: true,
-      profileLikes: true, profileViews: true,
-      collections: {
-        where: { visibility: 'public' },
-        take: 3,
-        include: { 
-          game: { 
-            select: { 
-              id: true, title: true, coverImageUrl: true, releaseYear: true, genre: true,
-              platform: { select: { name: true } } 
+    }),
+    // Users with public collections
+    prisma.user.findMany({
+      where: { collections: { some: { visibility: 'public' } } },
+      take: 12,
+      select: {
+        id: true, nickname: true, name: true, image: true,
+        profileLikes: true, profileViews: true,
+        collections: {
+          where: { visibility: 'public' },
+          take: 3,
+          include: { 
+            game: { 
+              select: { 
+                id: true, title: true, coverImageUrl: true, releaseYear: true, genre: true,
+                platform: { select: { name: true } } 
+              } 
             } 
-          } 
+          }
         }
       }
-    }
-  });
+    }),
+  ]);
+
+  const recentGames = recentGamesRaw.map(g => ({
+    id: g.id, title: g.title, releaseYear: g.releaseYear,
+    platform: g.platform.name, genre: g.genre,
+    imageUrl: g.coverImageUrl || '', popularity: g.popularity, views: g.views,
+    releaseStatus: g.releaseStatus, platformType: g.platform.type,
+    platformDiscontinued: g.platform.discontinued || false,
+    developer: g.developer?.name || '', publisher: g.publisher?.name || '',
+  }));
+
+  const popularGames = popularGamesRaw.map(g => ({
+    id: g.id, title: g.title, releaseYear: g.releaseYear,
+    platform: g.platform.name, genre: g.genre,
+    imageUrl: g.coverImageUrl || '', popularity: g.popularity, views: g.views,
+    rating: g.rating || 0, rarity: 'Common',
+    releaseStatus: g.releaseStatus, platformType: g.platform.type,
+    platformDiscontinued: g.platform.discontinued || false,
+    developer: g.developer?.name || '', publisher: g.publisher?.name || '',
+  }));
 
   const popularCollections = [
     ...popularGroups.map(group => ({

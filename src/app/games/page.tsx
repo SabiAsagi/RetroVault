@@ -64,19 +64,19 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
     installSize: g.installSize || null,
   }));
 
-  // Get filter options
-  const [allPlatforms, allGenres, allCountries, allDevelopers] = await Promise.all([
-    prisma.game.findMany({ select: { platform: { select: { name: true } } }, distinct: ['platformId'] }),
+  // Get filter options using direct tables where possible to avoid expensive distinct queries
+  const [platforms, allGenres, allCountries, companies] = await Promise.all([
+    prisma.platform.findMany({ select: { name: true } }),
     prisma.game.findMany({ select: { genre: true }, distinct: ['genre'] }),
     prisma.game.findMany({ where: { country: { not: null } }, select: { country: true }, distinct: ['country'] }),
-    prisma.game.findMany({ where: { developerId: { not: null } }, select: { developer: { select: { name: true } } }, distinct: ['developerId'] }),
+    prisma.company.findMany({ select: { name: true } }),
   ]);
 
   const filterOptions = {
-    platforms: [...new Set(allPlatforms.map(p => p.platform.name))].sort(),
+    platforms: platforms.map(p => p.name).sort(),
     genres: [...new Set(allGenres.map(g => g.genre))].filter(Boolean).sort(),
     countries: [...new Set(allCountries.map(c => c.country))].filter(Boolean).sort() as string[],
-    developers: [...new Set(allDevelopers.map(d => d.developer?.name).filter(Boolean))].sort() as string[],
+    developers: companies.map(c => c.name).sort() as string[],
   };
 
   const collection = await getUserCollection();

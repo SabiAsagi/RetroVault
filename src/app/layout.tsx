@@ -6,6 +6,15 @@ import NavigationApp from '../components/NavigationApp';
 import Footer from '../components/Footer';
 import { ToastProvider } from '../contexts/ToastContext';
 
+import { Press_Start_2P } from 'next/font/google';
+
+const pressStart2P = Press_Start_2P({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-pixel',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: "RetroVault | 레트로 게임 컬렉션 아카이브",
   description: "80년대부터 지금까지, 시대를 초월하는 명작들을 수집하고 기록하는 나만의 게임 박물관.",
@@ -57,10 +66,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-      </head>
-      <body className="transition-colors duration-300">
+      <body className={`transition-colors duration-300 ${pressStart2P.variable}`}>
         <Providers>
           <ToastProvider>
             <div className="min-h-screen bg-vault-bg">

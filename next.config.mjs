@@ -13,6 +13,9 @@ const nextConfig = {
       }
     ],
   },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'recharts'],
+  },
   async rewrites() {
     return {
       beforeFiles: [
