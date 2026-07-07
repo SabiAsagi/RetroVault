@@ -30,6 +30,7 @@ export default function MultiSelectFilter({
         setIsOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -41,39 +42,40 @@ export default function MultiSelectFilter({
 
   const toggleOption = (option: string) => {
     if (values.includes(option)) {
-      onChange(values.filter((v) => v !== option));
+      onChange(values.filter((value) => value !== option));
     } else {
       onChange([...values, option]);
     }
   };
 
+  const selectedLabel = values.length === 0
+    ? "전체"
+    : values.length === 1
+    ? labelMap ? labelMap[values[0]] ?? values[0] : values[0]
+    : `${values.length}개 선택됨`;
+
   return (
     <div className="relative flex flex-col min-w-[140px]" ref={dropdownRef}>
       <label className="text-[10px] text-text-muted block mb-1 font-medium">{label}</label>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-1.5 text-xs text-text-primary hover:border-mint/50 transition-colors"
+        className="flex min-h-11 items-center justify-between w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs text-text-primary hover:border-mint/50 transition-colors"
       >
-        <span className="truncate">
-          {values.length === 0
-            ? "전체"
-            : values.length === 1
-            ? labelMap ? labelMap[values[0]] ?? values[0] : values[0]
-            : `${values.length}개 선택됨`}
-        </span>
+        <span className="truncate">{selectedLabel || placeholder}</span>
         <ChevronDown size={14} className="text-text-muted ml-2 shrink-0" />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[300px] bg-vault-surface border border-vault-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
+        <div className="absolute top-full left-0 mt-1 w-full min-w-[220px] max-w-[calc(100vw-2rem)] sm:max-w-[320px] bg-vault-surface border border-vault-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
           <div className="p-2 border-b border-vault-border flex items-center gap-2 bg-vault-bg">
             <Search size={14} className="text-text-muted shrink-0" />
             <input
               type="text"
               placeholder={`${label} 검색...`}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent border-none text-xs text-text-primary focus:outline-none"
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className="w-full bg-transparent border-none py-2 text-sm text-text-primary focus:outline-none"
             />
           </div>
           <div className="max-h-60 overflow-y-auto p-1">
@@ -83,11 +85,13 @@ export default function MultiSelectFilter({
               filteredOptions.map((option) => {
                 const isSelected = values.includes(option);
                 const displayLabel = labelMap ? labelMap[option] ?? option : option;
+
                 return (
                   <button
                     key={option}
+                    type="button"
                     onClick={() => toggleOption(option)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-left rounded hover:bg-vault-surface-light transition-colors"
+                    className="w-full min-h-10 flex items-center gap-2 px-2.5 py-2 text-xs text-left rounded hover:bg-vault-surface-light transition-colors"
                   >
                     <div
                       className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
@@ -109,8 +113,9 @@ export default function MultiSelectFilter({
           {values.length > 0 && (
             <div className="p-2 border-t border-vault-border bg-vault-bg">
               <button
+                type="button"
                 onClick={() => onChange([])}
-                className="w-full text-xs text-coral hover:bg-coral/10 py-1 rounded transition-colors"
+                className="w-full min-h-10 text-xs text-coral hover:bg-coral/10 py-2 rounded transition-colors"
               >
                 선택 초기화
               </button>

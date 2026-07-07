@@ -36,7 +36,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useSessionStorage("companies-search", "");
+  const searchQuery = '';
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('companies-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('companies-filters-open', false);
@@ -61,21 +61,13 @@ export default function CompaniesPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy, setCurrentPage]);
+  }, [activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy, setCurrentPage]);
 
   const devCount = useMemo(() => companies.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH').length, [companies]);
   const pubCount = useMemo(() => companies.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH').length, [companies]);
 
   const filtered = useMemo(() => {
     let result = [...companies];
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        (c.country || '').toLowerCase().includes(q) ||
-        (c.flagshipFranchises || '').toLowerCase().includes(q)
-      );
-    }
     if (activeTypeTab === 'DEVELOPER') result = result.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH');
     if (activeTypeTab === 'PUBLISHER') result = result.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH');
     if (typeFilter.length > 0) result = result.filter(c => typeFilter.includes(c.type));
@@ -96,7 +88,7 @@ export default function CompaniesPage() {
       case 'founded-asc': result.sort((a, b) => (a.foundedAt || '9999').localeCompare(b.foundedAt || '9999')); break;
     }
     return result;
-  }, [companies, searchQuery, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);
+  }, [companies, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);
 
 
   const hasFilters = typeFilter.length > 0 || countryFilter.length > 0 || statusFilter.length > 0;
@@ -106,20 +98,6 @@ export default function CompaniesPage() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 page-enter">
-      {/* Search */}
-      <div className="mb-6 flex justify-end">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="회사 검색..."
-            className="w-full bg-vault-surface border border-vault-border rounded-xl px-10 py-3 text-text-primary focus:outline-none focus:border-amber transition-colors"
-          />
-        </div>
-      </div>
-
       <div className="flex flex-col md:flex-row gap-6 items-start">
         {/* Left Sidebar Filters */}
         <aside className={`w-full md:w-64 shrink-0 bg-vault-surface border border-vault-border rounded-xl p-5 ${showFilters ? 'block' : 'hidden md:block'}`}>

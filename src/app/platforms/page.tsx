@@ -37,7 +37,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function PlatformsPage() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useSessionStorage("platforms-search", "");
+  const searchQuery = '';
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('platforms-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('platforms-filters-open', false);
@@ -51,7 +51,7 @@ export default function PlatformsPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, manufacturerFilter, generationFilter, typeFilter, sortBy, activeManufacturerTab, setCurrentPage]);
+  }, [manufacturerFilter, generationFilter, typeFilter, sortBy, activeManufacturerTab, setCurrentPage]);
 
   useEffect(() => {
     fetch('/api/platforms-list')
@@ -66,10 +66,6 @@ export default function PlatformsPage() {
 
   const filtered = useMemo(() => {
     let result = [...platforms];
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(p => p.name.toLowerCase().includes(q) || p.manufacturer.toLowerCase().includes(q));
-    }
     if (activeManufacturerTab) result = result.filter(p => p.manufacturer === activeManufacturerTab);
     if (manufacturerFilter.length > 0) result = result.filter(p => manufacturerFilter.includes(p.manufacturer));
     if (generationFilter.length > 0) result = result.filter(p => generationFilter.includes(String(p.generation)));
@@ -89,7 +85,7 @@ export default function PlatformsPage() {
       case 'games-desc': result.sort((a, b) => b._count.games - a._count.games); break;
     }
     return result;
-  }, [platforms, searchQuery, activeManufacturerTab, manufacturerFilter, generationFilter, typeFilter, sortBy]);
+  }, [platforms, activeManufacturerTab, manufacturerFilter, generationFilter, typeFilter, sortBy]);
 
   const hasFilters = manufacturerFilter.length > 0 || generationFilter.length > 0 || typeFilter.length > 0 || activeManufacturerTab;
   const clearFilters = () => { setManufacturerFilter([]); setGenerationFilter([]); setTypeFilter([]); setActiveManufacturerTab(''); };
@@ -104,20 +100,6 @@ export default function PlatformsPage() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 page-enter">
-      {/* Search */}
-      <div className="mb-6 flex justify-end">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="콘솔/플랫폼 검색..."
-            className="w-full bg-vault-surface border border-vault-border rounded-xl px-10 py-3 text-text-primary focus:outline-none focus:border-neon-purple transition-colors"
-          />
-        </div>
-      </div>
-
       <div className="flex flex-col md:flex-row gap-6 items-start">
         {/* Left Sidebar Filters */}
         <aside className={`w-full md:w-64 shrink-0 bg-vault-surface border border-vault-border rounded-xl p-5 ${showFilters ? 'block' : 'hidden md:block'}`}>

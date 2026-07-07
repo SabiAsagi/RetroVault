@@ -39,7 +39,26 @@ const navItems: NavItem[] = [
   { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
 ];
 
+type SearchCategory = 'all' | 'game' | 'platform' | 'company' | 'user' | 'collection';
+
+const searchCategories: { value: SearchCategory; label: string; path?: string }[] = [
+  { value: 'all', label: '전체', path: '/games' },
+  { value: 'game', label: '게임', path: '/games' },
+  { value: 'platform', label: '플랫폼', path: '/platforms' },
+  { value: 'company', label: '회사', path: '/companies' },
+  { value: 'user', label: '유저', path: '/community' },
+  { value: 'collection', label: '컬렉션', path: '/community' },
+];
+
 const bottomTabIds = ['dashboard', 'archive', 'consoles', 'community', 'timeline'];
+
+const bottomTabLabels: Record<string, string> = {
+  dashboard: '홈',
+  archive: '게임',
+  consoles: '플랫폼',
+  community: '커뮤니티',
+  timeline: '타임라인',
+};
 
 export default function NavigationApp() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,6 +71,7 @@ export default function NavigationApp() {
   const isAuthenticated = !!user;
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchCategory, setSearchCategory] = useState<SearchCategory>('all');
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [searchResults, setSearchResults] = useState<any>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -74,7 +94,7 @@ export default function NavigationApp() {
   React.useEffect(() => {
     if (debouncedSearch.length >= 2) {
       setIsSearching(true);
-      fetch(`/api/search?q=${encodeURIComponent(debouncedSearch)}`)
+      fetch(`/api/search?q=${encodeURIComponent(debouncedSearch)}${searchCategory === 'all' ? '' : `&type=${searchCategory}`}`)
         .then(res => res.json())
         .then(data => setSearchResults(data))
         .catch(console.error)
@@ -82,7 +102,7 @@ export default function NavigationApp() {
     } else {
       setSearchResults(null);
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, searchCategory]);
 
   const getActiveItemId = () => {
     const item = navItems.find(n => n.path !== '/' && pathname.startsWith(n.path));
@@ -97,7 +117,7 @@ export default function NavigationApp() {
   return (
     <>
       <header className="sticky top-0 z-50 glass-panel border-b border-vault-border bg-vault-bg/80 backdrop-blur-md">
-        <div className="flex items-center h-14 px-4 gap-3 max-w-screen-2xl mx-auto">
+        <div className="flex items-center h-14 px-2 sm:px-4 gap-2 sm:gap-3 max-w-screen-2xl mx-auto">
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-vault-surface border border-vault-border text-text-secondary hover:text-mint hover:border-mint/40 transition-all shrink-0"
@@ -105,8 +125,8 @@ export default function NavigationApp() {
             <Menu size={17} />
           </button>
 
-          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer pl-1 sm:pl-0">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow-md neon-mint">
+          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer sm:pl-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow-md neon-mint">
               <span className="font-pixel text-[10px] text-vault-bg font-bold">RV</span>
             </div>
             <div className="hidden sm:block">
@@ -118,11 +138,22 @@ export default function NavigationApp() {
           </Link>
 
           {/* Global Search Bar */}
-          <div className="relative flex-1 max-w-xl mx-2 sm:mx-6 z-[80]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+          <div className="relative min-w-0 flex-1 max-w-xl mx-0 sm:mx-6 z-[80]">
+            <select
+              value={searchCategory}
+              onChange={(e) => setSearchCategory(e.target.value as SearchCategory)}
+              onFocus={() => setSearchFocused(true)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 rounded-md border border-vault-border bg-vault-bg px-2 text-[11px] font-bold text-text-secondary focus:outline-none focus:border-mint"
+              aria-label="게임, 플랫폼, 회사, 유저 통합 검색"
+            >
+              {searchCategories.map(category => (
+                <option key={category.value} value={category.value}>{category.label}</option>
+              ))}
+            </select>
+            <Search className="absolute left-[6.6rem] top-1/2 -translate-y-1/2 text-text-muted" size={16} />
             <input
               type="text"
-              placeholder="게임명, 회사, 유저 등 통합 검색..."
+              placeholder="통합 검색..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -133,80 +164,21 @@ export default function NavigationApp() {
               }}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-8 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-mint transition-all"
+              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-32 pr-9 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-mint transition-all" aria-label="게임, 플랫폼, 회사, 유저 통합 검색"
             />
             {isSearching && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-mint animate-spin" size={14} />
             )}
             
             {searchFocused && searchResults && (
-              <div className="absolute top-full mt-2 w-full bg-vault-surface border border-vault-border rounded-xl shadow-2xl overflow-hidden max-h-[70vh] overflow-y-auto">
+              <div className="fixed left-3 right-3 top-16 mt-0 bg-vault-surface border border-vault-border rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-8rem)] overflow-y-auto sm:absolute sm:left-auto sm:right-auto sm:top-full sm:mt-2 sm:w-full sm:max-h-[70vh]">
                 {searchResults.games?.length > 0 && (
-                  <div className="p-2 border-b border-vault-border/50">
-                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">게임</h3>
-                    {searchResults.games.map((g: any) => (
-                      <Link href={`/games/${getGameSlug(g)}`} key={g.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        {g.coverImageUrl ? (
-                          <img src={g.coverImageUrl} className="w-8 h-10 object-cover rounded" />
-                        ) : (
-                          <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border" />
-                        )}
-                        <div>
-                          <p className="text-sm font-bold text-text-primary leading-tight">{g.title}</p>
-                          <p className="text-xs text-text-secondary">{g.platform?.name}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                
-                {searchResults.platforms?.length > 0 && (
-                  <div className="p-2 border-b border-vault-border/50">
-                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">콘솔/플랫폼</h3>
-                    {searchResults.platforms.map((p: any) => (
-                      <Link href={`/platforms/${getPlatformSlug(p)}`} key={p.id} className="flex items-center gap-3 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <div className="w-8 h-10 bg-vault-bg rounded border border-vault-border flex items-center justify-center">
-                          <Monitor size={16} className="text-text-muted" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-text-primary leading-tight">{p.name}</p>
-                          <p className="text-xs text-text-secondary">{p.manufacturer}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                
-                {searchResults.users?.length > 0 && (
-                  <div className="p-2 border-b border-vault-border/50">
-                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
-                    {searchResults.users.map((u: any) => (
-                      <Link href={`/profile/${u.nickname || u.id}`} key={u.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <img src={u.image || u.avatar || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.id || 'User'}&backgroundColor=1A1A1A`} alt={u.nickname} className="w-6 h-6 rounded-md object-cover border border-vault-border" />
-                        <p className="text-sm text-text-primary">{u.nickname}</p>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                
-                {searchResults.companies?.length > 0 && (
-                  <div className="p-2 border-b border-vault-border/50">
-                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">회사</h3>
-                    {searchResults.companies.map((c: any) => (
-                      <div key={c.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <p className="text-sm text-text-primary">{c.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {searchResults.groups?.length > 0 && (
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">공개 컬렉션</h3>
                     {searchResults.groups.map((grp: any) => (
-                      <Link href={`/profile/${grp.user?.nickname || grp.userId}?group=${grp.id}`} key={grp.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/profile/${grp.user?.nickname || grp.user?.name || grp.userId}?group=${grp.id}`} key={grp.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
                         <p className="text-sm text-text-primary">{grp.name}</p>
-                        <span className="text-[10px] text-text-muted">by {grp.user?.nickname}</span>
+                        <span className="text-[10px] text-text-muted">by {grp.user?.nickname || grp.user?.name || 'User'}</span>
                       </Link>
                     ))}
                   </div>
@@ -220,7 +192,7 @@ export default function NavigationApp() {
           </div>
 
           <div className="flex items-center gap-2 ml-auto shrink-0">
-            <ThemeToggle />
+            <div className="hidden sm:block"><ThemeToggle /></div>
             {!isAuthenticated ? (
               <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mint text-vault-bg text-xs font-bold hover:bg-mint-dim transition-colors">
                 <LogIn size={13} />
@@ -322,6 +294,36 @@ export default function NavigationApp() {
           })}
         </nav>
       </aside>
+      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-vault-border bg-vault-bg/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]" aria-label="게임, 플랫폼, 회사, 유저 통합 검색">
+        <div className="grid h-16 grid-cols-5 max-w-screen-sm mx-auto">
+          {bottomTabIds.map(id => {
+            const item = navItems.find(navItem => navItem.id === id);
+            if (!item) return null;
+            const isActive = activeTabId === item.id;
+
+            return (
+              <Link
+                key={item.id}
+                href={item.path}
+                aria-label={item.label}
+                className={`relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-bold transition-colors ${
+                  isActive ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute top-0 h-0.5 w-8 rounded-b-full" style={{ backgroundColor: item.color }} />
+                )}
+                <span style={isActive ? { color: item.color } : {}} className="flex h-5 items-center justify-center">
+                  {item.icon}
+                </span>
+                <span className="block max-w-full truncate leading-none">
+                  {bottomTabLabels[item.id] || item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }

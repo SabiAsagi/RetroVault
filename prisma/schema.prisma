@@ -42,6 +42,10 @@ model User {
   reviews            Review[]          @relation("UserReviews")
   sessions           Session[]
   achievements       UserAchievement[]
+
+  @@index([name])
+  @@index([isBanned])
+  @@index([role])
 }
 
 model Account {
@@ -119,6 +123,16 @@ model Game {
   timelineEvents    TimelineEvent[]
 
   @@unique([title, platformId, releaseYear])
+  @@index([releaseYear])
+  @@index([genre])
+  @@index([country])
+  @@index([platformId])
+  @@index([developerId])
+  @@index([publisherId])
+  @@index([status])
+  @@index([releaseStatus])
+  @@index([views, popularity])
+  @@index([createdAt])
 }
 
 model Platform {
@@ -165,6 +179,13 @@ model Platform {
   games           Game[]
   requestedBy     User?           @relation("RequestedPlatforms", fields: [requestedById], references: [id])
   timelineEvents  TimelineEvent[]
+
+  @@index([manufacturer])
+  @@index([generation])
+  @@index([releaseYear])
+  @@index([type])
+  @@index([status])
+  @@index([views])
 }
 
 model Company {
@@ -196,6 +217,12 @@ model Company {
   requestedBy           User?    @relation("RequestedCompanies", fields: [requestedById], references: [id])
   developedGames     Game[]   @relation("DevelopedGames")
   publishedGames     Game[]   @relation("PublishedGames")
+
+  @@index([type])
+  @@index([country])
+  @@index([status])
+  @@index([companyStatus])
+  @@index([views])
 }
 
 model Screenshot {
@@ -204,6 +231,8 @@ model Screenshot {
   imageUrl String
   caption  String?
   game     Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
 }
 
 model CollectionItem {
@@ -231,6 +260,13 @@ model CollectionItem {
   user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, gameId])
+  @@index([userId, sortOrder])
+  @@index([gameId])
+  @@index([visibility])
+  @@index([ownershipStatus])
+  @@index([playStatus])
+  @@index([rating])
+  @@index([createdAt])
 }
 
 model Achievement {
@@ -253,6 +289,7 @@ model UserAchievement {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, achievementId])
+  @@index([achievementId])
 }
 
 model Report {
@@ -266,6 +303,11 @@ model Report {
   createdAt  DateTime  @default(now())
   resolvedAt DateTime?
   reporter   User      @relation("UserReports", fields: [reporterId], references: [id])
+
+  @@index([reporterId])
+  @@index([targetType, targetId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model EditRequest {
@@ -280,6 +322,11 @@ model EditRequest {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   requestedBy   User?    @relation("UserEditRequests", fields: [requestedById], references: [id])
+
+  @@index([targetType, targetId])
+  @@index([requestedById])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model AdminLog {
@@ -292,6 +339,10 @@ model AdminLog {
   afterJson  String?
   createdAt  DateTime @default(now())
   admin      User     @relation("AdminActionLogs", fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
 }
 
 model TimelineEvent {
@@ -312,6 +363,12 @@ model TimelineEvent {
   relatedPlatformId String?
   game              Game?     @relation(fields: [relatedGameId], references: [id])
   platform          Platform? @relation(fields: [relatedPlatformId], references: [id])
+
+  @@index([year])
+  @@index([type])
+  @@index([isVisible, sortOrder])
+  @@index([relatedGameId])
+  @@index([relatedPlatformId])
 }
 
 model CollectionGroup {
@@ -326,6 +383,10 @@ model CollectionGroup {
   views       Int                   @default(0)
   user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       CollectionGroupItem[]
+
+  @@index([userId])
+  @@index([isPublic, likes, views])
+  @@index([createdAt])
 }
 
 model CollectionGroupItem {
@@ -336,6 +397,7 @@ model CollectionGroupItem {
   item    CollectionItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, itemId])
+  @@index([itemId])
 }
 
 model DirectMessage {
@@ -348,6 +410,9 @@ model DirectMessage {
   updatedAt  DateTime @updatedAt
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, receiverId])
+  @@index([receiverId, isRead, createdAt])
 }
 
 model Friendship {
@@ -361,6 +426,8 @@ model Friendship {
   user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, friendId])
+  @@index([friendId, status])
+  @@index([status])
 }
 
 model Notification {
@@ -372,6 +439,9 @@ model Notification {
   link      String?
   createdAt DateTime @default(now())
   user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+  @@index([type])
 }
 
 model Review {
@@ -386,4 +456,7 @@ model Review {
   user      User     @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, gameId])
+  @@index([gameId])
+  @@index([rating])
+  @@index([createdAt])
 }

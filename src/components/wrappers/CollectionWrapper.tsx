@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import MyVault from '@/components/MyVault';
 import { Game, CollectionItem } from '@/types';
 import { updateCollectionItem } from '@/app/actions/collection';
+import { DEFAULT_OWNERSHIP_STATUS } from '@/constants/collection';
 
 interface Props {
   initialGames: Game[];
@@ -23,8 +24,8 @@ export default function CollectionWrapper({ initialGames, initialCollection }: P
     const newItem: CollectionItem = {
       id: `temp_${Date.now()}`,
       gameId,
-      status: '위시리스트' as any,
-      ownershipStatus: '위시리스트' as any,
+      status: DEFAULT_OWNERSHIP_STATUS,
+      ownershipStatus: DEFAULT_OWNERSHIP_STATUS,
       sortIndex: collection.length,
       purchaseDate: '',
       memo: '',
@@ -32,7 +33,7 @@ export default function CollectionWrapper({ initialGames, initialCollection }: P
     };
     setCollection([...collection, newItem]);
     try {
-      await updateCollectionItem(gameId, { ownershipStatus: '위시리스트' as any });
+      await updateCollectionItem(gameId, { ownershipStatus: DEFAULT_OWNERSHIP_STATUS });
     } catch (e) {
       console.error(e);
       setCollection(collection.filter(i => i.id !== newItem.id));

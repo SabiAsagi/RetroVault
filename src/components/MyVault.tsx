@@ -8,6 +8,7 @@ import CollectionSearchModal from './CollectionSearchModal';
 import CollectionAddModal from './CollectionAddModal';
 import CollectionGroupModal from './CollectionGroupModal';
 import { useToast } from '../contexts/ToastContext';
+import { OWNERSHIP_STATUS_OPTIONS } from '@/constants/collection';
 
 interface MyVaultProps {
   games: Game[];
@@ -214,7 +215,7 @@ export default function MyVault({
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-6 space-y-6 page-enter">
       {/* Header Toolbar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-vault-surface border border-vault-border rounded-xl p-4 shadow-sm">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-vault-surface border border-vault-border rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-mint/10 flex items-center justify-center border border-mint/20">
             <Package className="text-mint" size={20} />
@@ -227,24 +228,24 @@ export default function MyVault({
 
         <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 md:gap-3 w-full md:w-auto">
           {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
             <button 
               onClick={() => setSearchModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber/10 border border-amber/20 text-amber text-xs font-bold rounded-lg hover:bg-amber/20 transition-colors whitespace-nowrap"
+              className="flex min-h-11 items-center gap-1.5 px-3 py-2 bg-amber/10 border border-amber/20 text-amber text-xs font-bold rounded-lg hover:bg-amber/20 transition-colors whitespace-nowrap"
             >
               <Search size={14} /> 추가하기
             </button>
 
             <button 
               onClick={() => setGroupModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-text-secondary/10 border border-text-secondary/20 text-text-primary text-xs font-bold rounded-lg hover:bg-text-secondary/20 transition-colors whitespace-nowrap"
+              className="flex min-h-11 items-center gap-1.5 px-3 py-2 bg-text-secondary/10 border border-text-secondary/20 text-text-primary text-xs font-bold rounded-lg hover:bg-text-secondary/20 transition-colors whitespace-nowrap"
             >
               <Folder size={14} /> 그룹 관리
             </button>
 
             <button 
               onClick={() => setShareOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-xs font-bold rounded-lg hover:bg-neon-blue/20 transition-colors whitespace-nowrap"
+              className="flex min-h-11 items-center gap-1.5 px-3 py-2 bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-xs font-bold rounded-lg hover:bg-neon-blue/20 transition-colors whitespace-nowrap"
             >
               <Share2 size={14} /> 공유하기
             </button>
@@ -256,7 +257,7 @@ export default function MyVault({
               <button
                 key={v}
                 onClick={() => setVisibilityFilter(v)}
-                className={`px-2.5 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1 sm:gap-1.5 whitespace-nowrap ${
+                className={`min-h-10 px-3 py-2 rounded-md text-xs font-bold transition-colors flex items-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                   visibilityFilter === v ? 'bg-vault-surface-light text-text-primary shadow-sm' : 'text-text-muted hover:text-text-secondary'
                 }`}
               >
@@ -271,13 +272,13 @@ export default function MyVault({
               setIsBatchEditMode(!isBatchEditMode);
               if (isBatchEditMode) setSelectedGameIds(new Set());
             }}
-            className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+            className={`min-h-11 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
               isBatchEditMode 
                 ? 'bg-mint text-vault-bg shadow-[0_0_10px_rgba(74,237,196,0.3)]' 
                 : 'bg-vault-surface-light border border-vault-border text-text-primary hover:border-mint/50'
             }`}
           >
-            {isBatchEditMode ? '편집 취소' : '대량 편집'}
+            {isBatchEditMode ? '편집 취소' : '일괄 편집'}
           </button>
 
           {/* Group Filter */}
@@ -285,7 +286,7 @@ export default function MyVault({
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs font-bold text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
+              className="min-h-11 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs font-bold text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
             >
               <option value="all">전체 그룹</option>
               {groups.map(g => (
@@ -298,41 +299,41 @@ export default function MyVault({
           <select
             value={theme}
             onChange={(e) => setTheme(e.target.value as ExhibitionTheme)}
-            className="bg-vault-surface-light border border-vault-border rounded-lg px-3 py-2 text-sm font-bold text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
+            className="min-h-11 bg-vault-surface-light border border-vault-border rounded-lg px-3 py-2 text-sm font-bold text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer"
           >
-            <option value="basic">🗄️ 기본 선반</option>
-            <option value="glass">💎 유리 진열장</option>
-            <option value="crt">📺 CRT 게임방</option>
-            <option value="shop">🏪 레트로 게임샵</option>
+            <option value="basic">기본 선반</option>
+            <option value="glass">유리 진열장</option>
+            <option value="crt">CRT 게임방</option>
+            <option value="shop">레트로 게임샵</option>
           </select>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-vault-bg rounded-lg border border-vault-border p-1">
+          <div className="flex min-h-11 bg-vault-bg rounded-lg border border-vault-border p-1">
             <button
               onClick={() => setViewMode('shelf')}
               title="선반 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'shelf' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
+              className={`min-h-10 min-w-10 p-2 rounded-md transition-colors flex items-center justify-center ${viewMode === 'shelf' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <BookOpen size={16} />
             </button>
             <button
               onClick={() => setViewMode('spine')}
               title="패키지 옆면 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'spine' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
+              className={`min-h-10 min-w-10 p-2 rounded-md transition-colors flex items-center justify-center ${viewMode === 'spine' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <Library size={16} />
             </button>
             <button
               onClick={() => setViewMode('card')}
               title="카드 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'card' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
+              className={`min-h-10 min-w-10 p-2 rounded-md transition-colors flex items-center justify-center ${viewMode === 'card' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode('list')}
               title="리스트 보기"
-              className={`p-2 rounded-md transition-colors ${viewMode === 'list' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
+              className={`min-h-10 min-w-10 p-2 rounded-md transition-colors flex items-center justify-center ${viewMode === 'list' ? 'bg-mint/10 text-mint' : 'text-text-muted hover:text-text-primary'}`}
             >
               <List size={16} />
             </button>
@@ -352,35 +353,34 @@ export default function MyVault({
                 if (selectedGameIds.size === displayItems.length) setSelectedGameIds(new Set());
                 else setSelectedGameIds(new Set(displayItems.map(d => d.game.id)));
               }}
-              className="text-xs px-3 py-1.5 bg-vault-bg border border-vault-border rounded-lg hover:border-mint/50 transition-colors cursor-pointer"
+              className="min-h-10 text-xs px-3 py-2 bg-vault-bg border border-vault-border rounded-lg hover:border-mint/50 transition-colors cursor-pointer"
             >
               {selectedGameIds.size === displayItems.length ? '선택 해제' : '전체 선택'}
             </button>
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
-            <select id="batch-status" className="bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
-              <option value="">상태 변경...</option>
-              <option value="위시리스트">위시리스트</option>
-              <option value="보유중(실물)">보유중(실물)</option>
-              <option value="보유중(디지털)">보유중(디지털)</option>
-              <option value="구독플랜">구독플랜</option>
+            <select id="batch-status" className="min-h-10 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
+              <option value="">그룹 지정...</option>
+              {OWNERSHIP_STATUS_OPTIONS.map(status => (
+                <option key={status} value={status}>{status}</option>
+              ))}
             </select>
-            <select id="batch-visibility" className="bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
-              <option value="">공개 설정...</option>
+            <select id="batch-visibility" className="min-h-10 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
+              <option value="">그룹 지정...</option>
               <option value="public">전체 공개</option>
               <option value="friends">친구 공개</option>
               <option value="private">비공개</option>
             </select>
-            <select id="batch-group" className="bg-vault-bg border border-vault-border rounded-lg px-2 py-1.5 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
+            <select id="batch-group" className="min-h-10 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-mint/50 cursor-pointer">
               <option value="">그룹 지정...</option>
-              <option value="none">지정 안함 (그룹 해제)</option>
+              <option value="none">지정 안 함 (그룹 해제)</option>
               {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
             </select>
             <button
               onClick={handleBatchUpdate}
               disabled={isBatchUpdating || selectedGameIds.size === 0}
-              className="px-4 py-1.5 bg-mint text-vault-bg text-xs font-bold rounded-lg hover:bg-mint-dim disabled:opacity-50 transition-colors cursor-pointer"
+              className="min-h-10 px-4 py-2.5 bg-mint text-vault-bg text-xs font-bold rounded-lg hover:bg-mint-dim disabled:opacity-50 transition-colors cursor-pointer"
             >
               {isBatchUpdating ? '적용 중...' : '적용'}
             </button>
@@ -392,7 +392,7 @@ export default function MyVault({
       {collection.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 text-center bg-vault-surface border border-vault-border rounded-xl">
           <Package className="text-text-muted mb-4" size={56} />
-          <h3 className="text-text-primary font-bold text-xl mb-2">컬렉션이 비어있습니다</h3>
+          <h3 className="text-text-primary font-bold text-xl mb-2">컬렉션이 비어 있습니다</h3>
           <p className="text-text-muted text-sm mb-6">아카이브에서 게임을 검색하고 추가하여 나만의 게임 박물관을 만들어보세요.</p>
           <button 
             onClick={() => setSearchModalOpen(true)}

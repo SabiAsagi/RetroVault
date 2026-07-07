@@ -7,6 +7,19 @@ import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import {
+  CONDITION_OPTIONS,
+  DEFAULT_COLLECTION_MODAL_OWNERSHIP_STATUS,
+  DEFAULT_CONDITION,
+  DEFAULT_PLAY_STATUS,
+  DEFAULT_PURCHASE_TYPE,
+  DEFAULT_REGION,
+  DEFAULT_VISIBILITY,
+  PACKAGE_OWNERSHIP_STATUS_OPTIONS,
+  PLAY_STATUS_OPTIONS,
+  PURCHASE_TYPE_OPTIONS,
+  REGION_OPTIONS,
+} from '@/constants/collection';
 
 interface CollectionAddModalProps {
   game: Game;
@@ -22,13 +35,13 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    ownershipStatus: initialItem?.ownershipStatus || '미개봉',
-    playStatus: initialItem?.playStatus || '미플레이',
+    ownershipStatus: initialItem?.ownershipStatus || DEFAULT_COLLECTION_MODAL_OWNERSHIP_STATUS,
+    playStatus: initialItem?.playStatus || DEFAULT_PLAY_STATUS,
     playTime: initialItem?.playTime || 0,
-    visibility: initialItem?.visibility || 'public',
-    purchaseType: initialItem?.purchaseType || '패키지',
-    region: initialItem?.region || 'KOR',
-    condition: initialItem?.condition || 'Excellent',
+    visibility: initialItem?.visibility || DEFAULT_VISIBILITY,
+    purchaseType: initialItem?.purchaseType || DEFAULT_PURCHASE_TYPE,
+    region: initialItem?.region || DEFAULT_REGION,
+    condition: initialItem?.condition || DEFAULT_CONDITION,
     purchaseDate: initialItem?.purchaseDate || new Date().toISOString().split('T')[0],
     purchasePrice: initialItem?.purchasePrice || 0,
     memo: initialItem?.memo || '',
@@ -116,9 +129,9 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 onChange={e => setFormData({...formData, ownershipStatus: e.target.value as OwnershipStatus})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
-                <option value="미개봉">미개봉</option>
-                <option value="전부 보유">전부 보유</option>
-                <option value="일부 누락">일부 누락</option>
+                {PACKAGE_OWNERSHIP_STATUS_OPTIONS.map(status => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
               </select>
             </div>
             <div>
@@ -128,11 +141,9 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 onChange={e => setFormData({...formData, playStatus: e.target.value as PlayStatus})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
-                <option value="미플레이">미플레이</option>
-                <option value="플레이중">플레이중</option>
-                <option value="엔딩 완료">엔딩 완료</option>
-                <option value="중단">중단</option>
-                <option value="반복 플레이중">반복 플레이중</option>
+                {PLAY_STATUS_OPTIONS.map(status => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -183,9 +194,9 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 onChange={e => setFormData({...formData, purchaseType: e.target.value as PurchaseType})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
-                <option value="패키지">패키지</option>
-                <option value="다운로드">다운로드</option>
-                <option value="구독">구독</option>
+                {PURCHASE_TYPE_OPTIONS.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -198,11 +209,9 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 onChange={e => setFormData({...formData, region: e.target.value as Region})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
-                <option value="KOR">KOR (한국)</option>
-                <option value="JPN">JPN (일본)</option>
-                <option value="USA">USA (북미)</option>
-                <option value="EUR">EUR (유럽)</option>
-                <option value="OTHER">기타</option>
+                {REGION_OPTIONS.map(region => (
+                  <option key={region.value} value={region.value}>{region.value} ({region.label.replace('판', '')})</option>
+                ))}
               </select>
             </div>
             <div>
@@ -212,11 +221,9 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
                 onChange={e => setFormData({...formData, condition: e.target.value as Condition})}
                 className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
               >
-                <option value="Mint">Mint (최상)</option>
-                <option value="Excellent">Excellent (상)</option>
-                <option value="Good">Good (중)</option>
-                <option value="Fair">Fair (하)</option>
-                <option value="Poor">Poor (불량)</option>
+                {CONDITION_OPTIONS.map(condition => (
+                  <option key={condition} value={condition}>{condition}</option>
+                ))}
               </select>
             </div>
           </div>

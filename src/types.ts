@@ -3,9 +3,13 @@
 export type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Legendary';
 
 export type OwnershipStatus =
+  | '위시리스트'
   | '미개봉'
   | '전부 보유'
-  | '일부 누락';
+  | '일부 누락'
+  | '보유중(실물)'
+  | '보유중(디지털)'
+  | '구독플랜';
 
 export type PlayStatus =
   | '미플레이'

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { Game, Rarity } from '../types';
 import { Plus, Check, Star, Eye } from 'lucide-react';
 
@@ -86,7 +86,7 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
   const popularity = game.popularity ?? 50;
   const country = game.country;
   const countryFlag: Record<string, string> = {
-    JP: '🇯🇵', US: '🇺🇸', SU: '🇷🇺', GB: '🇬🇧', AU: '🇦🇺', CA: '🇨🇦', SE: '🇸🇪', EU: '🇪🇺',
+    JP: '?눓?눝', US: '?눣?눡', SU: '?눟?눣', GB: '?눐?눉', AU: '?눇?눣', CA: '?눊?눇', SE: '?눡?눎', EU: '?눎?눣',
   };
 
   return (
@@ -131,7 +131,7 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
         <h3 className="text-xs font-semibold text-text-primary line-clamp-2 break-words h-8 group-hover:text-mint transition-colors leading-tight" title={game.title}>
           {game.title}
         </h3>
-        <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} · {game.releaseYear}</p>
+        <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} 쨌 {game.releaseYear}</p>
 
         <div className="flex items-center justify-between mt-2">
           {/* Rating, Views, and Genre */}
@@ -150,17 +150,18 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
           {/* Add button */}
           <button
             onClick={e => { e.stopPropagation(); onAddToCollection(game.id); }}
-            className={`p-1.5 rounded-md transition-all cursor-pointer ${
+            className={`min-h-10 min-w-10 rounded-md transition-all cursor-pointer flex items-center justify-center ${
               isOwned
                 ? 'bg-mint/20 text-mint border border-mint/30'
                 : 'bg-vault-surface-light text-text-muted hover:text-mint hover:bg-mint/10 border border-transparent hover:border-mint/20'
             }`}
-            title={isOwned ? '컬렉션에 있음' : '컬렉션에 추가'}
+            title={isOwned ? '而щ젆?섏뿉 ?덉쓬' : '而щ젆?섏뿉 異붽?'}
           >
-            {isOwned ? <Check size={12} /> : <Plus size={12} />}
+            {isOwned ? <Check size={16} /> : <Plus size={16} />}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

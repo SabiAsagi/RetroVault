@@ -5,6 +5,7 @@ import { Game, CollectionItem } from '@/types';
 import { getGameSlug } from '@/lib/slug';
 import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
+import { DEFAULT_OWNERSHIP_STATUS } from '@/constants/collection';
 
 interface Props {
   initialCollection: CollectionItem[];
@@ -31,8 +32,8 @@ export default function DashboardWrapper({ initialCollection, historyGame, recen
     const newItem: CollectionItem = {
       id: `temp_${Date.now()}`,
       gameId,
-      status: '위시리스트' as any,
-      ownershipStatus: '위시리스트' as any,
+      status: DEFAULT_OWNERSHIP_STATUS,
+      ownershipStatus: DEFAULT_OWNERSHIP_STATUS,
       sortIndex: collection.length,
       purchaseDate: '',
       memo: '',
@@ -42,7 +43,7 @@ export default function DashboardWrapper({ initialCollection, historyGame, recen
 
     // Server action
     try {
-      await updateCollectionItem(gameId, { ownershipStatus: '위시리스트' as any });
+      await updateCollectionItem(gameId, { ownershipStatus: DEFAULT_OWNERSHIP_STATUS });
     } catch (e) {
       console.error(e);
       // Revert if failed (simplistic approach for MVP)

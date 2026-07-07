@@ -5,6 +5,7 @@ import {
   MonitorPlay, Gamepad2, Layers, CheckCircle2, Globe, Clock, DollarSign, Eye, EyeOff, Image as ImageIcon, Milestone, Calendar, Users
 } from 'lucide-react';
 import { getRarityClass, BoxArtPlaceholder } from './GameCard';
+import { CONDITION_OPTIONS, PACKAGE_OWNERSHIP_STATUS_OPTIONS, PURCHASE_TYPE_OPTIONS, REGION_OPTIONS } from '@/constants/collection';
 
 interface GameDetailModalProps {
   game: Game;
@@ -30,20 +31,10 @@ interface GameDetailModalProps {
   onUpdateVisibility?: (gameId: string, visibility: Visibility) => void;
 }
 
-const statuses: OwnershipStatus[] = ['미개봉', '전부 보유', '일부 누락'];
-const conditions: Condition[] = ['Mint', 'Excellent', 'Good', 'Fair', 'Poor'];
-const regions: { value: Region; label: string }[] = [
-  { value: 'KOR', label: '🇰🇷 한국판' },
-  { value: 'JPN', label: '🇯🇵 일본판' },
-  { value: 'USA', label: '🇺🇸 북미판' },
-  { value: 'EUR', label: '🇪🇺 유럽판' },
-  { value: 'OTHER', label: '기타' },
-];
-const purchaseTypes: { value: PurchaseType; label: string }[] = [
-  { value: '패키지', label: '📦 패키지' },
-  { value: '다운로드', label: '💻 다운로드' },
-  { value: '구독', label: '🔄 구독' },
-];
+const statuses = PACKAGE_OWNERSHIP_STATUS_OPTIONS;
+const conditions = CONDITION_OPTIONS;
+const regions = REGION_OPTIONS;
+const purchaseTypes = PURCHASE_TYPE_OPTIONS.map(value => ({ value, label: value }));
 
 type ModalTab = 'basic' | 'era' | 'media' | 'record';
 

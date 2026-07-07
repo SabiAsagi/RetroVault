@@ -1,8 +1,14 @@
 # 🎮 RetroVault (레트로볼트)
 
-![RetroVault Banner](https://via.placeholder.com/1200x400/1a1a3e/ffffff?text=RetroVault+-+The+Ultimate+Retro+Game+Archive)
-
 **RetroVault**는 비디오 게임의 황금기를 장식했던 클래식 게임, 콘솔(플랫폼), 그리고 제작사들의 역사적인 정보와 개인의 게임 컬렉션을 기록하고 관리할 수 있는 **Next.js 기반의 종합 레트로 게임 아카이브 플랫폼**입니다.
+
+## 🔗 링크
+
+* **서비스:** https://retrovault.kro.kr
+* **GitHub:** https://github.com/SabiAsagi/RetroVault
+* **개선 계획:** [docs/improvement-plan.md](docs/improvement-plan.md)
+* **데이터 정비 기준:** [docs/data-guidelines.md](docs/data-guidelines.md)
+* **디자인 시스템 초안:** [docs/design-system-draft.md](docs/design-system-draft.md)
 
 ## ✨ 주요 기능 (Key Features)
 
@@ -27,7 +33,7 @@
 
 ## 🛠️ 기술 스택 (Tech Stack)
 
-* **Framework:** Next.js 14+ (App Router)
+* **Framework:** Next.js 16 (App Router)
 * **Language:** TypeScript
 * **Styling:** Tailwind CSS (Custom Vault Theme)
 * **Icons:** Lucide React
@@ -88,6 +94,14 @@ npm run dev
 1. 일반 유저가 아카이브에 없는 새로운 게임이나 콘솔 기기 추가를 요청합니다.
 2. 해당 요청은 관리자(Admin) 대시보드로 전달됩니다.
 3. 관리자가 내용을 검토한 후 승인하면 정식 아카이브에 등록되며, 반려할 경우 사유와 함께 유저에게 알림이 전송됩니다.
+
+## 🧭 개선 로드맵
+
+1. README 및 타입 정의 정리
+2. 통합 검색 결과 확장
+3. 모바일 하단 탭 네비게이션 추가
+4. 데이터 정비 기준 및 출처 관리 강화
+5. Figma 기반 UI/UX 리디자인과 모바일 앱 프로토타입 제작
 
 ---
 *RetroVault - 게임의 역사는 계속됩니다.*

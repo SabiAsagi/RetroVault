@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { CollectionItem } from "@/types";
 import { revalidatePath } from "next/cache";
+import { DEFAULT_OWNERSHIP_STATUS, DEFAULT_PLAY_STATUS } from "@/constants/collection";
 
 export async function getUserCollection(): Promise<CollectionItem[]> {
   const session = await getServerSession(authOptions);
@@ -29,7 +30,7 @@ export async function getUserCollection(): Promise<CollectionItem[]> {
     playStartDate: item.playStartDate || undefined,
     clearDate: item.clearDate || undefined,
     playTime: item.playTime || undefined,
-    playStatus: item.playStatus as any || '미플레이',
+    playStatus: item.playStatus as any || DEFAULT_PLAY_STATUS,
     rating: item.rating || 0,
     visibility: item.visibility as any || 'public',
     sortIndex: item.sortOrder,
@@ -51,7 +52,7 @@ export async function updateCollectionItem(gameId: string, data: any) {
     create: {
       userId: session.user.id,
       gameId,
-      ownershipStatus: itemData.ownershipStatus || '위시리스트',
+      ownershipStatus: itemData.ownershipStatus || DEFAULT_OWNERSHIP_STATUS,
       ...itemData
     }
   });
@@ -103,7 +104,7 @@ export async function batchUpdateCollectionItems(gameIds: string[], data: any) {
       create: {
         userId: session.user.id,
         gameId,
-        ownershipStatus: itemData.ownershipStatus || '위시리스트',
+        ownershipStatus: itemData.ownershipStatus || DEFAULT_OWNERSHIP_STATUS,
         ...itemData
       }
     });

@@ -1,22 +1,13 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import { Users, FolderHeart, Gamepad2, Search } from 'lucide-react';
+import { Users, FolderHeart, Gamepad2 } from 'lucide-react';
 import { BoxArtPlaceholder } from './GameCard';
 
 export default function Community({ users, groups }: { users: any[], groups: any[] }) {
   const [tab, setTab] = useState<'users' | 'groups'>('users');
-  const [search, setSearch] = useState('');
-
-  const filteredUsers = users.filter(u => 
-    u.nickname?.toLowerCase().includes(search.toLowerCase()) || 
-    u.name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const filteredGroups = groups.filter(g => 
-    g.name.toLowerCase().includes(search.toLowerCase()) || 
-    g.user?.nickname?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users;
+  const filteredGroups = groups;
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
@@ -24,18 +15,7 @@ export default function Community({ users, groups }: { users: any[], groups: any
         <h2 className="text-2xl font-black text-text-primary flex items-center gap-2">
           <Users className="text-mint" /> 유저 컬렉션 탐색
         </h2>
-        
-        <div className="relative max-w-sm w-full">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input
-            type="text"
-            placeholder="유저명, 컬렉션명 검색..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-vault-surface border border-vault-border rounded-xl pl-10 pr-4 py-2 text-sm text-text-primary focus:outline-none focus:border-mint transition-colors"
-          />
-        </div>
-      </div>
+</div>
 
       <div className="flex gap-4 mb-6 border-b border-vault-border">
         <button

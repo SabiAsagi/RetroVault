@@ -71,7 +71,7 @@ export default function RootLayout({
           <ToastProvider>
             <div className="min-h-screen bg-vault-bg">
               <NavigationApp />
-              <main className="pb-16 sm:pb-0 page-enter flex-1">
+              <main className="pb-20 lg:pb-0 page-enter flex-1">
                 {children}
               </main>
               <Footer />
