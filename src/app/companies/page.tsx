@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { useSearchParams } from "next/navigation";
 import { Building2, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from 'lucide-react';
 import Link from "next/link";
 import MultiSelectFilter from "@/components/MultiSelectFilter";
@@ -36,7 +37,8 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const searchQuery = '';
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams?.get('q')?.trim() || '';
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('companies-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('companies-filters-open', false);
@@ -68,6 +70,10 @@ export default function CompaniesPage() {
 
   const filtered = useMemo(() => {
     let result = [...companies];
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(c => c.name.toLowerCase().includes(q) || c.country?.toLowerCase().includes(q));
+    }
     if (activeTypeTab === 'DEVELOPER') result = result.filter(c => c.type === 'DEVELOPER' || c.type === 'BOTH');
     if (activeTypeTab === 'PUBLISHER') result = result.filter(c => c.type === 'PUBLISHER' || c.type === 'BOTH');
     if (typeFilter.length > 0) result = result.filter(c => typeFilter.includes(c.type));
@@ -88,7 +94,7 @@ export default function CompaniesPage() {
       case 'founded-asc': result.sort((a, b) => (a.foundedAt || '9999').localeCompare(b.foundedAt || '9999')); break;
     }
     return result;
-  }, [companies, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy]);
+  }, [companies, activeTypeTab, typeFilter, countryFilter, statusFilter, sortBy, searchQuery]);
 
 
   const hasFilters = typeFilter.length > 0 || countryFilter.length > 0 || statusFilter.length > 0;

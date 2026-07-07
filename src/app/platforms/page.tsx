@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { useSearchParams } from "next/navigation";
 import { Database, Calendar, Monitor, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from "lucide-react";
 import Link from "next/link";
 import MultiSelectFilter from "@/components/MultiSelectFilter";
@@ -37,7 +38,8 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function PlatformsPage() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
-  const searchQuery = '';
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams?.get('q')?.trim() || '';
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('platforms-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('platforms-filters-open', false);
@@ -66,6 +68,10 @@ export default function PlatformsPage() {
 
   const filtered = useMemo(() => {
     let result = [...platforms];
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(p => p.name.toLowerCase().includes(q) || p.manufacturer?.toLowerCase().includes(q));
+    }
     if (activeManufacturerTab) result = result.filter(p => p.manufacturer === activeManufacturerTab);
     if (manufacturerFilter.length > 0) result = result.filter(p => manufacturerFilter.includes(p.manufacturer));
     if (generationFilter.length > 0) result = result.filter(p => generationFilter.includes(String(p.generation)));
@@ -85,7 +91,7 @@ export default function PlatformsPage() {
       case 'games-desc': result.sort((a, b) => b._count.games - a._count.games); break;
     }
     return result;
-  }, [platforms, activeManufacturerTab, manufacturerFilter, generationFilter, typeFilter, sortBy]);
+  }, [platforms, activeManufacturerTab, manufacturerFilter, generationFilter, typeFilter, sortBy, searchQuery]);
 
   const hasFilters = manufacturerFilter.length > 0 || generationFilter.length > 0 || typeFilter.length > 0 || activeManufacturerTab;
   const clearFilters = () => { setManufacturerFilter([]); setGenerationFilter([]); setTypeFilter([]); setActiveManufacturerTab(''); };

@@ -1,13 +1,17 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Users, FolderHeart, Gamepad2 } from 'lucide-react';
 import { BoxArtPlaceholder } from './GameCard';
 
 export default function Community({ users, groups }: { users: any[], groups: any[] }) {
   const [tab, setTab] = useState<'users' | 'groups'>('users');
-  const filteredUsers = users;
-  const filteredGroups = groups;
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams?.get('q')?.trim() || '';
+
+  const filteredUsers = users.filter(u => !searchQuery || (u.nickname || u.name || '').toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredGroups = groups.filter(g => !searchQuery || g.name.toLowerCase().includes(searchQuery.toLowerCase()) || (g.description || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)]">
