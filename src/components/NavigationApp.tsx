@@ -158,7 +158,10 @@ export default function NavigationApp() {
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchQuery.trim()) {
-                  window.location.href = `/games?q=${encodeURIComponent(searchQuery.trim())}`;
+                  const category = searchCategories.find(c => c.value === searchCategory);
+                  const path = category?.path || '/games';
+                  const typeParam = searchCategory !== 'all' ? `&type=${searchCategory}` : '';
+                  window.location.href = `${path}?q=${encodeURIComponent(searchQuery.trim())}${typeParam}`;
                   setSearchFocused(false);
                 }
               }}
@@ -173,6 +176,46 @@ export default function NavigationApp() {
             {searchFocused && searchResults && (
               <div className="fixed left-3 right-3 top-16 mt-0 bg-vault-surface border border-vault-border rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-8rem)] overflow-y-auto sm:absolute sm:left-auto sm:right-auto sm:top-full sm:mt-2 sm:w-full sm:max-h-[70vh]">
                 {searchResults.games?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">게임</h3>
+                    {searchResults.games.map((game: any) => (
+                      <Link href={`/games/${game.id}`} key={game.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-text-primary">{game.title}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {searchResults.platforms?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">플랫폼</h3>
+                    {searchResults.platforms.map((platform: any) => (
+                      <Link href={`/platforms/${platform.id}`} key={platform.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-text-primary">{platform.name}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {searchResults.companies?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">회사</h3>
+                    {searchResults.companies.map((company: any) => (
+                      <Link href={`/companies/${company.id}`} key={company.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-text-primary">{company.name}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {searchResults.users?.length > 0 && (
+                  <div className="p-2 border-b border-vault-border/50">
+                    <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
+                    {searchResults.users.map((user: any) => (
+                      <Link href={`/profile/${user.nickname || user.name || user.id}`} key={user.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-text-primary">{user.nickname || user.name}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {searchResults.groups?.length > 0 && (
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">공개 컬렉션</h3>
                     {searchResults.groups.map((grp: any) => (
