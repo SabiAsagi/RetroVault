@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { useSearchParams } from "next/navigation";
 import { Building2, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from 'lucide-react';
@@ -35,6 +35,14 @@ const sortOptions: { value: SortOption; label: string }[] = [
 ];
 
 export default function CompaniesPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-amber border-t-transparent rounded-full animate-spin"></div></div>}>
+      <CompaniesContent />
+    </Suspense>
+  );
+}
+
+function CompaniesContent() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { useSearchParams } from "next/navigation";
 import { Database, Calendar, Monitor, Filter, X, LayoutGrid, List, Search, Gamepad2, Eye } from "lucide-react";
@@ -36,6 +36,14 @@ const sortOptions: { value: SortOption; label: string }[] = [
 ];
 
 export default function PlatformsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-neon-purple border-t-transparent rounded-full animate-spin"></div></div>}>
+      <PlatformsContent />
+    </Suspense>
+  );
+}
+
+function PlatformsContent() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();

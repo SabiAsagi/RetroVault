@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Community from "@/components/Community";
+import { Suspense } from "react";
 
 export const dynamic = 'force-dynamic';
 
@@ -42,5 +43,9 @@ export default async function CommunityPage() {
     orderBy: { createdAt: 'desc' }
   });
 
-  return <Community users={publicUsers} groups={publicGroups} />;
+  return (
+    <Suspense fallback={<div className="flex justify-center p-20"><div className="w-8 h-8 border-4 border-mint border-t-transparent rounded-full animate-spin"></div></div>}>
+      <Community users={publicUsers} groups={publicGroups} />
+    </Suspense>
+  );
 }
