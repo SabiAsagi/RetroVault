@@ -1,16 +1,16 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { getGameSlug, getPlatformSlug, getCompanySlug } from '@/lib/slug';
+import { usePathname } from 'next/navigation';
 import {
   Home, Archive, Clock, BookOpen, BarChart3,
-  Trophy, User, Users, Settings, Search, Mail,
-  Database, X, Menu, LogIn, ChevronDown, Loader2, Monitor
+  Trophy, User, Users, Settings, Search,
+  Database, X, Menu, LogIn, ChevronDown, Loader2
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useSession, signOut } from 'next-auth/react';
 import { useDebounce } from '@/hooks/useDebounce';
+import { LogoIcon } from './LogoIcon';
 
 interface NavItem {
   id: string;
@@ -28,14 +28,13 @@ const navItems: NavItem[] = [
   { id: 'companies', path: '/companies', label: '게임 제작사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
   { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
   { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
-  
-  // User Menu order: 프로필 / 친구 / 내 컬렉션 / 컬렉션 분석 / 업적
+
   { id: 'profile', path: '/profile/me', label: '프로필', icon: <User size={16} />, color: '#4EA8FF', group: 'user' },
   { id: 'friends', path: '/friends', label: '친구', icon: <Users size={16} />, color: '#4AEDC4', group: 'user' },
   { id: 'vault', path: '/collection', label: '내 컬렉션', icon: <BookOpen size={16} />, color: '#FFB547', group: 'user' },
   { id: 'stats', path: '/stats', label: '컬렉션 분석', icon: <BarChart3 size={16} />, color: '#FF6B6B', group: 'user' },
   { id: 'achievements', path: '/achievements', label: '업적', icon: <Trophy size={16} />, color: '#FFB547', group: 'user' },
-  
+
   { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
 ];
 
@@ -112,7 +111,6 @@ export default function NavigationApp() {
   };
 
   const activeTabId = getActiveItemId();
-  const activeItem = navItems.find(n => n.id === activeTabId);
 
   return (
     <>
@@ -125,10 +123,8 @@ export default function NavigationApp() {
             <Menu size={17} />
           </button>
 
-          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer sm:pl-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow-md neon-mint">
-              <span className="font-pixel text-[10px] text-vault-bg font-bold">RV</span>
-            </div>
+          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
+            <LogoIcon size={36} />
             <div className="hidden sm:block">
               <h1 className="font-pixel text-xs text-text-primary group-hover:text-mint transition-colors leading-none mb-1">
                 RetroVault
@@ -144,7 +140,7 @@ export default function NavigationApp() {
               onChange={(e) => setSearchCategory(e.target.value as SearchCategory)}
               onFocus={() => setSearchFocused(true)}
               className="absolute left-2 top-1/2 -translate-y-1/2 h-8 rounded-md border border-vault-border bg-vault-bg px-2 text-[11px] font-bold text-text-secondary focus:outline-none focus:border-mint"
-              aria-label="게임, 플랫폼, 회사, 유저 통합 검색"
+              aria-label="검색 카테고리"
             >
               {searchCategories.map(category => (
                 <option key={category.value} value={category.value}>{category.label}</option>
@@ -167,12 +163,13 @@ export default function NavigationApp() {
               }}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-32 pr-9 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-mint transition-all" aria-label="게임, 플랫폼, 회사, 유저 통합 검색"
+              className="w-full bg-vault-surface/80 border border-vault-border rounded-lg pl-32 pr-9 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-mint transition-all"
+              aria-label="통합 검색"
             />
             {isSearching && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-mint animate-spin" size={14} />
             )}
-            
+
             {searchFocused && searchResults && (
               <div className="fixed left-3 right-3 top-16 mt-0 bg-vault-surface border border-vault-border rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-8rem)] overflow-y-auto sm:absolute sm:left-auto sm:right-auto sm:top-full sm:mt-2 sm:w-full sm:max-h-[70vh]">
                 {searchResults.games?.length > 0 && (
@@ -208,9 +205,9 @@ export default function NavigationApp() {
                 {searchResults.users?.length > 0 && (
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">유저</h3>
-                    {searchResults.users.map((user: any) => (
-                      <Link href={`/profile/${user.nickname || user.name || user.id}`} key={user.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
-                        <p className="text-sm text-text-primary">{user.nickname || user.name}</p>
+                    {searchResults.users.map((u: any) => (
+                      <Link href={`/profile/${u.nickname || u.name || u.id}`} key={u.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                        <p className="text-sm text-text-primary">{u.nickname || u.name}</p>
                       </Link>
                     ))}
                   </div>
@@ -226,7 +223,6 @@ export default function NavigationApp() {
                     ))}
                   </div>
                 )}
-                
                 {(!searchResults.games?.length && !searchResults.platforms?.length && !searchResults.users?.length && !searchResults.companies?.length && !searchResults.groups?.length) && (
                   <div className="p-6 text-center text-sm text-text-muted">검색 결과가 없습니다.</div>
                 )}
@@ -247,25 +243,37 @@ export default function NavigationApp() {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg hover:bg-vault-surface-light transition-colors border border-transparent hover:border-vault-border cursor-pointer"
                 >
-                  <img src={user?.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${(user as any)?.id || 'RetroMaster'}&backgroundColor=1A1A1A`} alt={user?.name || 'User'} className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border object-cover" />
+                  <img
+                    src={user?.image || `https://api.dicebear.com/7.x/pixel-art/svg?seed=${(user as any)?.id || 'RetroMaster'}&backgroundColor=1A1A1A`}
+                    alt={user?.name || 'User'}
+                    className="w-6 h-6 rounded-md bg-vault-bg border border-vault-border object-cover"
+                  />
                   <span className="hidden sm:block text-xs font-bold text-text-primary max-w-[80px] truncate">{(user as any)?.nickname || user?.name}</span>
                   <ChevronDown size={14} className="text-text-muted" />
                 </button>
                 {dropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-vault-surface border border-vault-border rounded-xl shadow-2xl py-1 z-50">
                     <div className="px-4 py-2 border-b border-vault-border/50 mb-1">
-                        <p className="text-sm font-bold text-text-primary truncate">{(user as any)?.nickname || user?.name}</p>
-                        <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
-                      </div>
-                      {navItems.filter(item => item.group === 'user').map(item => (
-                        <Link key={item.id} href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path} onClick={() => setDropdownOpen(false)} className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light hover:text-text-primary flex items-center gap-2">
-                          {item.icon} {item.label}
-                        </Link>
-                      ))}
-                      <div className="h-px bg-vault-border/50 my-1" />
-                      <button onClick={() => { setDropdownOpen(false); signOut(); }} className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2 cursor-pointer">
-                        <LogIn size={14} className="rotate-180" /> 로그아웃
-                      </button>
+                      <p className="text-sm font-bold text-text-primary truncate">{(user as any)?.nickname || user?.name}</p>
+                      <p className="text-[10px] text-text-muted truncate">{user?.email}</p>
+                    </div>
+                    {navItems.filter(item => item.group === 'user').map(item => (
+                      <Link
+                        key={item.id}
+                        href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path}
+                        onClick={() => setDropdownOpen(false)}
+                        className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-vault-surface-light flex items-center gap-2"
+                      >
+                        {item.icon} {item.label}
+                      </Link>
+                    ))}
+                    <div className="h-px bg-vault-border/50 my-1" />
+                    <button
+                      onClick={() => { setDropdownOpen(false); signOut(); }}
+                      className="w-full text-left px-4 py-2 text-sm text-coral hover:bg-coral/10 flex items-center gap-2 cursor-pointer"
+                    >
+                      <LogIn size={14} className="rotate-180" /> 로그아웃
+                    </button>
                   </div>
                 )}
               </div>
@@ -276,7 +284,7 @@ export default function NavigationApp() {
         <nav className="hidden lg:flex items-center gap-0 px-4 max-w-screen-2xl mx-auto border-t border-vault-border/40 overflow-x-auto">
           {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
-            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'INFO_MANAGER' && user?.role !== 'USER_MANAGER' && user?.role !== 'MODERATOR') return null;
+            if (item.id === 'admin' && (user as any)?.role !== 'ADMIN' && (user as any)?.role !== 'INFO_MANAGER' && (user as any)?.role !== 'USER_MANAGER' && (user as any)?.role !== 'MODERATOR') return null;
             return (
               <Link
                 href={item.path}
@@ -290,7 +298,10 @@ export default function NavigationApp() {
                 </span>
                 {item.label}
                 {isActive && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-t" style={{ background: `linear-gradient(90deg, ${item.color}, transparent)` }} />
+                  <span
+                    className="absolute bottom-0 left-2 right-2 h-0.5 rounded-t"
+                    style={{ background: `linear-gradient(90deg, ${item.color}, transparent)` }}
+                  />
                 )}
               </Link>
             );
@@ -305,11 +316,10 @@ export default function NavigationApp() {
       <aside className={`fixed top-0 left-0 z-[70] h-full w-72 glass-panel border-r border-vault-border shadow-2xl lg:hidden transition-transform duration-300 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between px-5 h-14 border-b border-vault-border">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-mint to-neon-blue flex items-center justify-center crt-lines shadow">
-              <span className="font-pixel text-[7px] text-vault-bg font-bold">RV</span>
-            </div>
+            <LogoIcon size={28} />
             <div>
               <p className="font-pixel text-[8px] text-text-primary">RetroVault</p>
+              <p className="text-[8px] text-text-muted">DIGITAL MUSEUM</p>
             </div>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all">
@@ -320,10 +330,10 @@ export default function NavigationApp() {
         <nav className="py-3 px-3 space-y-0.5 overflow-y-auto">
           {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
-            if (item.id === 'admin' && user?.role !== 'ADMIN' && user?.role !== 'INFO_MANAGER' && user?.role !== 'USER_MANAGER' && user?.role !== 'MODERATOR') return null;
+            if (item.id === 'admin' && (user as any)?.role !== 'ADMIN' && (user as any)?.role !== 'INFO_MANAGER' && (user as any)?.role !== 'USER_MANAGER' && (user as any)?.role !== 'MODERATOR') return null;
             return (
               <Link
-                href={item.id === 'profile' ? `/profile/${(user as any)?.nickname || user?.name || user?.id}` : item.path}
+                href={item.path}
                 key={item.id}
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
@@ -337,13 +347,16 @@ export default function NavigationApp() {
           })}
         </nav>
       </aside>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-vault-border bg-vault-bg/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]" aria-label="게임, 플랫폼, 회사, 유저 통합 검색">
+
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-vault-border bg-vault-bg/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
+        aria-label="하단 탭 네비게이션"
+      >
         <div className="grid h-16 grid-cols-5 max-w-screen-sm mx-auto">
           {bottomTabIds.map(id => {
             const item = navItems.find(navItem => navItem.id === id);
             if (!item) return null;
             const isActive = activeTabId === item.id;
-
             return (
               <Link
                 key={item.id}
