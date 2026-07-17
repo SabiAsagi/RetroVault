@@ -1,96 +1,120 @@
 import { PrismaClient } from '@prisma/client';
-import { fetchIgdb, igdbImageUrl } from '../src/lib/igdb';
+import { igdbImageUrl } from '../src/lib/igdb';
+import {
+  countryFromIsoNumeric,
+  createStats,
+  readPositiveInt,
+  toIsoDate,
+  walkIgdbById,
+} from './igdb-sync-utils';
 
 const prisma = new PrismaClient();
 
+type IgdbCompany = {
+  id: number;
+  name?: string;
+  description?: string;
+  country?: number;
+  start_date?: number;
+  url?: string;
+  developed?: number[];
+  published?: number[];
+  logo?: { url?: string };
+  websites?: Array<{ url?: string; trusted?: boolean }>;
+  status?: { name?: string };
+};
+
+function companyType(company: IgdbCompany): 'DEVELOPER' | 'PUBLISHER' | 'BOTH' {
+  const develops = (company.developed?.length ?? 0) > 0;
+  const publishes = (company.published?.length ?? 0) > 0;
+
+  if (develops && !publishes) return 'DEVELOPER';
+  if (!develops && publishes) return 'PUBLISHER';
+  return 'BOTH';
+}
+
+function officialWebsite(company: IgdbCompany): string | null {
+  const trusted = company.websites?.find((website) => website.trusted && website.url)?.url;
+  return trusted ?? company.websites?.find((website) => website.url)?.url ?? company.url ?? null;
+}
+
 async function syncCompanies() {
-  console.log('Starting IGDB Companies Sync...');
-  
-  let offset = 0;
-  const limit = 200;
-  let totalUpdated = 0;
-  let totalCreated = 0;
+  console.log('Starting IGDB company sync...');
 
-  while (true) {
-    const query = `
-      fields name, description, logo.url, country, start_date, developed.name, published.name;
-      limit ${limit};
-      offset ${offset};
-    `;
+  const stats = createStats();
+  const maxItems = readPositiveInt('IGDB_SYNC_MAX_COMPANIES', 0);
 
-    console.log(`Fetching companies from IGDB (offset: ${offset})...`);
-    const companies = await fetchIgdb('companies', query);
-
-    if (companies.length === 0) {
-      break;
-    }
-
-    for (const igdbCompany of companies) {
-      try {
-        const name = igdbCompany.name;
-        if (!name) continue;
-
-        const logoUrl = igdbCompany.logo?.url ? igdbImageUrl(igdbCompany.logo.url, 't_cover_big') : null;
-        const description = igdbCompany.description;
-        // IGDB country is an integer code, mapping it to string might be complex, so we just convert to string or ignore. Let's ignore or store the code.
-        // Actually IGDB country code is ISO 3166-1 numeric code. We can just leave country null if we don't map it.
-        const foundedAt = igdbCompany.start_date 
-          ? new Date(igdbCompany.start_date * 1000).getFullYear().toString()
-          : null;
-
-        let type = 'BOTH';
-        const hasDeveloped = igdbCompany.developed && igdbCompany.developed.length > 0;
-        const hasPublished = igdbCompany.published && igdbCompany.published.length > 0;
-        
-        if (hasDeveloped && !hasPublished) type = 'DEVELOPER';
-        else if (!hasDeveloped && hasPublished) type = 'PUBLISHER';
-
-        const existingCompany = await prisma.company.findFirst({
-          where: { name: { equals: name, mode: 'insensitive' } }
-        });
-
-        if (existingCompany) {
-          const updates: any = {};
-          if (!existingCompany.logoUrl && logoUrl) updates.logoUrl = logoUrl;
-          if (!existingCompany.description && description) updates.description = description;
-          if (!existingCompany.foundedAt && foundedAt) updates.foundedAt = foundedAt;
-
-          if (Object.keys(updates).length > 0) {
-            await prisma.company.update({
-              where: { id: existingCompany.id },
-              data: updates
-            });
-            console.log(`[UPDATED] ${name}`);
-            totalUpdated++;
+  await walkIgdbById<IgdbCompany>({
+    endpoint: 'companies',
+    maxItems,
+    fields: [
+      'id',
+      'name',
+      'description',
+      'country',
+      'start_date',
+      'url',
+      'developed',
+      'published',
+      'logo.url',
+      'websites.url',
+      'websites.trusted',
+      'status.name',
+    ].join(','),
+    onBatch: async (companies) => {
+      for (const igdbCompany of companies) {
+        try {
+          const name = igdbCompany.name?.trim();
+          if (!name) {
+            stats.skipped += 1;
+            continue;
           }
-        } else {
-          await prisma.company.create({
-            data: {
-              name,
-              type,
-              logoUrl,
-              description,
-              foundedAt,
-              status: 'APPROVED'
-            }
+
+          const data = {
+            name,
+            type: companyType(igdbCompany),
+            country: countryFromIsoNumeric(igdbCompany.country),
+            logoUrl: igdbCompany.logo?.url
+              ? igdbImageUrl(igdbCompany.logo.url, 't_cover_big')
+              : null,
+            description: igdbCompany.description ?? null,
+            foundedAt: toIsoDate(igdbCompany.start_date),
+            websiteUrl: officialWebsite(igdbCompany),
+            companyStatus: igdbCompany.status?.name?.toUpperCase() ?? null,
+            status: 'APPROVED',
+          };
+
+          const existing = await prisma.company.findFirst({
+            where: {
+              name: { equals: name, mode: 'insensitive' },
+            },
+            select: { id: true },
           });
-          console.log(`[CREATED] ${name}`);
-          totalCreated++;
+
+          if (existing) {
+            await prisma.company.update({
+              where: { id: existing.id },
+              data,
+            });
+            stats.updated += 1;
+          } else {
+            await prisma.company.create({ data });
+            stats.created += 1;
+          }
+        } catch (error) {
+          stats.errors += 1;
+          console.error(`Failed to sync company ${igdbCompany.id}:`, error);
         }
-      } catch (err: any) {
-        console.error(`Error processing company ${igdbCompany.name}:`, err.message);
       }
-    }
+    },
+  });
 
-    offset += limit;
-  }
-
-  console.log(`Sync completed! Updated: ${totalUpdated}, Created: ${totalCreated}`);
+  console.log('IGDB company sync completed:', stats);
 }
 
 syncCompanies()
-  .catch(e => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
   .finally(async () => {
