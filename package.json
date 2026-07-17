@@ -13,6 +13,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma db push && tsx prisma/seed.ts",
     "db:consoles": "tsx prisma/seed_wiki_consoles.ts",
+    "sync:reset": "tsx scripts/reset-archive-data.ts",
+    "sync:fresh": "tsx scripts/reset-archive-data.ts --yes && npm run sync:all",
     "sync:games": "tsx scripts/sync-games.ts",
     "sync:platforms": "tsx scripts/sync-platforms.ts",
     "sync:companies": "tsx scripts/sync-companies.ts",
@@ -56,7 +58,7 @@
     "dotenv": "^17.4.2",
     "postcss": "^8.5.15",
     "prisma": "^6.4.1",
-    "tailwindcss": "^4.1.7",
+    "tailwindcss": "^4.3.0",
     "tsx": "^4.19.3",
     "typescript": "~5.8.3"
   },
