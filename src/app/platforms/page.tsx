@@ -287,12 +287,20 @@ function PlatformsContent() {
 }
 
 function PlatformCard({ platform }: { platform: Platform }) {
+  const [imgError, setImgError] = useState(false);
   return (
     <Link href={`/platforms/${platform.slug}`} className="block group">
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
         <div className="relative">
-          {platform.imageUrl ? (
-            <img src={platform.imageUrl} alt={platform.name} className="w-full aspect-[4/3] object-contain p-4" />
+          {!imgError && platform.imageUrl ? (
+            <div className="w-full aspect-[4/3] flex items-center justify-center p-4 rounded-t-lg" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+              <img 
+                src={platform.imageUrl} 
+                alt={platform.name} 
+                className="max-w-full max-h-full object-contain" 
+                onError={() => setImgError(true)}
+              />
+            </div>
           ) : (
             <div className="w-full aspect-[4/3] bg-vault-surface-light dark:bg-vault-surface flex items-center justify-center">
               <Monitor size={32} className="text-neon-purple/40" />
@@ -344,16 +352,17 @@ function PlatformCard({ platform }: { platform: Platform }) {
 }
 
 function PlatformListRow({ platform }: { platform: Platform }) {
+  const [imgError, setImgError] = useState(false);
   return (
     <Link href={`/platforms/${platform.slug}`} className="block group">
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
-        <div className="w-10 h-10 rounded shrink-0 overflow-hidden bg-vault-surface-light flex items-center justify-center">
-          {platform.imageUrl ? (
+        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+          {!imgError && platform.imageUrl ? (
             <img 
               src={platform.imageUrl} 
               alt={platform.name} 
-              className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" 
-              style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.1))' }}
+              className="w-full h-full object-contain p-1 group-hover:scale-110 transition-transform duration-500" 
+              onError={() => setImgError(true)}
             />
           ) : (
             <Monitor size={16} className="text-text-muted" />

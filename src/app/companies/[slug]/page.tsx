@@ -61,11 +61,15 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0 w-full space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-vault-surface-light border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-2">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-3" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
                 {company.logoUrl ? (
-                  <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
+                  <img 
+                    src={company.logoUrl} 
+                    alt={company.name} 
+                    className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-500"
+                  />
                 ) : (
-                  <Building2 size={48} className="text-text-muted opacity-50" />
+                  <Building2 size={48} className="text-text-muted" />
                 )}
               </div>
               <div>

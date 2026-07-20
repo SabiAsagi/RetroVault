@@ -50,16 +50,15 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
         <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
           {/* Left Column: Image */}
           <div className="w-full md:w-80 shrink-0">
-            <div className="aspect-[4/3] bg-vault-surface-light border border-vault-border rounded-xl overflow-hidden flex items-center justify-center p-6">
+            <div className="aspect-[4/3] border border-vault-border rounded-xl overflow-hidden flex items-center justify-center p-6" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
               {platform.imageUrl ? (
                 <img 
                   src={platform.imageUrl} 
                   alt={platform.name} 
-                  className="w-full h-full object-contain drop-shadow-xl hover:scale-110 transition-transform duration-500" 
-                  style={{ filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.1))' }}
+                  className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-500" 
                 />
               ) : (
-                <Monitor size={64} className="text-text-muted opacity-20" />
+                <Monitor size={64} className="text-text-muted" />
               )}
             </div>
           </div>

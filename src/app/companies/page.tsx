@@ -288,6 +288,7 @@ function CompaniesContent() {
 }
 
 function CompanyCard({ company }: { company: Company }) {
+  const [imgError, setImgError] = useState(false);
   const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
   const totalGames = company._count.developedGames + company._count.publishedGames;
 
@@ -295,11 +296,16 @@ function CompanyCard({ company }: { company: Company }) {
     <Link href={`/companies/${company.slug}`} className="block group">
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
         <div className="relative">
-          <div className="w-full aspect-square bg-vault-surface-light dark:bg-vault-surface flex items-center justify-center p-4">
-            {company.logoUrl ? (
-              <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
+          <div className="w-full aspect-square flex items-center justify-center p-4 rounded-t-lg" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+            {!imgError && company.logoUrl ? (
+              <img 
+                src={company.logoUrl} 
+                alt={company.name} 
+                className="max-w-full max-h-full object-contain" 
+                onError={() => setImgError(true)}
+              />
             ) : (
-              <Building2 size={32} className="text-amber/40" />
+              <Building2 size={32} className="text-text-muted" />
             )}
           </div>
           <div className="absolute top-2 left-2">
@@ -346,15 +352,21 @@ function CompanyCard({ company }: { company: Company }) {
 }
 
 function CompanyListRow({ company }: { company: Company }) {
+  const [imgError, setImgError] = useState(false);
   const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
   const totalGames = company._count.developedGames + company._count.publishedGames;
 
   return (
     <Link href={`/companies/${company.slug}`} className="block group">
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
-        <div className="w-10 h-10 rounded shrink-0 overflow-hidden bg-vault-surface-light flex items-center justify-center p-1">
-          {company.logoUrl ? (
-            <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
+        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center p-1" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+          {!imgError && company.logoUrl ? (
+            <img 
+              src={company.logoUrl} 
+              alt={company.name} 
+              className="w-full h-full object-contain" 
+              onError={() => setImgError(true)}
+            />
           ) : (
             <Building2 size={16} className="text-text-muted" />
           )}
