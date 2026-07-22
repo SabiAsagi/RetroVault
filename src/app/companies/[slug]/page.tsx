@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Building2, ArrowLeft, Link as LinkIcon, Gamepad2, Package } from "lucide-react";
 import Link from "next/link";
 import GameGrid from "@/components/GameGrid";
+import ViewAllGamesButton from "@/components/ViewAllGamesButton";
 
 import { parseCompanySlug } from "@/lib/slug";
 
@@ -162,7 +163,10 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 {devGames.length}
               </span>
             </div>
-            <GameGrid games={devGames} />
+            <GameGrid games={devGames.slice(0, 12)} />
+            {devGames.length > 12 && (
+              <ViewAllGamesButton developer={company.name} count={devGames.length} />
+            )}
           </div>
         )}
 
@@ -175,7 +179,10 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 {pubGames.length}
               </span>
             </div>
-            <GameGrid games={pubGames} />
+            <GameGrid games={pubGames.slice(0, 12)} />
+            {pubGames.length > 12 && (
+              <ViewAllGamesButton publisher={company.name} count={pubGames.length} />
+            )}
           </div>
         )}
 

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Database, Calendar, Monitor, Link as LinkIcon, Gamepad2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import GameGrid from "@/components/GameGrid";
+import ViewAllGamesButton from "@/components/ViewAllGamesButton";
 
 import { parsePlatformSlug } from "@/lib/slug";
 
@@ -172,7 +173,12 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
           </div>
 
           {mappedGames.length > 0 ? (
-            <GameGrid games={mappedGames} />
+            <>
+              <GameGrid games={mappedGames.slice(0, 12)} />
+              {mappedGames.length > 12 && (
+                <ViewAllGamesButton platform={platform.name} count={mappedGames.length} />
+              )}
+            </>
           ) : (
             <div className="py-20 text-center bg-vault-surface border border-vault-border rounded-xl">
               <p className="text-text-muted">등록된 게임이 없습니다.</p>
