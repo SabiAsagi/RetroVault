@@ -112,6 +112,17 @@ export default function NavigationApp() {
 
   const activeTabId = getActiveItemId();
 
+  const handleNavClick = (path: string) => {
+    if (path === '/games') {
+      sessionStorage.removeItem('archive-platforms');
+      sessionStorage.removeItem('archive-genre');
+      sessionStorage.removeItem('archive-country');
+      sessionStorage.removeItem('archive-developer');
+      sessionStorage.removeItem('archive-publisher');
+      sessionStorage.removeItem('archive-search');
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 glass-panel border-b border-vault-border bg-vault-bg/80 backdrop-blur-md">
@@ -289,6 +300,7 @@ export default function NavigationApp() {
               <Link
                 href={item.path}
                 key={item.id}
+                onClick={() => handleNavClick(item.path)}
                 className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-medium whitespace-nowrap transition-all cursor-pointer group ${
                   isActive ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary'
                 }`}
@@ -335,7 +347,10 @@ export default function NavigationApp() {
               <Link
                 href={item.path}
                 key={item.id}
-                onClick={() => setSidebarOpen(false)}
+                onClick={() => {
+                  handleNavClick(item.path);
+                  setSidebarOpen(false);
+                }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                   isActive ? 'bg-vault-surface-light text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary hover:bg-vault-surface/50'
                 }`}
@@ -361,6 +376,7 @@ export default function NavigationApp() {
               <Link
                 key={item.id}
                 href={item.path}
+                onClick={() => handleNavClick(item.path)}
                 aria-label={item.label}
                 className={`relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-bold transition-colors ${
                   isActive ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary'

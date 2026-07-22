@@ -77,6 +77,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
     genres: [...new Set(allGenres.map(g => g.genre))].filter(Boolean).sort(),
     countries: [...new Set(allCountries.map(c => c.country))].filter(Boolean).sort() as string[],
     developers: companies.map(c => c.name).sort() as string[],
+    publishers: companies.map(c => c.name).sort() as string[],
   };
 
   const collection = await getUserCollection();

@@ -17,6 +17,7 @@ interface Props {
     genres: string[];
     countries: string[];
     developers: string[];
+    publishers: string[];
   };
 }
 
@@ -46,6 +47,7 @@ export default function ArchiveWrapper({ initialGames, initialCollection, initia
     genres: string[];
     countries: string[];
     developers: string[];
+    publishers: string[];
   }) => {
     setIsLoading(true);
     try {
@@ -58,6 +60,7 @@ export default function ArchiveWrapper({ initialGames, initialCollection, initia
       if (params.genres.length > 0) searchParams.set('genres', params.genres.join(','));
       if (params.countries.length > 0) searchParams.set('countries', params.countries.join(','));
       if (params.developers.length > 0) searchParams.set('developers', params.developers.join(','));
+      if (params.publishers.length > 0) searchParams.set('publishers', params.publishers.join(','));
 
       const res = await fetch(`/api/games?${searchParams.toString()}`);
       const data = await res.json();

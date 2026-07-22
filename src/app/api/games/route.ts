@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   const genres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
   const countries = searchParams.get('countries')?.split(',').filter(Boolean) || [];
   const developers = searchParams.get('developers')?.split(',').filter(Boolean) || [];
+  const publishers = searchParams.get('publishers')?.split(',').filter(Boolean) || [];
 
   const where: any = {};
 
@@ -36,6 +37,10 @@ export async function GET(request: NextRequest) {
 
   if (developers.length > 0) {
     where.developer = { name: { in: developers } };
+  }
+
+  if (publishers.length > 0) {
+    where.publisher = { name: { in: publishers } };
   }
 
   let orderBy: any;

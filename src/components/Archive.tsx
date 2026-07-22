@@ -24,14 +24,39 @@ interface ArchiveProps {
     genres: string[];
     countries: string[];
     developers: string[];
+    publishers: string[];
   }) => void;
   filterOptions?: {
     platforms: string[];
     genres: string[];
     countries: string[];
     developers: string[];
+    publishers: string[];
   };
 }
+
+const countryLabels: Record<string, string> = {
+  'Japan': '일본',
+  'United States': '미국',
+  'South Korea': '한국',
+  'United Kingdom': '영국',
+  'France': '프랑스',
+  'Canada': '캐나다',
+  'Germany': '독일',
+  'Sweden': '스웨덴',
+  'Poland': '폴란드',
+  'China': '중국',
+  'Australia': '호주',
+  'Russia': '러시아',
+  'Spain': '스페인',
+  'Italy': '이탈리아',
+  'Netherlands': '네덜란드',
+  'Finland': '핀란드',
+  'Norway': '노르웨이',
+  'Denmark': '덴마크',
+  'Brazil': '브라질',
+  'Taiwan': '대만'
+};
 
 const genreLabels: Record<string, string> = {
   Action: '액션',
@@ -85,6 +110,7 @@ export default function Archive({
   const allGenres = useMemo(() => filterOptions?.genres || [], [filterOptions]);
   const allCountries = useMemo(() => filterOptions?.countries || [], [filterOptions]);
   const allDevelopers = useMemo(() => filterOptions?.developers || [], [filterOptions]);
+  const allPublishers = useMemo(() => filterOptions?.publishers || [], [filterOptions]);
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
   const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', true);
@@ -92,6 +118,7 @@ export default function Archive({
   const [genreFilter, setGenreFilter] = useSessionStorage<string[]>('archive-genre', []);
   const [countryFilter, setCountryFilter] = useSessionStorage<string[]>('archive-country', []);
   const [developerFilter, setDeveloperFilter] = useSessionStorage<string[]>('archive-developer', []);
+  const [publisherFilter, setPublisherFilter] = useSessionStorage<string[]>('archive-publisher', []);
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -108,7 +135,7 @@ export default function Archive({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, platformFilters, genreFilter, countryFilter, developerFilter, sortBy]);
+  }, [debouncedSearch, platformFilters, genreFilter, countryFilter, developerFilter, publisherFilter, sortBy]);
 
   useEffect(() => {
     onFetchGames({
@@ -119,10 +146,11 @@ export default function Archive({
       genres: genreFilter,
       countries: countryFilter,
       developers: developerFilter,
+      publishers: publisherFilter,
     });
-  }, [currentPage, sortBy, debouncedSearch, platformFilters, genreFilter, countryFilter, developerFilter, onFetchGames]);
+  }, [currentPage, sortBy, debouncedSearch, platformFilters, genreFilter, countryFilter, developerFilter, publisherFilter, onFetchGames]);
 
-  const hasFilters = platformFilters.length > 0 || genreFilter.length > 0 || countryFilter.length > 0 || developerFilter.length > 0;
+  const hasFilters = platformFilters.length > 0 || genreFilter.length > 0 || countryFilter.length > 0 || developerFilter.length > 0 || publisherFilter.length > 0;
   const totalPages = Math.ceil(total / itemsPerPage);
 
   const clearFilters = () => {
@@ -130,6 +158,7 @@ export default function Archive({
     setGenreFilter([]);
     setCountryFilter([]);
     setDeveloperFilter([]);
+    setPublisherFilter([]);
   };
 
   return (
@@ -152,7 +181,8 @@ export default function Archive({
             <MultiSelectFilter label="플랫폼" values={platformFilters} onChange={setPlatformFilters} options={allPlatforms} />
             <MultiSelectFilter label="장르" values={genreFilter} onChange={setGenreFilter} options={allGenres} labelMap={genreLabels} />
             <MultiSelectFilter label="개발사" values={developerFilter} onChange={setDeveloperFilter} options={allDevelopers as string[]} />
-            <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} />
+            <MultiSelectFilter label="유통사" values={publisherFilter} onChange={setPublisherFilter} options={allPublishers as string[]} />
+            <MultiSelectFilter label="국가" values={countryFilter} onChange={setCountryFilter} options={allCountries as string[]} labelMap={countryLabels} />
 
             {hasFilters && (
               <button onClick={clearFilters} className="w-full min-h-11 text-xs px-3 py-2.5 border border-vault-border rounded hover:bg-coral/10 hover:text-coral hover:border-coral/30 transition-colors font-bold mt-4">
