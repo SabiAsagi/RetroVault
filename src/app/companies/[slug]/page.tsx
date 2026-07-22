@@ -7,6 +7,31 @@ import ViewAllGamesButton from "@/components/ViewAllGamesButton";
 
 import { parseCompanySlug } from "@/lib/slug";
 
+const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
+const statusLabels: Record<string, string> = { ACTIVE: '운영중', DEFUNCT: '폐업', ACQUIRED: '인수합병' };
+const countryLabels: Record<string, string> = {
+  'Japan': '일본',
+  'United States': '미국',
+  'South Korea': '한국',
+  'United Kingdom': '영국',
+  'France': '프랑스',
+  'Canada': '캐나다',
+  'Germany': '독일',
+  'Sweden': '스웨덴',
+  'Poland': '폴란드',
+  'China': '중국',
+  'Australia': '호주',
+  'Russia': '러시아',
+  'Spain': '스페인',
+  'Italy': '이탈리아',
+  'Netherlands': '네덜란드',
+  'Finland': '핀란드',
+  'Norway': '노르웨이',
+  'Denmark': '덴마크',
+  'Brazil': '브라질',
+  'Taiwan': '대만'
+};
+
 export default async function CompanyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const { year, name } = parseCompanySlug(slug);
@@ -14,9 +39,6 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
   const company = await prisma.company.findFirst({
     where: { 
       name,
-      // If we need strict matching with year we can, but usually name is unique enough. 
-      // foundedAt is a string like '1889', so year might be a partial match if we need it. 
-      // For now, finding by name is robust enough, but let's just use name since year was just a prefix
     },
     include: {
       developedGames: {
@@ -58,96 +80,88 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         <ArrowLeft size={16} /> 제작사 목록으로 돌아가기
       </Link>
 
-      <div className="bg-vault-surface border border-vault-border rounded-xl overflow-hidden mb-8 p-6 md:p-8">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="flex-1 min-w-0 w-full space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border flex items-center justify-center shrink-0 overflow-hidden p-3" style={{ background: 'var(--platform-logo-bg)', borderColor: 'var(--platform-logo-border)' }}>
-                {company.logoUrl ? (
-                  <img 
-                    src={company.logoUrl} 
-                    alt={company.name} 
-                    className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-500"
-                  />
-                ) : (
-                  <Building2 size={48} className="text-text-muted" />
-                )}
-              </div>
-              <div>
-                <h1 className="text-4xl font-black text-text-primary mb-3">{company.name}</h1>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-3 py-1 bg-amber/20 border border-amber/30 text-amber rounded-full text-xs font-bold">
-                    {company.type}
-                  </span>
-                  {company.country && (
-                    <span className="px-3 py-1 bg-vault-bg border border-vault-border text-text-secondary rounded-full text-xs font-bold">
-                      {company.country}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-bold text-text-muted mb-2 uppercase tracking-wider">소개</h3>
-              <p className="text-text-primary leading-relaxed whitespace-pre-wrap max-w-3xl">
-                {company.description || '상세 정보가 없습니다.'}
-              </p>
+      <div className="bg-vault-surface border border-vault-border rounded-xl p-6 md:p-8 mb-8">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
+          {/* Left Column: Logo Image Box */}
+          <div className="w-full md:w-80 shrink-0">
+            <div className="aspect-[4/3] border rounded-xl overflow-hidden flex items-center justify-center p-6" style={{ background: 'var(--platform-logo-bg)', borderColor: 'var(--platform-logo-border)' }}>
+              {company.logoUrl ? (
+                <img 
+                  src={company.logoUrl} 
+                  alt={company.name} 
+                  className="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-500" 
+                />
+              ) : (
+                <Building2 size={64} className="text-text-muted" />
+              )}
             </div>
           </div>
-          
-          <div className="w-full md:w-80 shrink-0 space-y-4">
-            <div className="bg-vault-bg border border-vault-border rounded-xl p-5 space-y-4 text-sm">
-              <h3 className="font-bold text-text-primary border-b border-vault-border/50 pb-2 mb-4">회사 정보</h3>
-              
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">회사명</span>
-                <span className="text-text-primary font-bold text-right">{company.name}</span>
-              </div>
-              
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">구분</span>
-                <span className="text-text-primary font-bold text-right">{company.type}</span>
-              </div>
-              
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">소재지</span>
-                <span className="text-text-primary font-bold text-right">{company.country || '불명'}</span>
-              </div>
-              
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">설립일</span>
-                <span className="text-text-primary font-bold text-right">{company.foundedAt || '불명'}</span>
-              </div>
-              
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">주요 인물</span>
-                <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.keyFigures || '불명'}</span>
-              </div>
 
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">대표작</span>
-                <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.flagshipFranchises || '불명'}</span>
+          {/* Right Column: Title, Badges, and Info Table */}
+          <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="px-3 py-1 bg-amber/20 border border-amber/30 text-amber rounded-lg text-xs font-bold">
+                {typeLabels[company.type] || company.type}
+              </span>
+              {company.country && (
+                <span className="px-3 py-1 bg-vault-bg border border-vault-border text-text-secondary rounded-lg text-xs font-bold">
+                  {countryLabels[company.country] || company.country}
+                </span>
+              )}
+              {company.companyStatus && (
+                <span className={`px-3 py-1 border rounded-lg text-xs font-bold flex items-center gap-1 ${company.companyStatus === 'ACTIVE' ? 'bg-mint/10 border-mint/30 text-mint' : 'bg-coral/10 border-coral/30 text-coral'}`}>
+                  <span className={`w-2 h-2 rounded-full ${company.companyStatus === 'ACTIVE' ? 'bg-mint animate-pulse' : 'bg-coral'}`}></span>
+                  {statusLabels[company.companyStatus] || company.companyStatus}
+                </span>
+              )}
+            </div>
+            
+            <h1 className="text-3xl md:text-4xl font-black text-text-primary mb-6">{company.name}</h1>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">설립일</span>
+                <span className="text-text-primary text-sm font-bold">{company.foundedAt || '불명'}</span>
               </div>
-
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">현재 상태</span>
-                <span className="text-text-primary font-bold text-right">{company.companyStatus === 'ACTIVE' ? '운영중' : company.companyStatus === 'DEFUNCT' ? '폐업' : company.companyStatus === 'ACQUIRED' ? '인수합병' : (company.companyStatus || '불명')}</span>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">구분</span>
+                <span className="text-text-primary text-sm font-bold">{typeLabels[company.type] || company.type}</span>
               </div>
-
-              <div className="flex justify-between items-start gap-4">
-                <span className="text-text-muted shrink-0">산하 스튜디오</span>
-                <span className="text-text-primary font-bold text-right break-words max-w-[150px]">{company.subsidiaries || '불명'}</span>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">소재지</span>
+                <span className="text-text-primary text-sm font-bold">{countryLabels[company.country || ''] || company.country || '불명'}</span>
               </div>
-
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50">
+                <span className="text-text-muted text-sm font-bold">현재 상태</span>
+                <span className="text-text-primary text-sm font-bold">{statusLabels[company.companyStatus || ''] || company.companyStatus || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">주요 인물</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={company.keyFigures || ''}>{company.keyFigures || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">대표작</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={company.flagshipFranchises || ''}>{company.flagshipFranchises || '불명'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                <span className="text-text-muted text-sm font-bold w-24 shrink-0">산하 스튜디오</span>
+                <span className="text-text-primary text-sm font-bold text-right truncate" title={company.subsidiaries || ''}>{company.subsidiaries || '불명'}</span>
+              </div>
               {company.websiteUrl && (
-                <div className="flex justify-between items-center gap-4 pt-3 border-t border-vault-border/50">
-                  <span className="text-text-muted shrink-0">웹사이트</span>
-                  <a href={company.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-neon-blue font-bold text-right break-all hover:underline flex items-center gap-1">
+                <div className="flex justify-between items-center py-2 border-b border-vault-border/50 col-span-1 sm:col-span-2">
+                  <span className="text-text-muted text-sm font-bold w-24 shrink-0">웹사이트</span>
+                  <a href={company.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-neon-blue font-bold text-right truncate hover:underline flex items-center gap-1">
                     <LinkIcon size={12} /> 공식 홈페이지
                   </a>
                 </div>
               )}
+            </div>
+
+            <div className="mt-auto">
+              <h3 className="text-sm font-bold text-text-muted mb-2 uppercase tracking-wider">소개</h3>
+              <p className="text-text-secondary leading-relaxed whitespace-pre-wrap text-sm">
+                {company.description || '상세 정보가 없습니다.'}
+              </p>
             </div>
           </div>
         </div>

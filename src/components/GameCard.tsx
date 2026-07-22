@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { Game, Rarity } from '../types';
 import { Plus, Check, Star, Eye } from 'lucide-react';
 
@@ -82,12 +82,24 @@ export function BoxArtPlaceholder({ game }: { game: Game }) {
   );
 }
 
+import { useState, useEffect } from 'react';
+import { is19PlusGame, isAgeVerified } from '@/lib/ageVerification';
+import { Lock } from 'lucide-react';
+
 export default function GameCard({ game, isOwned, onAddToCollection, onClick }: GameCardProps) {
   const popularity = game.popularity ?? 50;
   const country = game.country;
-  const countryFlag: Record<string, string> = {
-    JP: '?눓?눝', US: '?눣?눡', SU: '?눟?눣', GB: '?눐?눉', AU: '?눇?눣', CA: '?눊?눇', SE: '?눡?눎', EU: '?눎?눣',
-  };
+  const is19 = is19PlusGame(game);
+  const [verified, setVerified] = useState(false);
+
+  useEffect(() => {
+    setVerified(isAgeVerified());
+    const handleAgeChange = () => setVerified(isAgeVerified());
+    window.addEventListener('ageVerificationChanged', handleAgeChange);
+    return () => window.removeEventListener('ageVerificationChanged', handleAgeChange);
+  }, []);
+
+  const showBlur = is19 && !verified;
 
   return (
     <div
@@ -95,30 +107,45 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
       onClick={() => onClick?.(game)}
     >
       {/* Cover Art */}
-      <div className="relative">
-        {game.imageUrl ? (
-          <img src={game.imageUrl} alt={game.title} className="w-full aspect-[3/4] object-cover" />
-        ) : (
-          <BoxArtPlaceholder game={game} />
+      <div className="relative overflow-hidden">
+        <div className={showBlur ? "blur-md scale-105 filter select-none transition-all duration-300" : ""}>
+          {game.imageUrl ? (
+            <img src={game.imageUrl} alt={game.title} className="w-full aspect-[3/4] object-cover" />
+          ) : (
+            <BoxArtPlaceholder game={game} />
+          )}
+        </div>
+
+        {showBlur && (
+          <div className="absolute inset-0 bg-vault-bg/60 backdrop-blur-sm flex flex-col items-center justify-center gap-1.5 z-10">
+            <div className="w-9 h-9 rounded-full bg-coral/90 border-2 border-white flex items-center justify-center text-white font-black text-xs shadow-lg animate-pulse">
+              19
+            </div>
+            <span className="text-[10px] font-extrabold text-coral bg-vault-bg/80 px-2 py-0.5 rounded border border-coral/30">
+              청소년 관람불가
+            </span>
+          </div>
         )}
 
         {/* Rarity badge overlay */}
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-2 left-2 z-20">
           <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${getRarityClass(game.rarity)}`}>
             {game.rarity}
           </span>
         </div>
 
-        {/* Country flag */}
-        {country && countryFlag[country] && (
-          <div className="absolute top-2 right-2 text-sm leading-none" title={country}>
-            {countryFlag[country]}
+        {/* 19+ Badge (when unblurred or verified) */}
+        {is19 && !showBlur && (
+          <div className="absolute top-2 left-16 z-20">
+            <span className="text-[9px] px-1.5 py-0.5 rounded font-black bg-coral text-white border border-coral/50 shadow-sm">
+              19
+            </span>
           </div>
         )}
 
         {/* Owned overlay */}
         {isOwned && (
-          <div className="absolute inset-0 bg-mint/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute inset-0 bg-mint/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
             <div className="w-8 h-8 rounded-full bg-mint flex items-center justify-center shadow-lg">
               <Check size={16} className="text-vault-bg" />
             </div>

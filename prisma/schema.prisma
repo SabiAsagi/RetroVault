@@ -113,6 +113,8 @@ model Game {
   shortDescription  String?
   trailerUrl        String?
   views             Int              @default(0)
+  isAdult           Boolean          @default(false)
+  ageRating         String?          @default("ALL")
   collectedBy       CollectionItem[]
   developer         Company?         @relation("DevelopedGames", fields: [developerId], references: [id])
   platform          Platform         @relation(fields: [platformId], references: [id])

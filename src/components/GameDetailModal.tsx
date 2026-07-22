@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { is19PlusGame, isAgeVerified } from '@/lib/ageVerification';
+import AgeVerificationModal from './AgeVerificationModal';
 import { Game, CollectionItem, OwnershipStatus, Condition, Region, PurchaseType, Visibility } from '../types';
 import {
   X, Plus, Heart, ChevronRight, Star, Trash2, Library, Info, BookOpen,
@@ -52,6 +54,33 @@ export default function GameDetailModal({
 }: GameDetailModalProps) {
   const [activeTab, setActiveTab] = useState<ModalTab>('basic');
   const [selectedScreenshotIndex, setSelectedScreenshotIndex] = useState(0);
+
+  const is19 = is19PlusGame(game);
+  const [verified, setVerified] = useState(false);
+  const [showAgeModal, setShowAgeModal] = useState(false);
+
+  useEffect(() => {
+    const isV = isAgeVerified();
+    setVerified(isV);
+    if (is19 && !isV) {
+      setShowAgeModal(true);
+    }
+  }, [game, is19]);
+
+  const showBlur = is19 && !verified;
+
+  if (showAgeModal) {
+    return (
+      <AgeVerificationModal
+        isOpen={true}
+        onClose={onClose}
+        onSuccess={() => {
+          setVerified(true);
+          setShowAgeModal(false);
+        }}
+      />
+    );
+  }
 
   const col = collectionItem;
 

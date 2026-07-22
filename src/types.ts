@@ -138,6 +138,8 @@ export interface Game {
   installSize?: string;
   trailerUrl?: string;
   views?: number;
+  isAdult?: boolean;
+  ageRating?: string;
 }
 
 // ─── Company ──────────────────────────────────────────────────────────────────

@@ -3,18 +3,45 @@ import { Game } from "@/types";
 import { ArrowLeft, Star, Plus, Info, Eye } from "lucide-react";
 import Link from "next/link";
 import { BoxArtPlaceholder } from "@/components/GameCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import CollectionAddModal from "@/components/CollectionAddModal";
+import AgeVerificationModal from "@/components/AgeVerificationModal";
 import { useSession } from "next-auth/react";
 import ReviewSection from "@/components/ReviewSection";
+import { is19PlusGame, isAgeVerified } from "@/lib/ageVerification";
 
 export default function GameDetailClient({ game }: { game: Game }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'info'|'era'|'review'>('info');
   const [showAddModal, setShowAddModal] = useState(false);
   const { data: session } = useSession();
 
+  const is19 = is19PlusGame(game);
+  const [verified, setVerified] = useState(false);
+  const [showAgeModal, setShowAgeModal] = useState(false);
+
+  useEffect(() => {
+    const isV = isAgeVerified();
+    setVerified(isV);
+    if (is19 && !isV) {
+      setShowAgeModal(true);
+    }
+  }, [is19]);
+
+  const showBlur = is19 && !verified;
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 page-enter min-h-[calc(100vh-64px)] space-y-6">
+      <AgeVerificationModal
+        isOpen={showAgeModal}
+        onClose={() => router.push('/games')}
+        onSuccess={() => {
+          setVerified(true);
+          setShowAgeModal(false);
+        }}
+      />
+
       <Link href="/games" className="inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-text-primary transition-colors">
         <ArrowLeft size={16} /> 아카이브로 돌아가기
       </Link>
@@ -22,11 +49,26 @@ export default function GameDetailClient({ game }: { game: Game }) {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left: Cover Art */}
         <div className="w-full md:w-64 shrink-0 flex flex-col gap-4">
-          <div className="rounded-xl overflow-hidden shadow-2xl border border-vault-border">
-            {game.imageUrl ? (
-              <img src={game.imageUrl} alt={game.title} className="w-full aspect-[3/4] object-cover" />
-            ) : (
-              <BoxArtPlaceholder game={game} />
+          <div className="rounded-xl overflow-hidden shadow-2xl border border-vault-border relative">
+            <div className={showBlur ? "blur-xl filter select-none transition-all duration-300 pointer-events-none" : ""}>
+              {game.imageUrl ? (
+                <img src={game.imageUrl} alt={game.title} className="w-full aspect-[3/4] object-cover" />
+              ) : (
+                <BoxArtPlaceholder game={game} />
+              )}
+            </div>
+            {showBlur && (
+              <div className="absolute inset-0 bg-vault-bg/70 backdrop-blur-md flex flex-col items-center justify-center gap-2 p-4 text-center">
+                <div className="w-12 h-12 rounded-full bg-coral border-2 border-white flex items-center justify-center text-white font-black text-sm shadow-xl animate-pulse">
+                  19
+                </div>
+                <span className="text-xs font-black text-coral">
+                  청소년 관람불가
+                </span>
+                <p className="text-[10px] text-text-muted">
+                  만 19세 이상만 이용 가능합니다.
+                </p>
+              </div>
             )}
           </div>
           
