@@ -68,7 +68,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
   const [platforms, allGenres, allCountries, companies] = await Promise.all([
     prisma.platform.findMany({ select: { name: true } }),
     prisma.game.findMany({ select: { genre: true }, distinct: ['genre'] }),
-    prisma.game.findMany({ where: { country: { not: null } }, select: { country: true }, distinct: ['country'] }),
+    prisma.company.findMany({ where: { country: { not: null } }, select: { country: true }, distinct: ['country'] }),
     prisma.company.findMany({ select: { name: true } }),
   ]);
 

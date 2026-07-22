@@ -32,7 +32,16 @@ export async function GET(request: NextRequest) {
   }
 
   if (countries.length > 0) {
-    where.country = { in: countries };
+    const countryOr = [
+      { country: { in: countries } },
+      { developer: { country: { in: countries } } },
+      { publisher: { country: { in: countries } } },
+    ];
+    if (where.AND) {
+      where.AND.push({ OR: countryOr });
+    } else {
+      where.AND = [{ OR: countryOr }];
+    }
   }
 
   if (developers.length > 0) {
@@ -79,16 +88,16 @@ export async function GET(request: NextRequest) {
     }),
     prisma.game.count({ where }),
     // Filter options - only fetch once when no filters applied (first load)
-    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && !search
+    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && publishers.length === 0 && !search
       ? prisma.game.findMany({ select: { platform: { select: { name: true } } }, distinct: ['platformId'] })
       : Promise.resolve(null),
-    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && !search
+    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && publishers.length === 0 && !search
       ? prisma.game.findMany({ select: { genre: true }, distinct: ['genre'] })
       : Promise.resolve(null),
-    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && !search
-      ? prisma.game.findMany({ where: { country: { not: null } }, select: { country: true }, distinct: ['country'] })
+    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && publishers.length === 0 && !search
+      ? prisma.company.findMany({ where: { country: { not: null } }, select: { country: true }, distinct: ['country'] })
       : Promise.resolve(null),
-    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && !search
+    platforms.length === 0 && genres.length === 0 && countries.length === 0 && developers.length === 0 && publishers.length === 0 && !search
       ? prisma.game.findMany({ where: { developerId: { not: null } }, select: { developer: { select: { name: true } } }, distinct: ['developerId'] })
       : Promise.resolve(null),
   ]);
@@ -128,6 +137,7 @@ export async function GET(request: NextRequest) {
       genres: [...new Set(allGenres!.map(g => g.genre))].filter(Boolean).sort(),
       countries: [...new Set(allCountries!.map(c => c.country))].filter(Boolean).sort(),
       developers: [...new Set(allDevelopers!.map(d => d.developer?.name).filter(Boolean))].sort(),
+      publishers: [...new Set(allDevelopers!.map(d => d.developer?.name).filter(Boolean))].sort(), // companies are both
     };
   }
 
