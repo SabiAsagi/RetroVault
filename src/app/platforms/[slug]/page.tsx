@@ -50,7 +50,7 @@ export default async function PlatformDetailPage({ params }: { params: Promise<{
         <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
           {/* Left Column: Image */}
           <div className="w-full md:w-80 shrink-0">
-            <div className="aspect-[4/3] border border-vault-border rounded-xl overflow-hidden flex items-center justify-center p-6" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+            <div className="aspect-[4/3] border border-vault-border rounded-xl overflow-hidden flex items-center justify-center p-6" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
               {platform.imageUrl ? (
                 <img 
                   src={platform.imageUrl} 

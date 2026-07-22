@@ -293,7 +293,7 @@ function PlatformCard({ platform }: { platform: Platform }) {
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
         <div className="relative">
           {!imgError && platform.imageUrl ? (
-            <div className="w-full aspect-[4/3] flex items-center justify-center p-4 rounded-t-lg" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+            <div className="w-full aspect-[4/3] flex items-center justify-center p-4 rounded-t-lg" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
               <img 
                 src={platform.imageUrl} 
                 alt={platform.name} 
@@ -356,7 +356,7 @@ function PlatformListRow({ platform }: { platform: Platform }) {
   return (
     <Link href={`/platforms/${platform.slug}`} className="block group">
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
-        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #e8ecf0 0%, #d5dbe3 100%)' }}>
+        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
           {!imgError && platform.imageUrl ? (
             <img 
               src={platform.imageUrl} 
