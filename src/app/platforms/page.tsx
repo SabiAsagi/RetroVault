@@ -291,37 +291,36 @@ function PlatformCard({ platform }: { platform: Platform }) {
   return (
     <Link href={`/platforms/${platform.slug}`} className="block group">
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
-        <div className="relative">
+        <div className="platform-card__visual rounded-t-lg">
           {!imgError && platform.imageUrl ? (
-            <div className="w-full aspect-[4/3] flex items-center justify-center p-4 rounded-t-lg" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
+            <div className="w-full aspect-[4/3] flex items-center justify-center p-4">
               <img 
                 src={platform.imageUrl} 
                 alt={platform.name} 
-                className="max-w-full max-h-full object-contain" 
+                className="max-w-full max-h-full object-contain platform-card__logo" 
                 onError={() => setImgError(true)}
               />
             </div>
           ) : (
-            <div className="w-full aspect-[4/3] bg-vault-surface-light dark:bg-vault-surface flex items-center justify-center">
-              <Monitor size={32} className="text-neon-purple/40" />
+            <div className="w-full aspect-[4/3] flex items-center justify-center">
+              <Monitor size={32} className="text-neon-purple/40 platform-card__logo" />
             </div>
           )}
-          <div className="absolute top-2 left-2">
+          <div className="absolute top-2 left-2 platform-card__badges">
             <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-neon-purple/20 text-neon-purple border border-neon-purple/30">
               {platform.type === 'HOME' ? '가정용' : platform.type === 'HANDHELD' ? '휴대용' : platform.type}
             </span>
           </div>
           {platform.generation && (
-            <div className="absolute top-2 right-2">
+            <div className="absolute top-2 right-2 platform-card__badges">
               <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-vault-bg/80 text-text-secondary border border-vault-border">
                 {platform.generation}세대
               </span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-vault-bg/90 to-transparent opacity-80" />
-          <div className="absolute bottom-2 left-2 right-2">
+          <div className="absolute bottom-2 left-2 right-2 platform-card__title">
             <p className="text-xs font-bold text-text-primary truncate group-hover:text-neon-purple transition-colors">{platform.name}</p>
-            <p className="text-[10px] text-text-secondary truncate">{platform.manufacturer}</p>
+            <p className="text-[10px] text-text-secondary truncate platform-card__manufacturer">{platform.manufacturer}</p>
           </div>
         </div>
         <div className="p-2.5">
@@ -356,16 +355,16 @@ function PlatformListRow({ platform }: { platform: Platform }) {
   return (
     <Link href={`/platforms/${platform.slug}`} className="block group">
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
-        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
+        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center" style={{ background: 'var(--platform-logo-bg)' }}>
           {!imgError && platform.imageUrl ? (
             <img 
               src={platform.imageUrl} 
               alt={platform.name} 
-              className="w-full h-full object-contain p-1 group-hover:scale-110 transition-transform duration-500" 
+              className="w-full h-full object-contain p-1 group-hover:scale-110 transition-transform duration-500 platform-card__logo" 
               onError={() => setImgError(true)}
             />
           ) : (
-            <Monitor size={16} className="text-text-muted" />
+            <Monitor size={16} className="text-text-muted platform-card__logo" />
           )}
         </div>
         <div className="flex-1 min-w-0">

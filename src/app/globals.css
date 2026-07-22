@@ -66,6 +66,10 @@
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.4);
   --glass-blur: 12px;
+
+  --platform-logo-bg: linear-gradient(145deg, #fbfcfe 0%, #f2f5f8 52%, #e8ecf2 100%);
+  --platform-logo-border: #cdd5df;
+  --platform-logo-bottom-overlay: linear-gradient(to bottom, transparent 55%, rgba(255, 255, 255, 0.92) 100%);
 }
 
 /* ─── Dark Mode ───────────────────────────────────────────────────────────── */
@@ -98,6 +102,10 @@
   --glass-bg: rgba(17, 29, 46, 0.75);
   --glass-border: rgba(74, 237, 196, 0.12);
   --glass-blur: 16px;
+
+  --platform-logo-bg: linear-gradient(145deg, #c2cedd 0%, #aebccd 48%, #96a7bc 100%);
+  --platform-logo-border: #435873;
+  --platform-logo-bottom-overlay: linear-gradient(to bottom, transparent 42%, rgba(8, 18, 34, 0.88) 100%);
 }
 
 /* ─── Retro Mode ──────────────────────────────────────────────────────────── */
@@ -131,6 +139,10 @@
   --glass-bg: rgba(13, 13, 0, 0.85);
   --glass-border: rgba(57, 255, 20, 0.2);
   --glass-blur: 4px;
+
+  --platform-logo-bg: linear-gradient(145deg, #c9c3a3 0%, #b2ae8d 50%, #969574 100%);
+  --platform-logo-border: #62651f;
+  --platform-logo-bottom-overlay: linear-gradient(to bottom, transparent 42%, rgba(18, 19, 3, 0.88) 100%);
 }
 
 /* ─── Base ────────────────────────────────────────────────────────────────── */
@@ -447,3 +459,32 @@ body::after {
   to   { opacity: 1; transform: translateY(0); }
 }
 .page-enter { animation: page-in 0.25s ease-out; }
+
+/* ─── Platform & Company Cards ────────────────────────────────────────────── */
+.platform-card__visual {
+  position: relative;
+  overflow: hidden;
+  background: var(--platform-logo-bg);
+  border-bottom: 1px solid var(--platform-logo-border);
+}
+
+.platform-card__visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--platform-logo-bottom-overlay);
+  pointer-events: none;
+}
+
+.platform-card__logo,
+.platform-card__title,
+.platform-card__manufacturer,
+.platform-card__badges {
+  position: relative;
+  z-index: 1;
+}
+
+.platform-card__logo {
+  opacity: 1;
+  filter: none;
+}

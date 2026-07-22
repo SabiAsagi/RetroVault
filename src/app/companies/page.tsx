@@ -295,26 +295,26 @@ function CompanyCard({ company }: { company: Company }) {
   return (
     <Link href={`/companies/${company.slug}`} className="block group">
       <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
-        <div className="relative">
-          <div className="w-full aspect-square flex items-center justify-center p-4 rounded-t-lg" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
+        <div className="platform-card__visual rounded-t-lg">
+          <div className="w-full aspect-square flex items-center justify-center p-4">
             {!imgError && company.logoUrl ? (
               <img 
                 src={company.logoUrl} 
                 alt={company.name} 
-                className="max-w-full max-h-full object-contain" 
+                className="max-w-full max-h-full object-contain platform-card__logo" 
                 onError={() => setImgError(true)}
               />
             ) : (
-              <Building2 size={32} className="text-text-muted" />
+              <Building2 size={32} className="text-text-muted platform-card__logo" />
             )}
           </div>
-          <div className="absolute top-2 left-2">
+          <div className="absolute top-2 left-2 platform-card__badges">
             <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber/20 text-amber border border-amber/30">
               {typeLabels[company.type] || company.type}
             </span>
           </div>
           {company.country && (
-            <div className="absolute top-2 right-2">
+            <div className="absolute top-2 right-2 platform-card__badges">
               <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-vault-bg/80 text-text-secondary border border-vault-border">
                 {company.country}
               </span>
@@ -359,16 +359,16 @@ function CompanyListRow({ company }: { company: Company }) {
   return (
     <Link href={`/companies/${company.slug}`} className="block group">
       <div className="flex items-center gap-3 px-4 py-3 bg-vault-surface border border-vault-border rounded-lg hover:border-vault-border-light hover:bg-vault-surface-light cursor-pointer transition-all">
-        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center p-1" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
+        <div className="w-10 h-10 rounded shrink-0 overflow-hidden flex items-center justify-center p-1" style={{ background: 'var(--platform-logo-bg)' }}>
           {!imgError && company.logoUrl ? (
             <img 
               src={company.logoUrl} 
               alt={company.name} 
-              className="w-full h-full object-contain" 
+              className="w-full h-full object-contain platform-card__logo" 
               onError={() => setImgError(true)}
             />
           ) : (
-            <Building2 size={16} className="text-text-muted" />
+            <Building2 size={16} className="text-text-muted platform-card__logo" />
           )}
         </div>
         <div className="flex-1 min-w-0">

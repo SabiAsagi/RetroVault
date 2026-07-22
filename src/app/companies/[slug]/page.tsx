@@ -61,7 +61,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0 w-full space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border border-vault-border flex items-center justify-center shrink-0 overflow-hidden p-3" style={{ background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)' }}>
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border flex items-center justify-center shrink-0 overflow-hidden p-3" style={{ background: 'var(--platform-logo-bg)', borderColor: 'var(--platform-logo-border)' }}>
                 {company.logoUrl ? (
                   <img 
                     src={company.logoUrl} 
