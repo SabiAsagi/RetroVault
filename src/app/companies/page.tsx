@@ -293,21 +293,19 @@ function CompanyCard({ company }: { company: Company }) {
   const totalGames = company._count.developedGames + company._count.publishedGames;
 
   return (
-    <Link href={`/companies/${company.slug}`} className="block group">
-      <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
-        <div className="platform-card__visual rounded-t-lg">
-          <div className="w-full aspect-square flex items-center justify-center p-4">
-            {!imgError && company.logoUrl ? (
-              <img 
-                src={company.logoUrl} 
-                alt={company.name} 
-                className="max-w-full max-h-full object-contain platform-card__logo" 
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <Building2 size={32} className="text-text-muted platform-card__logo" />
-            )}
-          </div>
+    <Link href={`/companies/${company.slug}`} className="block group h-full">
+      <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer h-full flex flex-col">
+        <div className="platform-card__visual w-full aspect-square rounded-t-lg flex items-center justify-center p-4">
+          {!imgError && company.logoUrl ? (
+            <img 
+              src={company.logoUrl} 
+              alt={company.name} 
+              className="max-w-full max-h-full object-contain platform-card__logo" 
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <Building2 size={32} className="text-text-muted platform-card__logo" />
+          )}
           <div className="absolute top-2 left-2 platform-card__badges">
             <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber/20 text-amber border border-amber/30">
               {typeLabels[company.type] || company.type}
@@ -321,7 +319,7 @@ function CompanyCard({ company }: { company: Company }) {
             </div>
           )}
         </div>
-        <div className="p-2.5">
+        <div className="p-2.5 flex flex-col flex-1">
           <h3 className="text-xs font-semibold text-text-primary line-clamp-2 break-words h-8 group-hover:text-amber transition-colors leading-tight" title={company.name}>
             {company.name}
           </h3>
@@ -339,7 +337,7 @@ function CompanyCard({ company }: { company: Company }) {
             </div>
           </div>
           {company.companyStatus && (
-            <div className="mt-1">
+            <div className="mt-auto pt-1">
               <span className={`text-[9px] ${company.companyStatus === '운영 중' || company.companyStatus === '활동 중' ? 'text-mint' : 'text-text-muted'}`}>
                 {company.companyStatus}
               </span>

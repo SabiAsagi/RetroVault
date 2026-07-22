@@ -289,22 +289,18 @@ function PlatformsContent() {
 function PlatformCard({ platform }: { platform: Platform }) {
   const [imgError, setImgError] = useState(false);
   return (
-    <Link href={`/platforms/${platform.slug}`} className="block group">
-      <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer">
-        <div className="platform-card__visual rounded-t-lg">
+    <Link href={`/platforms/${platform.slug}`} className="block group h-full">
+      <div className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer h-full flex flex-col">
+        <div className="platform-card__visual w-full aspect-[4/3] rounded-t-lg flex items-center justify-center p-4">
           {!imgError && platform.imageUrl ? (
-            <div className="w-full aspect-[4/3] flex items-center justify-center p-4">
-              <img 
-                src={platform.imageUrl} 
-                alt={platform.name} 
-                className="max-w-full max-h-full object-contain platform-card__logo" 
-                onError={() => setImgError(true)}
-              />
-            </div>
+            <img 
+              src={platform.imageUrl} 
+              alt={platform.name} 
+              className="max-w-full max-h-full object-contain platform-card__logo" 
+              onError={() => setImgError(true)}
+            />
           ) : (
-            <div className="w-full aspect-[4/3] flex items-center justify-center">
-              <Monitor size={32} className="text-neon-purple/40 platform-card__logo" />
-            </div>
+            <Monitor size={32} className="text-neon-purple/40 platform-card__logo" />
           )}
           <div className="absolute top-2 left-2 platform-card__badges">
             <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-neon-purple/20 text-neon-purple border border-neon-purple/30">
@@ -323,7 +319,7 @@ function PlatformCard({ platform }: { platform: Platform }) {
             <p className="text-[10px] text-text-secondary truncate platform-card__manufacturer">{platform.manufacturer}</p>
           </div>
         </div>
-        <div className="p-2.5">
+        <div className="p-2.5 flex flex-col flex-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-text-muted">{platform.releaseYear}년</span>
             <div className="flex items-center gap-2">
@@ -338,7 +334,7 @@ function PlatformCard({ platform }: { platform: Platform }) {
             </div>
           </div>
           {platform.discontinued !== null && (
-            <div className="mt-1">
+            <div className="mt-auto pt-1">
               <span className={`text-[9px] ${platform.discontinued ? 'text-coral' : 'text-mint'}`}>
                 {platform.discontinued ? '단종' : '현역'}
               </span>
