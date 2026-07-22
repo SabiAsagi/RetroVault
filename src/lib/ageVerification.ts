@@ -10,6 +10,21 @@ export function is19PlusGame(game?: { isAdult?: boolean; ageRating?: string; gen
       return true;
     }
   }
+  if (game.title) {
+    const t = game.title.toLowerCase();
+    if (
+      t.includes('grand theft auto') ||
+      t.includes('gta') ||
+      t.includes('resident evil') ||
+      t.includes('god of war') ||
+      t.includes('mortal kombat') ||
+      t.includes('silent hill') ||
+      t.includes('postal') ||
+      t.includes('manhunt')
+    ) {
+      return true;
+    }
+  }
   return false;
 }
 
