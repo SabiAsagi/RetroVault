@@ -291,6 +291,28 @@ function CompanyCard({ company }: { company: Company }) {
   const [imgError, setImgError] = useState(false);
   const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
   const totalGames = company._count.developedGames + company._count.publishedGames;
+  const countryLabels: Record<string, string> = {
+    'Japan': '일본',
+    'United States': '미국',
+    'South Korea': '한국',
+    'United Kingdom': '영국',
+    'France': '프랑스',
+    'Canada': '캐나다',
+    'Germany': '독일',
+    'Sweden': '스웨덴',
+    'Poland': '폴란드',
+    'China': '중국',
+    'Australia': '호주',
+    'Russia': '러시아',
+    'Spain': '스페인',
+    'Italy': '이탈리아',
+    'Netherlands': '네덜란드',
+    'Finland': '핀란드',
+    'Norway': '노르웨이',
+    'Denmark': '덴마크',
+    'Brazil': '브라질',
+    'Taiwan': '대만'
+  };
 
   return (
     <Link href={`/companies/${company.slug}`} className="block group h-full">
@@ -307,14 +329,14 @@ function CompanyCard({ company }: { company: Company }) {
             <Building2 size={32} className="text-text-muted platform-card__logo" />
           )}
           <div className="absolute top-2 left-2 platform-card__badges">
-            <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber/20 text-amber border border-amber/30">
+            <span className="text-[10px] px-1.5 py-0.5 rounded font-black bg-amber text-vault-bg shadow-[0_0_8px_rgba(255,181,71,0.6)]">
               {typeLabels[company.type] || company.type}
             </span>
           </div>
           {company.country && (
             <div className="absolute top-2 right-2 platform-card__badges">
-              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-vault-bg/80 text-text-secondary border border-vault-border">
-                {company.country}
+              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-vault-surface/90 text-text-primary border border-vault-border/50 shadow-sm backdrop-blur-sm">
+                {countryLabels[company.country] || company.country}
               </span>
             </div>
           )}
