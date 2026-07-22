@@ -476,15 +476,14 @@ body::after {
   pointer-events: none;
 }
 
-.platform-card__logo,
-.platform-card__title,
-.platform-card__manufacturer,
-.platform-card__badges {
+.platform-card__logo {
   position: relative;
   z-index: 1;
-}
-
-.platform-card__logo {
   opacity: 1;
   filter: none;
+}
+
+.platform-card__title,
+.platform-card__badges {
+  z-index: 1;
 }
