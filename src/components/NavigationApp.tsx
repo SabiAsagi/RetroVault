@@ -38,6 +38,8 @@ const navItems: NavItem[] = [
   { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
 ];
 
+import { getGameSlug, getPlatformSlug, getCompanySlug } from '@/lib/slug';
+
 type SearchCategory = 'all' | 'game' | 'platform' | 'company' | 'user' | 'collection';
 
 const searchCategories: { value: SearchCategory; label: string; path?: string }[] = [
@@ -187,7 +189,7 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">게임</h3>
                     {searchResults.games.map((game: any) => (
-                      <Link href={`/games/${game.id}`} key={game.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/games/${getGameSlug(game)}`} key={game.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors" onClick={() => setSearchFocused(false)}>
                         <p className="text-sm text-text-primary">{game.title}</p>
                       </Link>
                     ))}
@@ -197,7 +199,7 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">플랫폼</h3>
                     {searchResults.platforms.map((platform: any) => (
-                      <Link href={`/platforms/${platform.id}`} key={platform.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/platforms/${getPlatformSlug(platform)}`} key={platform.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors" onClick={() => setSearchFocused(false)}>
                         <p className="text-sm text-text-primary">{platform.name}</p>
                       </Link>
                     ))}
@@ -207,7 +209,7 @@ export default function NavigationApp() {
                   <div className="p-2 border-b border-vault-border/50">
                     <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2 px-2">회사</h3>
                     {searchResults.companies.map((company: any) => (
-                      <Link href={`/companies/${company.id}`} key={company.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors">
+                      <Link href={`/companies/${getCompanySlug(company)}`} key={company.id} className="flex items-center gap-2 px-2 py-2 hover:bg-vault-surface-light rounded-lg transition-colors" onClick={() => setSearchFocused(false)}>
                         <p className="text-sm text-text-primary">{company.name}</p>
                       </Link>
                     ))}
