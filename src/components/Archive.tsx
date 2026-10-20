@@ -113,7 +113,7 @@ export default function Archive({
   const allPublishers = useMemo(() => filterOptions?.publishers || [], [filterOptions]);
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('archive-view', 'grid');
-  const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', true);
+  const [showFilters, setShowFilters] = useSessionStorage('archive-filters-open', false);
   const [platformFilters, setPlatformFilters] = useSessionStorage<string[]>('archive-platforms', []);
   const [genreFilter, setGenreFilter] = useSessionStorage<string[]>('archive-genre', []);
   const [countryFilter, setCountryFilter] = useSessionStorage<string[]>('archive-country', []);
