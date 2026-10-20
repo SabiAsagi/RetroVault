@@ -140,10 +140,10 @@ export default function NavigationApp() {
           <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
             <LogoIcon size={36} />
             <div className="hidden sm:block">
-              <p className="font-black text-xl text-text-primary group-hover:text-mint transition-colors leading-none mb-1">
+              <p className="brand-wordmark text-text-primary group-hover:text-mint transition-colors">
                 겜자취
               </p>
-              <p className="text-[9px] text-text-muted leading-none tracking-wider">게임 위키 · 아카이브</p>
+              <p className="brand-tagline">게임과 추억을 차곡차곡</p>
             </div>
           </Link>
 
@@ -333,8 +333,8 @@ export default function NavigationApp() {
           <div className="flex items-center gap-2.5">
             <LogoIcon size={28} />
             <div>
-              <p className="font-black text-lg text-text-primary">겜자취</p>
-              <p className="text-[8px] text-text-muted">게임 위키 · 아카이브</p>
+              <p className="brand-wordmark text-text-primary">겜자취</p>
+              <p className="brand-tagline">게임과 추억을 차곡차곡</p>
             </div>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all">

@@ -30,6 +30,8 @@ body::before,body::after,.retro::after,.retro body::after { display:none; }
 .retro .font-pixel { animation:none; }
 .brand-symbol { display:inline-flex; flex:none; position:relative; align-items:center; justify-content:center; }
 .brand-symbol img { flex:none; max-width:none; }
+.brand-wordmark { font-family:var(--font-brand),var(--font-sans); font-size:28px; font-weight:400; letter-spacing:-.02em; line-height:1.1; }
+.brand-tagline { font-size:10px; line-height:1.4; margin-top:4px; color:var(--color-text-secondary); white-space:nowrap; }
 .brand-dark,.brand-retro { display:none; }
 .dark .brand-light,.retro .brand-light { display:none; }
 .dark .brand-dark,.retro .brand-retro { display:block; }

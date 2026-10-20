@@ -7,7 +7,9 @@ import NavigationApp from '../components/NavigationApp';
 import Footer from '../components/Footer';
 import { ToastProvider } from '../contexts/ToastContext';
 
-import { Press_Start_2P } from 'next/font/google';
+import { Press_Start_2P, Jua } from 'next/font/google';
+
+const brandFont = Jua({ weight: '400', subsets: ['latin'], variable: '--font-brand', display: 'swap' });
 
 const pressStart2P = Press_Start_2P({
   weight: '400',
@@ -68,7 +70,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`transition-colors duration-300 ${pressStart2P.variable}`}>
+      <body className={`transition-colors duration-300 ${pressStart2P.variable} ${brandFont.variable}`}>
         <Providers>
           <ToastProvider>
             <div className="min-h-screen bg-vault-bg">
