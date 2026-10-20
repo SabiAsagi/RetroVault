@@ -19,7 +19,7 @@ const pressStart2P = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  icons: { icon: '/brand/symbol-light.svg', apple: '/brand/symbol-light.svg' },
+  icons: { icon: '/brand/symbol-final-light.svg', apple: '/brand/symbol-final-light.svg' },
   title: "겜자취 | 게임 위키와 나만의 다락",
   description: "게임·플랫폼·제작사의 정보를 함께 기록하고, 좋아하는 게임을 내 다락에 모으는 게임 위키·아카이브.",
   keywords: "레트로, 게임, 컬렉션, 아카이브, 닌텐도, 플레이스테이션, 아타리",
