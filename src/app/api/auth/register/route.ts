@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { z } from 'zod';
+import { registrationConsentSchema } from '@/lib/registration-consent';
 
 export async function POST(req: Request) {
   try {
-    const { email, password, nickname } = await req.json();
+    const parsed = registrationConsentSchema.extend({
+      email: z.email().trim().toLowerCase(), password: z.string().min(6).max(72), nickname: z.string().trim().min(1).max(40),
+    }).safeParse(await req.json());
+    if (!parsed.success) return NextResponse.json({ message: '가입 정보를 확인하고 만 14세 이상 확인과 필수 동의를 완료해주세요.' }, { status: 400 });
+    const { email, password, nickname } = parsed.data;
 
     if (!email || !password || !nickname) {
       return NextResponse.json(

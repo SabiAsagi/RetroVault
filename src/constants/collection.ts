@@ -63,4 +63,4 @@ export const REGION_OPTIONS: readonly { value: Region; label: string }[] = [
 export const DEFAULT_REGION: Region = 'KOR';
 
 export const VISIBILITY_OPTIONS: readonly Visibility[] = ['public', 'friends', 'private'];
-export const DEFAULT_VISIBILITY: Visibility = 'public';
+export const DEFAULT_VISIBILITY: Visibility = 'private';

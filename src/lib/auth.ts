@@ -7,6 +7,8 @@ import NaverProvider from "next-auth/providers/naver";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
+import { cookies } from 'next/headers';
+import { CONSENT_COOKIE, verifyConsentToken } from './registration-consent';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -66,6 +68,17 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+    async signIn({ account }) {
+      if (!account || account.type !== 'oauth') return true;
+      const existingAccount = await prisma.account.findUnique({
+        where: { provider_providerAccountId: { provider: account.provider, providerAccountId: account.providerAccountId } },
+        select: { id: true },
+      });
+      if (existingAccount) return true;
+      const cookieStore = await cookies();
+      return verifyConsentToken(cookieStore.get(CONSENT_COOKIE)?.value, process.env.NEXTAUTH_SECRET)
+        ? true : '/register?notice=consent-required';
+    },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
@@ -90,7 +103,6 @@ export const authOptions: NextAuthOptions = {
           token.picture = session.image || session.avatar;
         }
       }
-      console.log("JWT Token length:", JSON.stringify(token).length);
       return token;
     }
   }

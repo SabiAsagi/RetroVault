@@ -14,7 +14,7 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
   const { showToast } = useToast();
   const [groups, setGroups] = useState<any[]>([]);
   const [newGroupName, setNewGroupName] = useState('');
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
 
   useEffect(() => {
     if (isOpen) {

@@ -47,6 +47,15 @@ test('editing a memo preserves existing group membership', async () => {
   assert.ok(calls.paths.includes('/collection'));
 });
 
+test('new collection items default to private without changing existing visibility', async () => {
+  const { actions, calls } = loadActions();
+  await actions.updateCollectionItem('game', { memo: 'QA' });
+  assert.equal(calls.writes[0].create.visibility, 'private');
+  assert.equal(calls.writes[0].update.visibility, undefined);
+  await actions.updateCollectionItem('public-game', { visibility: 'public' });
+  assert.equal(calls.writes[1].create.visibility, 'public');
+});
+
 test('explicitly clearing the group removes membership', async () => {
   const { actions, calls } = loadActions();
   await actions.updateCollectionItem('game', { groupId: '' });

@@ -3,6 +3,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
+import SocialSignIn from '@/components/SocialSignIn';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -62,7 +63,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
-              placeholder="admin@retrovault.kr"
+              placeholder="user@example.com"
             />
           </div>
           <div>
@@ -101,26 +102,7 @@ export default function LoginPage() {
           <div className="flex-1 h-px bg-vault-border" />
         </div>
 
-        <div className="mt-4 flex gap-3 relative z-10">
-          <button
-            onClick={() => signIn("google", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-text-primary text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            구글
-          </button>
-          <button
-            onClick={() => signIn("kakao", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-[#FEE500] hover:bg-[#FEE500]/80 text-[#000000] border border-[#FEE500] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            카카오
-          </button>
-          <button
-            onClick={() => signIn("naver", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-[#03C75A] hover:bg-[#03C75A]/80 text-white border border-[#03C75A] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            네이버
-          </button>
-        </div>
+        <SocialSignIn />
 
         <div className="mt-8 text-center text-xs text-text-secondary relative z-10 flex flex-col gap-2">
           <div>

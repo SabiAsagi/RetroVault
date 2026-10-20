@@ -75,6 +75,7 @@ export async function updateCollectionItem(gameId: string, data: any) {
       userId: session.user.id,
       gameId,
       ownershipStatus: itemData.ownershipStatus || DEFAULT_OWNERSHIP_STATUS,
+      visibility: 'private',
       ...itemData
     }
   });
@@ -131,6 +132,7 @@ export async function batchUpdateCollectionItems(gameIds: string[], data: any) {
         userId: session.user.id,
         gameId,
         ownershipStatus: itemData.ownershipStatus || DEFAULT_OWNERSHIP_STATUS,
+        visibility: 'private',
         ...itemData
       }
     });
