@@ -158,7 +158,7 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
         <h3 className="text-xs font-semibold text-text-primary line-clamp-2 break-words h-8 group-hover:text-mint transition-colors leading-tight" title={game.title}>
           {game.title}
         </h3>
-        <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} 쨌 {game.releaseYear}</p>
+        <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} · {game.releaseYear}</p>
 
         <div className="flex items-center justify-between mt-2">
           {/* Rating, Views, and Genre */}
@@ -182,7 +182,8 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
                 ? 'bg-mint/20 text-mint border border-mint/30'
                 : 'bg-vault-surface-light text-text-muted hover:text-mint hover:bg-mint/10 border border-transparent hover:border-mint/20'
             }`}
-            title={isOwned ? '而щ젆?섏뿉 ?덉쓬' : '而щ젆?섏뿉 異붽?'}
+            title={isOwned ? '컬렉션에 있음' : '컬렉션에 추가'}
+            aria-label={`${game.title}: ${isOwned ? '컬렉션에 있음' : '컬렉션에 추가'}`}
           >
             {isOwned ? <Check size={16} /> : <Plus size={16} />}
           </button>
