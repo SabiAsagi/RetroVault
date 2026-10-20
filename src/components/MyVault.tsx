@@ -111,10 +111,7 @@ export default function MyVault({
 
   const filteredCollection = sortedCollection.filter(c => {
     if (visibilityFilter !== 'all' && c.visibility !== visibilityFilter) return false;
-    if (selectedGroup !== 'all') {
-      const group = groups.find(g => g.id === selectedGroup);
-      if (group && !group.items?.some((i: any) => i.itemId === c.id)) return false;
-    }
+    if (selectedGroup !== 'all' && c.groupId !== selectedGroup) return false;
     return true;
   });
 
