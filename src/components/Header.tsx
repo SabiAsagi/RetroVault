@@ -34,7 +34,7 @@ export default function Header({ activeTab, onTabChange, searchQuery, onSearchCh
               <span className="font-pixel text-[8px] text-vault-bg font-bold">RV</span>
             </div>
             <h1 className="font-pixel text-[10px] sm:text-xs text-text-primary group-hover:text-mint transition-colors hidden sm:block">
-              RetroVault
+              겜자취
             </h1>
           </button>
 

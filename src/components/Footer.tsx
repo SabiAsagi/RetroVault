@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="w-full bg-vault-surface border-t border-vault-border pt-8 pb-24 lg:py-8 mt-12">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-muted">
         <div>
-          <p className="font-semibold text-text-secondary">{STUDIO_NAME} · RetroVault</p>
+          <p className="font-semibold text-text-secondary">{STUDIO_NAME} · 겜자취</p>
           <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-2 inline-block text-xs hover:text-mint">{SUPPORT_EMAIL}</a>
           <p className="mt-2 text-xs">© {currentYear} {STUDIO_NAME}. All rights reserved.</p>
         </div>

@@ -40,7 +40,7 @@ export default function ShareCollectionModal({ isOpen, onClose, visibility }: Sh
         <div className="flex justify-between items-center px-6 py-4 border-b border-vault-border bg-vault-surface-light">
           <h2 className="text-lg font-black text-text-primary flex items-center gap-2">
             <ExternalLink size={20} className="text-neon-blue" />
-            내 컬렉션 공유
+            내 다락 공유
           </h2>
           <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-1">
             <X size={20} />

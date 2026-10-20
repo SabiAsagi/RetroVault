@@ -218,7 +218,7 @@ export default function MyVault({
             <Package className="text-mint" size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-text-primary leading-none mb-1">내 컬렉션</h2>
+            <h2 className="text-lg font-black text-text-primary leading-none mb-1">내 다락</h2>
             <p className="text-xs text-text-muted">총 {collection.length}개의 게임을 보유 중입니다</p>
           </div>
         </div>

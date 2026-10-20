@@ -49,7 +49,7 @@ export default function Dashboard({ collection, historyGame, recentGames = [], p
               <Calendar size={12} />
             </span>
             <span className="font-pixel text-[10px] text-mint tracking-widest uppercase">
-              {(historyGame as any)?.isRandom ? "RetroVault" : "그날의 게임 추천"}
+              {(historyGame as any)?.isRandom ? "겜자취" : "그날의 게임 추천"}
             </span>
           </div>
           
@@ -69,7 +69,7 @@ export default function Dashboard({ collection, historyGame, recentGames = [], p
                 방대한 게임 데이터베이스,
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint via-neon-blue to-neon-purple">
-                  RetroVault 아카이브
+                  겜자취 아카이브
                 </span>
               </>
             )}
@@ -78,7 +78,7 @@ export default function Dashboard({ collection, historyGame, recentGames = [], p
           <p className="text-text-secondary text-sm md:text-base mb-6 leading-relaxed bg-black/5 dark:bg-black/20 p-4 rounded-lg border border-black/5 dark:border-white/5 backdrop-blur-sm">
             {historyGame && !(historyGame as any)?.isRandom 
               ? `오늘(${new Date().getMonth() + 1}월 ${new Date().getDate()}일) 발매된 게임입니다. 아카이브에서 확인해보세요!`
-              : '과거와 현재를 잇는 디지털 게임 박물관, RetroVault에 오신 것을 환영합니다. 방대한 게임 역사를 탐험하고, 나만의 컬렉션을 진열해 전 세계 유저들과 소중한 추억을 공유해 보세요.'}
+              : '과거와 현재를 잇는 디지털 게임 박물관, 겜자취에 오신 것을 환영합니다. 방대한 게임 역사를 탐험하고, 나만의 컬렉션을 진열해 전 세계 유저들과 소중한 추억을 공유해 보세요.'}
           </p>
           
           <div className="flex flex-wrap gap-3">

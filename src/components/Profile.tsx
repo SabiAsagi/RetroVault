@@ -742,7 +742,7 @@ export default function Profile({ collection, games, viewedUser, collectionGroup
             
             <div className="mb-8">
               <h4 className="text-3xl font-black text-text-primary tracking-tight mb-1">{displayUser?.nickname || (displayUser as any)?.name || '레트로 마스터'}</h4>
-              <p className="text-sm text-text-secondary">RetroVault Verified Collector</p>
+              <p className="text-sm text-text-secondary">겜자취 Verified Collector</p>
             </div>
             
             <div className="grid grid-cols-2 gap-4 mb-8">

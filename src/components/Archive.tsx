@@ -162,9 +162,9 @@ export default function Archive({
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto px-4 py-6">
+    <div className="wiki-shell wiki-archive">
 
-      <div className="flex flex-col md:flex-row gap-6 items-start">
+      <section className="wiki-archive-heading"><h1>게임 위키</h1><p className="wiki-intro">게임의 기본 정보부터 플랫폼·제작사·관련 기록까지.</p><form action="/games" className="wiki-search"><label className="sr-only" htmlFor="archive-search">게임 검색</label><input id="archive-search" name="q" value={searchQuery} onChange={e => onSearchChange?.(e.target.value)} placeholder="게임 제목 · 기종 · 제작사 검색" /><button type="submit" aria-label="게임 검색"><Search size={20} /></button></form><Link className="wiki-callout" href="/request?tab=game">찾는 게임이 없나요? 정보 추가를 제안해주세요. →</Link></section><div className="flex flex-col md:flex-row gap-6 items-start">
         <aside className={`w-full md:w-64 shrink-0 bg-vault-surface border border-vault-border rounded-xl p-5 ${showFilters ? 'block' : 'hidden md:block'}`}>
           <div className="flex justify-between items-center mb-6 md:hidden">
             <h3 className="font-bold text-text-primary">카테고리</h3>
@@ -196,7 +196,7 @@ export default function Archive({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-text-primary whitespace-nowrap">게임 아카이브</h2>
+                <h2 className="text-lg font-bold text-text-primary whitespace-nowrap">게임 문서 둘러보기</h2>
                 <span className="text-xs text-text-muted bg-vault-surface border border-vault-border px-2 py-0.5 rounded-full">
                   {total}개
                 </span>
@@ -258,7 +258,7 @@ export default function Archive({
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-5">
               {Array.from({ length: 12 }).map((_, index) => (
                 <div key={index} className="bg-vault-surface border border-vault-border rounded-lg overflow-hidden">
                   <div className="w-full aspect-[3/4] skeleton" />
@@ -282,7 +282,7 @@ export default function Archive({
                     필터 초기화
                   </button>
                 )}
-                <a href="/games/request" className="min-h-11 px-4 py-2.5 text-sm text-text-primary bg-neon-blue rounded-lg hover:bg-neon-blue-dim transition-colors flex items-center gap-2">
+                <a href="/request?tab=game" className="min-h-11 px-4 py-2.5 text-sm text-text-primary bg-neon-blue rounded-lg hover:bg-neon-blue-dim transition-colors flex items-center gap-2">
                   게임 추가 요청하기
                 </a>
               </div>
@@ -290,7 +290,7 @@ export default function Archive({
           ) : (
             <>
               {viewMode === 'grid' ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-5">
                   {games.map((game) => (
                     <GameCard key={game.id} game={game} isOwned={isOwned(game.id)} onAddToCollection={onAddToCollection} onClick={onSelectGame} />
                   ))}

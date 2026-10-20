@@ -1,16 +1,8 @@
-import DashboardWrapper from "@/components/wrappers/DashboardWrapper";
-import { getUserCollection } from "./actions/collection";
-import { getDashboardData } from "./actions/dashboard";
-
+import WikiHome from '@/components/WikiHome';
+import { getUserCollection } from './actions/collection';
+import { getDashboardData } from './actions/dashboard';
 export default async function Home() {
-  const collection = await getUserCollection();
-  const { historyGame, recentGames, popularGames, popularCollections } = await getDashboardData();
-
-  return <DashboardWrapper 
-    initialCollection={collection} 
-    historyGame={historyGame as any}
-    recentGames={recentGames as any[]}
-    popularGames={popularGames as any[]}
-    popularCollections={popularCollections}
-  />;
+  const [collection, data] = await Promise.all([getUserCollection(), getDashboardData()]);
+  const games = data.popularGames.length ? data.popularGames : data.recentGames;
+  return <WikiHome games={games as any} ownedIds={collection.map(item => item.gameId)} historyGame={data.historyGame as any} />;
 }
