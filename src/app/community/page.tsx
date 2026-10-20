@@ -9,7 +9,11 @@ export default async function CommunityPage() {
     where: {
       collections: { some: { visibility: 'public' } }
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      nickname: true,
+      image: true,
       collections: {
         where: { visibility: 'public' },
         include: {
@@ -29,8 +33,9 @@ export default async function CommunityPage() {
   const publicGroups = await prisma.collectionGroup.findMany({
     where: { isPublic: true },
     include: {
-      user: true,
+      user: { select: { id: true, name: true, nickname: true, image: true } },
       items: {
+        where: { item: { visibility: 'public' } },
         include: {
           item: {
             include: { game: true }
@@ -38,7 +43,7 @@ export default async function CommunityPage() {
         },
         take: 6
       },
-      _count: { select: { items: true } }
+      _count: { select: { items: { where: { item: { visibility: 'public' } } } } }
     },
     orderBy: { createdAt: 'desc' }
   });
