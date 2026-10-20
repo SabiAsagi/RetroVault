@@ -25,7 +25,8 @@ html { scroll-padding-top:130px; }
 body { color:var(--color-text-primary); background:var(--color-vault-bg); }
 button,a,input,select,textarea { -webkit-tap-highlight-color:transparent; }
 :focus-visible { outline:3px solid var(--color-mint); outline-offset:4px; }
-.retro::after,.retro body::after { display:none; }
+body::before,body::after,.retro::after,.retro body::after { display:none; }
+.retro h1,.retro h2 { font-family:var(--font-sans); }
 .retro .font-pixel { animation:none; }
 .brand-symbol { display:inline-flex; flex:none; position:relative; align-items:center; justify-content:center; }
 .brand-symbol img { flex:none; max-width:none; }
