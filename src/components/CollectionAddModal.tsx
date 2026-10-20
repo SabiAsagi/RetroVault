@@ -7,6 +7,7 @@ import { updateCollectionItem } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { getGameSlug } from '@/lib/slug';
 import {
   CONDITION_OPTIONS,
   DEFAULT_COLLECTION_MODAL_OWNERSHIP_STATUS,
@@ -253,7 +254,7 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
             <label className="block text-xs font-bold text-text-muted mb-1.5">개인 평점 (0~5)</label>
             <input 
               type="number" 
-              min="0" max="5" step="0.5"
+              min="0" max="5" step="1"
               value={formData.rating} 
               onChange={e => setFormData({...formData, rating: parseFloat(e.target.value)})}
               className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
@@ -272,7 +273,8 @@ export default function CollectionAddModal({ game, initialItem, onClose, onSucce
           </div>
         </form>
 
-        <div className="p-4 border-t border-vault-border bg-vault-bg flex justify-end gap-3">
+        <div className="p-4 border-t border-vault-border bg-vault-bg flex flex-wrap items-center justify-end gap-3">
+          <Link href={`/games/${getGameSlug(game)}`} className="mr-auto py-2 text-sm text-mint hover:underline">게임 상세 보기</Link>
           <button 
             type="button"
             onClick={onClose}
