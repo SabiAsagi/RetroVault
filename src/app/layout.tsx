@@ -19,11 +19,11 @@ const pressStart2P = Press_Start_2P({
 export const metadata: Metadata = {
   icons: { icon: '/brand/symbol-light.svg', apple: '/brand/symbol-light.svg' },
   title: "겜자취 | 게임 위키와 나만의 다락",
-  description: "80년대부터 지금까지, 시대를 초월하는 명작들을 수집하고 기록하는 게임 정보를 함께 기록하고, 좋아하는 게임을 내 다락에 모으는 곳.",
+  description: "게임·플랫폼·제작사의 정보를 함께 기록하고, 좋아하는 게임을 내 다락에 모으는 게임 위키·아카이브.",
   keywords: "레트로, 게임, 컬렉션, 아카이브, 닌텐도, 플레이스테이션, 아타리",
   openGraph: {
     title: "겜자취 | 게임 위키와 나만의 다락",
-    description: "시대를 초월하는 명작들을 수집하고 기록하는 게임 정보를 함께 기록하고, 좋아하는 게임을 내 다락에 모으는 곳.",
+    description: "게임 정보를 함께 기록하고, 좋아하는 게임과 추억을 내 다락에 차곡차곡.",
     url: "https://retrovault.kro.kr",
     siteName: "겜자취",
     images: [
