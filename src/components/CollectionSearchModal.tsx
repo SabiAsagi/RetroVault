@@ -1,31 +1,56 @@
 "use client";
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Game } from '@/types';
 import { Search, X, Plus } from 'lucide-react';
 
 interface CollectionSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  games: Game[]; // Pass the global games list for client-side search
   onSelectGame: (game: Game) => void;
 }
 
-export default function CollectionSearchModal({ isOpen, onClose, games, onSelectGame }: CollectionSearchModalProps) {
+export default function CollectionSearchModal({ isOpen, onClose, onSelectGame }: CollectionSearchModalProps) {
   const [query, setQuery] = useState('');
+  const [filteredGames, setFilteredGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
-  const filteredGames = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return games.filter(g => 
-      g.title.toLowerCase().includes(q) || 
-      g.platform.toLowerCase().includes(q)
-    ).slice(0, 10); // Limit to top 10 results
-  }, [query, games]);
+  useEffect(() => {
+    if (!isOpen || !query.trim()) {
+      setFilteredGames([]);
+      setLoading(false);
+      setError(false);
+      return;
+    }
+    const controller = new AbortController();
+    setFilteredGames([]);
+    setLoading(true);
+    setError(false);
+    const timer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({ q: query.trim(), pageSize: '10' });
+        const response = await fetch(`/api/games?${params}`, { signal: controller.signal });
+        if (!response.ok) throw new Error('Search failed');
+        const data = await response.json();
+        if (!Array.isArray(data.games)) throw new Error('Invalid search results');
+        if (!controller.signal.aborted) setFilteredGames(data.games);
+      } catch {
+        if (!controller.signal.aborted) setError(true);
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [isOpen, query, attempt]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[10vh] bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div role="dialog" aria-modal="true" aria-label="컬렉션에 추가할 게임 검색" onKeyDown={event => { if (event.key === 'Escape') onClose(); }} className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[10vh] bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-vault-surface border border-vault-border rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]">
         
         {/* Search Header */}
@@ -35,11 +60,12 @@ export default function CollectionSearchModal({ isOpen, onClose, games, onSelect
             type="text"
             autoFocus
             placeholder="아카이브에서 게임 검색..."
+            aria-label="컬렉션에 추가할 게임 제목 또는 플랫폼"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent border-none text-text-primary focus:outline-none text-lg"
           />
-          <button onClick={onClose} className="text-text-muted hover:text-text-primary p-1 transition-colors shrink-0">
+          <button onClick={onClose} aria-label="검색 닫기" className="text-text-muted hover:text-text-primary p-1 transition-colors shrink-0">
             <X size={24} />
           </button>
         </div>
@@ -49,6 +75,13 @@ export default function CollectionSearchModal({ isOpen, onClose, games, onSelect
           {query.trim() === '' ? (
             <div className="text-center p-8 text-text-muted text-sm">
               게임 제목이나 플랫폼을 입력하여 검색하세요.
+            </div>
+          ) : loading ? (
+            <p role="status" className="p-8 text-center text-sm text-text-muted">전체 아카이브에서 검색 중입니다...</p>
+          ) : error ? (
+            <div role="alert" className="p-8 text-center text-sm text-text-secondary">
+              <p>검색 결과를 불러오지 못했어요.</p>
+              <button onClick={() => setAttempt(value => value + 1)} className="mt-3 min-h-11 rounded-lg border border-vault-border px-4 text-mint">다시 시도</button>
             </div>
           ) : filteredGames.length === 0 ? (
             <div className="text-center p-8 text-text-muted text-sm">

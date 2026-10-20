@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   if (search) {
     where.OR = [
       { title: { contains: search, mode: 'insensitive' } },
+      { platform: { name: { contains: search, mode: 'insensitive' } } },
       { developer: { name: { contains: search, mode: 'insensitive' } } },
       { publisher: { name: { contains: search, mode: 'insensitive' } } },
     ];

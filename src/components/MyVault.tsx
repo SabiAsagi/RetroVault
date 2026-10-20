@@ -647,7 +647,6 @@ export default function MyVault({
       <CollectionSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
-        games={games}
         onSelectGame={(game) => {
           setSearchModalOpen(false);
           setGameToAdd(game);
