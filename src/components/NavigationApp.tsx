@@ -11,6 +11,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { useSession, signOut } from 'next-auth/react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { LogoIcon } from './LogoIcon';
+import { BrandLogo } from './BrandLogo';
 
 interface NavItem {
   id: string;
@@ -138,13 +139,8 @@ export default function NavigationApp() {
           </button>
 
           <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
-            <LogoIcon size={36} />
-            <div className="hidden sm:block">
-              <p className="brand-wordmark text-text-primary group-hover:text-mint transition-colors">
-                겜자취
-              </p>
-              <p className="brand-tagline">게임과 추억을 차곡차곡</p>
-            </div>
+            <span className="sm:hidden"><LogoIcon size={36} /></span>
+            <span className="hidden sm:block"><BrandLogo /></span>
           </Link>
 
           {/* Global Search Bar */}
@@ -331,11 +327,7 @@ export default function NavigationApp() {
       <aside className={`fixed top-0 left-0 z-[70] h-full w-72 glass-panel border-r border-vault-border shadow-2xl lg:hidden transition-transform duration-300 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between px-5 h-14 border-b border-vault-border">
           <div className="flex items-center gap-2.5">
-            <LogoIcon size={28} />
-            <div>
-              <p className="brand-wordmark text-text-primary">겜자취</p>
-              <p className="brand-tagline">게임과 추억을 차곡차곡</p>
-            </div>
+            <BrandLogo width={184.88} />
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all">
             <X size={17} />
