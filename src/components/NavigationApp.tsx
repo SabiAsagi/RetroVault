@@ -10,7 +10,6 @@ import {
 import { ThemeToggle } from './ThemeToggle';
 import { useSession, signOut } from 'next-auth/react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { LogoIcon } from './LogoIcon';
 import { BrandLogo } from './BrandLogo';
 
 interface NavItem {
@@ -138,9 +137,9 @@ export default function NavigationApp() {
             <Menu size={17} />
           </button>
 
-          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
-            <span className="sm:hidden"><LogoIcon size={36} /></span>
-            <span className="hidden sm:block"><BrandLogo /></span>
+          <Link href="/" className="nav-brand flex items-center shrink-0 group cursor-pointer" aria-label="겜자취 홈">
+            <span className="nav-brand-mobile"><BrandLogo width={140} /></span>
+            <span className="hidden sm:flex"><BrandLogo /></span>
           </Link>
 
           {/* Global Search Bar */}
@@ -240,7 +239,7 @@ export default function NavigationApp() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 ml-auto shrink-0">
+          <div className="nav-account-controls flex items-center gap-2 ml-auto shrink-0">
             <div className="block"><ThemeToggle /></div>
             {!isAuthenticated ? (
               <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mint text-vault-bg text-xs font-bold hover:bg-mint-dim transition-colors">
@@ -325,9 +324,9 @@ export default function NavigationApp() {
       )}
 
       <aside className={`fixed top-0 left-0 z-[70] h-full w-72 glass-panel border-r border-vault-border shadow-2xl lg:hidden transition-transform duration-300 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between px-5 h-14 border-b border-vault-border">
+        <div className="flex items-center justify-between px-5 h-16 border-b border-vault-border">
           <div className="flex items-center gap-2.5">
-            <BrandLogo width={184.88} />
+            <BrandLogo width={140} />
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all">
             <X size={17} />
