@@ -93,17 +93,17 @@ body::before,body::after,.retro::after,.retro body::after { display:none; }
 .wiki-archive-heading { display:flex; flex-direction:column; gap:16px; margin-bottom:40px; }
 .wiki-archive-heading .wiki-intro { margin:0; }
 .wiki-callout { padding:16px 20px; border-radius:12px; background:var(--color-vault-surface-light); font-size:15px; }
-.game-card { border-radius:14px; padding:12px; box-shadow:none; }
+.game-card { min-width:0; border-radius:14px; padding:12px; box-shadow:none; }
 .game-card>div:first-child { border-radius:9px; }
 .game-card>div:last-child { padding:14px 0 0; }
-.game-card h3 { font-size:16px; line-height:1.5; height:auto; min-height:48px; font-weight:700; word-break:keep-all; }
+.game-card h3 { min-width:0; font-size:16px; line-height:1.5; height:auto; min-height:48px; font-weight:700; word-break:normal; overflow-wrap:anywhere; }
 .game-card h3+p { font-size:12px; margin-top:6px; }
-.cartridge-art { aspect-ratio:1/1; padding:16px; background:var(--color-mint); color:var(--color-vault-bg); display:flex; flex-direction:column; gap:12px; }
-.cartridge-art>span { font-size:11px; font-weight:800; }
-.cartridge-label { flex:1; padding:16px; border-radius:5px; background:var(--color-vault-bg); color:var(--color-mint); display:flex; flex-direction:column; gap:12px; }
-.cartridge-label small { font-family:monospace; font-size:11px; }
-.cartridge-label strong { font-size:24px; line-height:1.4; word-break:keep-all; overflow-wrap:anywhere; }
-.cartridge-label em { font-style:normal; font-size:11px; color:var(--color-text-secondary); margin-top:auto; }
+.cartridge-art { min-width:0; min-height:0; aspect-ratio:1/1; overflow:hidden; padding:16px; background:var(--color-mint); color:var(--color-vault-bg); display:flex; flex-direction:column; gap:12px; }
+.cartridge-art>span { flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; font-weight:800; }
+.cartridge-label { flex:1; min-width:0; min-height:0; padding:16px; border-radius:5px; background:var(--color-vault-bg); color:var(--color-mint); display:flex; flex-direction:column; gap:12px; }
+.cartridge-label small { flex-shrink:0; font-family:monospace; font-size:11px; }
+.cartridge-label strong { min-height:0; overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; font-size:24px; line-height:1.4; word-break:normal; overflow-wrap:anywhere; }
+.cartridge-label em { flex-shrink:0; font-style:normal; font-size:11px; color:var(--color-text-secondary); margin-top:auto; }
 .wiki-document-header { margin-bottom:28px; }
 .wiki-document-header h1 { margin:18px 0 8px; }
 .wiki-document-layout { display:grid; grid-template-columns:180px minmax(0,1fr) 300px; gap:24px; align-items:start; }

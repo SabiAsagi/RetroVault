@@ -37,7 +37,7 @@ export function getRarityClass(rarity: Rarity): string {
 }
 
 export function BoxArtPlaceholder({ game }: { game: Game }) {
-  return <div className="cartridge-art"><span>{game.platform || 'GAME'}</span><div className="cartridge-label"><small>ARCHIVE / {game.releaseYear || '—'}</small><strong>{game.title}</strong><em>게임 위키 · 겜자취</em></div></div>;
+  return <div className="cartridge-art"><span>{game.platform || 'GAME'}</span><div className="cartridge-label"><small>ARCHIVE / {game.releaseYear || '—'}</small><strong title={game.title}>{game.title}</strong><em>게임 위키 · 겜자취</em></div></div>;
 }
 
 import { useState, useEffect } from 'react';
