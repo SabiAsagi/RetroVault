@@ -112,7 +112,7 @@ function CompaniesContent() {
 
   const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
 
-  const statusLabels: Record<string, string> = { ACTIVE: "운영 중", DEFUNCT: "운영 종료", ACQUIRED: "인수·합병" };
+  const statusLabels: Record<string, string> = { ACTIVE: "운영 중", DEFUNCT: "운영 종료", ACQUIRED: "인수·합병", MERGED: "합병" };
   return <div className="directory-shell page-enter">
     <DirectoryHeading kind="company" total={companies.length} loading={loading} query={searchQuery} onQuery={setSearchQuery} />
     <DirectoryTabs value={activeTypeTab} onChange={setActiveTypeTab} tabs={[{ value: '', label: '전체 제작사' }, { value: 'DEVELOPER', label: `개발사 ${devCount.toLocaleString('ko-KR')}` }, { value: 'PUBLISHER', label: `유통사 ${pubCount.toLocaleString('ko-KR')}` }]} />

@@ -2,6 +2,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { useSearchParams } from "next/navigation";
+import { isKnownManufacturer, manufacturerLabel } from '@/lib/archive-labels';
 import { DirectoryHeading, DirectoryFilters, DirectoryTabs, DirectoryToolbar, DirectoryResults } from '@/components/DirectoryUI';
 import MultiSelectFilter from "@/components/MultiSelectFilter";
 
@@ -71,7 +72,7 @@ function PlatformsContent() {
       .catch(() => { setLoadError(true); setLoading(false); });
   }, []);
 
-  const allManufacturers = useMemo(() => [...new Set(platforms.map(p => p.manufacturer))].filter(Boolean).sort(), [platforms]);
+  const allManufacturers = useMemo(() => [...new Set(platforms.map(p => p.manufacturer))].filter(isKnownManufacturer).sort(), [platforms]);
   const allGenerations = useMemo(() => [...new Set(platforms.map(p => p.generation).filter(g => g !== null))].sort((a, b) => (a as number) - (b as number)) as number[], [platforms]);
   const allTypes = useMemo(() => [...new Set(platforms.map(p => p.type))].filter(Boolean).sort(), [platforms]);
 
@@ -111,7 +112,7 @@ function PlatformsContent() {
     return counts.sort((a, b) => b.count - a.count).slice(0, 8);
   }, [allManufacturers, platforms]);
 
-  const typeLabels: Record<string, string> = { HOME: '가정용', HANDHELD: '휴대용', HYBRID: '하이브리드', ARCADE: '아케이드', PC: 'PC' };
+  const typeLabels: Record<string, string> = { HOME: '가정용', HANDHELD: '휴대용', HYBRID: '하이브리드', ARCADE: '아케이드', PC: 'PC', OTHER: '기타' };
 
   return <div className="directory-shell page-enter">
     <DirectoryHeading kind="platform" total={platforms.length} loading={loading} query={searchQuery} onQuery={setSearchQuery} />
@@ -124,7 +125,7 @@ function PlatformsContent() {
       </DirectoryFilters>
       <main className="directory-main">
         <DirectoryToolbar count={filtered.length} loading={loading} view={viewMode} onView={setViewMode} sort={sortBy} onSort={v => setSortBy(v as SortOption)} options={sortOptions} filtersOpen={showFilters} onFilters={() => setShowFilters(!showFilters)} />
-        <DirectoryResults kind="platform" view={viewMode} loading={loading} error={loadError} page={currentPage} onPage={setCurrentPage} onReset={() => { clearFilters(); setSearchQuery(''); }} items={filtered.map(p => ({ id: p.id, name: p.name, href: `/platforms/${p.slug}`, image: p.imageUrl, category: typeLabels[p.type] || p.type, meta: p.manufacturer || '제조사 정보 확인 중', facts: [p.releaseYear ? `${p.releaseYear}년 출시` : '출시 연도 확인 중', p.generation ? `${p.generation}세대` : ''].filter(Boolean).join(' · '), games: `등록된 게임 ${p._count.games.toLocaleString('ko-KR')}개`, status: p.discontinued === true ? '단종' : p.discontinued === false ? '생산 중' : null }))} />
+        <DirectoryResults kind="platform" view={viewMode} loading={loading} error={loadError} page={currentPage} onPage={setCurrentPage} onReset={() => { clearFilters(); setSearchQuery(''); }} items={filtered.map(p => ({ id: p.id, name: p.name, href: `/platforms/${p.slug}`, image: p.imageUrl, category: typeLabels[p.type] || p.type, meta: manufacturerLabel(p.manufacturer), facts: [p.releaseYear ? `${p.releaseYear}년 출시` : '출시 연도 확인 중', p.generation ? `${p.generation}세대` : ''].filter(Boolean).join(' · '), games: `등록된 게임 ${p._count.games.toLocaleString('ko-KR')}개`, status: p.discontinued === true ? '단종' : p.discontinued === false ? '생산 중' : null }))} />
       </main>
     </div>
   </div>;

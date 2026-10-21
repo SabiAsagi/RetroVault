@@ -8,7 +8,7 @@ import ViewAllGamesButton from "@/components/ViewAllGamesButton";
 import { parseCompanySlug } from "@/lib/slug";
 
 const typeLabels: Record<string, string> = { DEVELOPER: '개발사', PUBLISHER: '유통사', BOTH: '개발/유통' };
-const statusLabels: Record<string, string> = { ACTIVE: '운영중', DEFUNCT: '폐업', ACQUIRED: '인수합병' };
+const statusLabels: Record<string, string> = { ACTIVE: '운영중', DEFUNCT: '폐업', ACQUIRED: '인수합병', MERGED: '합병' };
 const countryLabels: Record<string, string> = {
   'Japan': '일본',
   'United States': '미국',

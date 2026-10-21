@@ -5,3 +5,11 @@ export const archiveCountryLabels: Record<string, string> = {
   Netherlands: '네덜란드', Finland: '핀란드', Norway: '노르웨이', Denmark: '덴마크',
   Brazil: '브라질', Taiwan: '대만',
 };
+
+export function isKnownManufacturer(value: string | null | undefined): value is string {
+  return !!value?.trim() && !/^(unknown|n\/a|null|\d+)$/i.test(value.trim());
+}
+
+export function manufacturerLabel(value: string | null | undefined) {
+  return isKnownManufacturer(value) ? value : '제조사 정보 확인 중';
+}
