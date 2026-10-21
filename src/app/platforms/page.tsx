@@ -48,8 +48,8 @@ function PlatformsContent() {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const routeQuery = searchParams?.get('q')?.trim() || '';
-  const [searchQuery, setSearchQuery] = useState(routeQuery);
-  useEffect(() => { setSearchQuery(routeQuery); }, [routeQuery]);
+  const [searchQuery, setSearchQuery] = useSessionStorage('platforms-search', routeQuery);
+  useEffect(() => { if (searchParams?.has('q')) setSearchQuery(routeQuery); }, [routeQuery, searchParams, setSearchQuery]);
   const [loadError, setLoadError] = useState(false);
 
   const [viewMode, setViewMode] = useSessionStorage<ViewMode>('platforms-view', 'grid');

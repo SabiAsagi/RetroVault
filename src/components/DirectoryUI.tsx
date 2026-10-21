@@ -1,5 +1,5 @@
 "use client";
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Building2, Filter, LayoutGrid, List, Monitor, Search, X } from 'lucide-react';
 
@@ -27,7 +27,14 @@ export function DirectoryHeading({ kind, total, loading, query, onQuery }: { kin
   </section>;
 }
 export function DirectoryFilters({ open, onClose, onClear, active, children }: { open: boolean; onClose: () => void; onClear: () => void; active: boolean; children: ReactNode }) {
-  return <aside id="directory-filters" className={`directory-filters ${open ? 'is-open' : ''}`}><div className="directory-filter-heading"><h2>기록 좁혀보기</h2><button className="directory-mobile-close" onClick={onClose} aria-label="필터 닫기"><X size={18} /></button></div><p>관심 있는 조건을 골라보세요.</p><div className="directory-filter-fields">{children}</div>{active && <button className="directory-reset" onClick={onClear}>선택한 필터 초기화</button>}<div className="directory-filter-note">하나의 문서에서<br />다음 게임의 실마리를 찾아요.</div></aside>;
+  const panel = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (open && window.matchMedia('(max-width:767px)').matches) {
+      panel.current?.focus({ preventScroll: true });
+      panel.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
+  }, [open]);
+  return <aside ref={panel} tabIndex={-1} aria-label="기록 필터" id="directory-filters" className={`directory-filters ${open ? 'is-open' : ''}`}><div className="directory-filter-heading"><h2>기록 좁혀보기</h2><button className="directory-mobile-close" onClick={onClose} aria-label="필터 닫기"><X size={18} /></button></div><p>관심 있는 조건을 골라보세요.</p><div className="directory-filter-fields">{children}</div>{active && <button className="directory-reset" onClick={onClear}>선택한 필터 초기화</button>}<div className="directory-filter-note">하나의 문서에서<br />다음 게임의 실마리를 찾아요.</div></aside>;
 }
 export function DirectoryTabs({ tabs, value, onChange }: { tabs: { value: string; label: string }[]; value: string; onChange: (value: string) => void }) {
   return <div className="directory-tabs" role="group" aria-label="빠른 분류">{tabs.map(t => <button key={t.value} aria-pressed={value === t.value} onClick={() => onChange(t.value)}>{t.label}</button>)}</div>;

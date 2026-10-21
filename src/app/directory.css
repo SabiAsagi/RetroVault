@@ -18,7 +18,7 @@
 .directory-tabs button[aria-pressed=true] { background:var(--color-mint); border-color:var(--color-mint); color:var(--color-vault-bg); font-weight:700; }
 .directory-layout { display:grid; grid-template-columns:216px minmax(0,1fr); gap:28px; align-items:start; }
 .directory-main { min-width:0; }
-.directory-filters { background:var(--color-vault-surface); border:1px solid var(--color-vault-border); border-radius:18px; padding:22px 18px; }
+.directory-filters { scroll-margin-top:190px; background:var(--color-vault-surface); border:1px solid var(--color-vault-border); border-radius:18px; padding:22px 18px; }
 .directory-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .directory-filter-heading h2 { font-weight:800; font-size:16px; }
 .directory-filters>p { font-size:12px; color:var(--color-text-muted); margin-top:8px; line-height:1.6; }
@@ -119,7 +119,7 @@
   .directory-filter-toggle { font-size:12px; border:1px solid var(--color-vault-border); padding:8px; border-radius:10px; background:var(--color-vault-surface); }
   .directory-filter-fields { margin-top:20px; gap:20px; }
   .directory-filter-note { display:none; }
-  .directory-tools { gap:6px; }
+  .directory-tools { gap:6px; flex-wrap:wrap; }
   .directory-tools select { max-width:132px; padding:8px; }
   .directory-toolbar { gap:12px; }
   .directory-pagination { gap:10px; font-size:12px; }
