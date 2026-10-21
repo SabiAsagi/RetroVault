@@ -11,7 +11,7 @@ import { getPlatformSlug } from '@/lib/slug';
 
 export async function generateMetadata({params}:{params:Promise<{id:string}>}) {
   const {id}=await params;const entry=getHardware(id);
-  return entry?{title:`${entry.name} | 기기 도감 · 겜자취`,description:entry.summary,alternates:{canonical:`/hardware/${entry.id}`}}:{};
+  return entry?{title:`${entry.name} | 기기 도감 · 겜자취`,description:entry.summary,alternates:{canonical:`https://retrovault.kro.kr/hardware/${entry.id}`}}:{};
 }
 
 export default async function HardwarePage({params}:{params:Promise<{id:string}>}) {
