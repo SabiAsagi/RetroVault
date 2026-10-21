@@ -55,8 +55,8 @@ const bottomTabIds = ['dashboard', 'archive', 'consoles', 'community', 'vault'];
 
 const bottomTabLabels: Record<string, string> = {
   dashboard: '홈',
-  archive: '게임',
-  consoles: '플랫폼',
+  archive: '게임 위키',
+  consoles: '도감',
   community: '다락 구경',
   vault: '내 다락',
   timeline: '타임라인',
@@ -113,7 +113,7 @@ export default function NavigationApp() {
     return '';
   };
 
-  const activeTabId = getActiveItemId();
+  const activeTabId = pathname.startsWith('/hardware/') ? 'consoles' : getActiveItemId();
 
   const handleNavClick = (path: string) => {
     if (path === '/games') {
@@ -365,13 +365,14 @@ export default function NavigationApp() {
           {bottomTabIds.map(id => {
             const item = navItems.find(navItem => navItem.id === id);
             if (!item) return null;
-            const isActive = activeTabId === item.id;
+            const isActive = activeTabId === item.id || (id === 'consoles' && (activeTabId === 'companies' || pathname.startsWith('/hardware')));
             return (
               <Link
                 key={item.id}
                 href={item.path}
                 onClick={() => handleNavClick(item.path)}
-                aria-label={item.label}
+                aria-label={bottomTabLabels[item.id] || item.label}
+                aria-current={isActive ? 'page' : undefined}
                 className={`relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-bold transition-colors ${
                   isActive ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary'
                 }`}

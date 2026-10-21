@@ -18,7 +18,7 @@ export function DirectoryHeading({ kind, total, loading, query, onQuery }: { kin
   const Icon = kind === 'platform' ? Monitor : Building2;
   return <section className="directory-heading">
     <div><p className="directory-eyebrow"><Icon size={16} aria-hidden="true" /> 게임 위키 / {labels[kind]} 기록</p>
-      <h1>{labels[kind]} 아카이브</h1>
+      <nav className="directory-switch" aria-label="도감 선택"><Link href="/platforms" aria-current={kind === 'platform' ? 'page' : undefined}>플랫폼 도감</Link><Link href="/companies" aria-current={kind === 'company' ? 'page' : undefined}>제작사 도감</Link></nav><h1 tabIndex={-1}>{labels[kind]} 도감</h1>
       <p className="directory-lead">{kind === 'platform' ? '게임이 머물던 기기들, 그 안에 담긴 이야기.' : '좋아하는 게임 뒤에는, 만드는 사람들이 있어요.'}</p>
       <p className="directory-description">{kind === 'platform' ? '제조사와 세대를 따라 기기를 살펴보고, 발매된 게임으로 이어가 보세요.' : '개발사와 유통사의 기록을 읽고, 함께 만든 게임을 만나보세요.'}</p>
     </div>
@@ -46,8 +46,16 @@ export function DirectoryResults({ kind, items, view, loading, error, page, onPa
   const pages = Math.max(1, Math.ceil(items.length / 30));
   const current = Math.min(Math.max(page, 1), pages);
   const visible = items.slice((current - 1) * 30, current * 30);
+  const changePage = (next: number) => {
+    if (next === current) return;
+    onPage(next);
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>('.directory-heading h1')?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    });
+  };
   if (error) return <div className="directory-empty" role="alert"><h2>기록을 불러오지 못했어요.</h2><p>잠시 후 다시 시도해주세요.</p><button onClick={() => window.location.reload()}>다시 불러오기</button></div>;
   if (loading) return <div className="directory-grid" aria-label="문서 불러오는 중" aria-busy="true">{Array.from({ length: 6 }, (_, i) => <div className="directory-skeleton skeleton" key={i} />)}</div>;
   if (!items.length) return <div className="directory-empty"><Search size={32} aria-hidden="true" /><h2>아직 맞는 기록을 찾지 못했어요.</h2><p>이름을 짧게 입력하거나 선택한 조건을 줄여보세요.</p><button onClick={onReset}>검색과 필터 초기화</button></div>;
-  return <><div className={view === 'grid' ? 'directory-grid' : 'directory-list'}>{visible.map(item => <Link key={item.id} href={item.href} className={`directory-card ${view === 'list' ? 'is-list' : ''}`}><EntityLogo src={item.image} name={item.name} kind={kind} /><div className="directory-card-body"><div className="directory-card-tags"><span>{item.category}</span>{item.status && <small>{item.status}</small>}</div><h2 title={item.name}>{item.name}</h2><p className="directory-card-meta">{item.meta}</p><p className="directory-card-facts">{item.facts}</p><div className="directory-card-footer"><span>{item.games}</span><ArrowRight size={17} aria-hidden="true" /></div></div></Link>)}</div>{pages > 1 && <nav className="directory-pagination" aria-label="문서 페이지"><button disabled={current === 1} onClick={() => onPage(current - 1)}>이전</button><form key={`${current}-${pages}`} onSubmit={e => { e.preventDefault(); const value = Number(new FormData(e.currentTarget).get('page')); if (Number.isInteger(value) && value >= 1 && value <= pages) onPage(value); }}><label><span className="sr-only">이동할 페이지</span><input name="page" aria-label="이동할 페이지" type="number" min={1} max={pages} defaultValue={current} required /></label><span> / {pages.toLocaleString('ko-KR')}</span><button type="submit">이동</button></form><button disabled={current === pages} onClick={() => onPage(current + 1)}>다음</button></nav>}<div className="directory-contribute"><span>함께 채워가는 게임 위키</span><Link href={`/request/edit?tab=${kind}`}>정보 추가·수정 제안 <ArrowRight size={15} /></Link></div></>;
+  return <><div className={view === 'grid' ? 'directory-grid' : 'directory-list'}>{visible.map(item => <Link key={item.id} href={item.href} className={`directory-card ${view === 'list' ? 'is-list' : ''}`}><EntityLogo src={item.image} name={item.name} kind={kind} /><div className="directory-card-body"><div className="directory-card-tags"><span>{item.category}</span>{item.status && <small>{item.status}</small>}</div><h2 title={item.name}>{item.name}</h2><p className="directory-card-meta">{item.meta}</p><p className="directory-card-facts">{item.facts}</p><div className="directory-card-footer"><span>{item.games}</span><ArrowRight size={17} aria-hidden="true" /></div></div></Link>)}</div>{pages > 1 && <nav className="directory-pagination" aria-label="문서 페이지"><button disabled={current === 1} onClick={() => changePage(current - 1)}>이전</button><form key={`${current}-${pages}`} onSubmit={e => { e.preventDefault(); const value = Number(new FormData(e.currentTarget).get('page')); if (Number.isInteger(value) && value >= 1 && value <= pages) changePage(value); }}><label><span className="sr-only">이동할 페이지</span><input name="page" aria-label="이동할 페이지" type="number" min={1} max={pages} defaultValue={current} required /></label><span> / {pages.toLocaleString('ko-KR')}</span><button type="submit">이동</button></form><button disabled={current === pages} onClick={() => changePage(current + 1)}>다음</button></nav>}<div className="directory-contribute"><span>함께 채워가는 게임 위키</span><Link href={`/request/edit?tab=${kind}`}>정보 추가·수정 제안 <ArrowRight size={15} /></Link></div></>;
 }

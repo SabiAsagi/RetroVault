@@ -121,6 +121,11 @@ export default function Archive({
   const [publisherFilter, setPublisherFilter] = useSessionStorage<string[]>('archive-publisher', []);
   const [sortBy, setSortBy] = useSessionStorage<SortOption>('archive-sort', 'popularity');
   const [currentPage, setCurrentPage] = useState(1);
+  const changePage = (page: number) => {
+    setCurrentPage(page);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
+  };
+
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
   const itemsPerPage = 30;
@@ -306,7 +311,7 @@ export default function Archive({
               {totalPages > 1 && (
                 <div className="mt-8 flex flex-wrap justify-center gap-2">
                   <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    onClick={() => changePage(Math.max(currentPage - 1, 1))}
                     disabled={currentPage === 1}
                     className="min-h-11 px-4 py-2.5 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors"
                   >
@@ -319,7 +324,7 @@ export default function Archive({
                         return (
                           <button
                             key={page}
-                            onClick={() => setCurrentPage(page)}
+                            onClick={() => changePage(page)}
                             className={`min-w-11 h-11 px-2 flex items-center justify-center rounded-lg text-sm transition-colors ${currentPage === page ? 'bg-mint text-vault-bg font-bold' : 'bg-vault-surface text-text-secondary border border-vault-border hover:border-mint/50'}`}
                           >
                             {page}
@@ -333,7 +338,7 @@ export default function Archive({
                     })}
                   </div>
                   <button
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    onClick={() => changePage(Math.min(currentPage + 1, totalPages))}
                     disabled={currentPage === totalPages}
                     className="min-h-11 px-4 py-2.5 bg-vault-surface border border-vault-border rounded-lg text-sm text-text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-vault-surface-light transition-colors"
                   >
