@@ -12,6 +12,7 @@ export default function ViewAllGamesButton({ platform, developer, publisher, cou
   const router = useRouter();
   
   const handleClick = () => {
+    sessionStorage.setItem('archive-publisher', JSON.stringify(publisher ? [publisher] : []));
     // Override session storage filters
     if (platform) {
       sessionStorage.setItem('archive-platforms', JSON.stringify([platform]));
@@ -32,8 +33,8 @@ export default function ViewAllGamesButton({ platform, developer, publisher, cou
       sessionStorage.setItem('archive-platforms', JSON.stringify([]));
       sessionStorage.setItem('archive-genre', JSON.stringify([]));
       sessionStorage.setItem('archive-country', JSON.stringify([]));
-      sessionStorage.setItem('archive-search', JSON.stringify(publisher));
-      router.push(`/games?q=${encodeURIComponent(publisher)}`);
+      sessionStorage.setItem('archive-search', JSON.stringify(''));
+      router.push(`/games?publisher=${encodeURIComponent(publisher)}`);
     }
   };
 
