@@ -1,5 +1,6 @@
 /* Shared Figma theme tokens, applied through the existing next-themes classes. */
 :root {
+  --color-media-paper:#f2f3ef;
   --color-vault-bg:#f7f8f5; --color-vault-surface:#fff; --color-vault-surface-light:#edf1e9;
   --color-vault-border:#cbd3c7; --color-vault-border-light:#aebba8;
   --color-text-primary:#202821; --color-text-secondary:#53614f; --color-text-muted:#62705e;
@@ -8,6 +9,7 @@
   --glass-bg:rgba(247,248,245,.96); --glass-border:#cbd3c7; --crt-opacity:0;
 }
 .dark {
+  --color-media-paper:#d5dad8;
   --color-vault-bg:#111315; --color-vault-surface:#1c2023; --color-vault-surface-light:#2a3035;
   --color-vault-border:#41494f; --color-vault-border-light:#647078;
   --color-text-primary:#f6f4e9; --color-text-secondary:#b7c0c4; --color-text-muted:#a3afb5;
@@ -15,6 +17,7 @@
   --color-neon-purple:#c0acd9; --color-coral:#ff9d8b; --glass-bg:rgba(17,19,21,.96); --glass-border:#41494f; --crt-opacity:0;
 }
 .retro {
+  --color-media-paper:#dbd8bc;
   --color-vault-bg:#101508; --color-vault-surface:#1b220d; --color-vault-surface-light:#2a3417;
   --color-vault-border:#51602b; --color-vault-border-light:#7b8b4e;
   --color-text-primary:#fff3bb; --color-text-secondary:#c4c892; --color-text-muted:#b2b983;

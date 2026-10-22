@@ -6,7 +6,7 @@ import { hardwareKindLabels, type HardwareEntry, type HardwareKind } from '@/lib
 
 export function HardwarePhoto({ entry }: { entry: HardwareEntry }) {
   const [failed,setFailed]=useState(false);
-  return <div className="hardware-photo">{entry.image && !failed ? <img src={entry.image} alt={entry.name} loading="lazy" onError={()=>setFailed(true)} /> : <div><Monitor size={32} aria-hidden="true"/><span>사진 준비 중</span></div>}</div>;
+  return <div className="hardware-photo"><div className="hardware-photo-stage">{entry.image && !failed ? <img src={entry.image} alt={entry.name} loading="lazy" onError={()=>setFailed(true)} /> : <div className="hardware-photo-fallback"><Monitor size={32} aria-hidden="true"/><span>사진 준비 중</span></div>}</div></div>;
 }
 export default function PlatformHardware({ entries, legacyNames }: { entries: HardwareEntry[]; legacyNames: string[] }) {
   const [tab,setTab]=useState<'models'|'accessories'>('models');

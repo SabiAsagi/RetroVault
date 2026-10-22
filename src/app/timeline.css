@@ -70,5 +70,46 @@
 .chronicle.is-dense .chronicle-platform,.chronicle.is-dense .chronicle-game { padding:12px 14px; }
 .chronicle.is-dense .chronicle-snippet { display:none; }
 .chronicle-more { min-height:44px; color:var(--color-mint); padding:10px 0; margin-top:8px; font-weight:700; font-size:13px; }
+.chronicle-view { display:flex; gap:8px; margin-bottom:16px; }
+.chronicle-view button { border:1px solid var(--color-vault-border); border-radius:10px; padding:8px 16px; color:var(--color-text-secondary); background:var(--color-vault-surface); font-size:13px; }
+.chronicle-view button[aria-pressed=true] { background:var(--color-mint); border-color:var(--color-mint); color:var(--color-vault-bg); font-weight:800; }
+.chronicle.is-rail-view { max-width:1600px; padding:24px 24px 40px; }
+.is-rail-view .chronicle-hero { margin-bottom:20px; }
+.is-rail-view h1 { font-size:26px; margin:8px 0; }
+.is-rail-view .chronicle-lead { font-size:14px; }
+.is-rail-view .chronicle-lead br { display:none; }
+.is-rail-view .chronicle-stamp { display:none; }
+.is-rail-view .chronicle-tools { margin-bottom:12px; padding:14px 18px; }
+.is-rail-view .chronicle-decades { margin-bottom:4px; }
+.chronicle-rail-hint { color:var(--color-text-muted); font-size:12px; line-height:1.8; margin:8px 0 12px; }
+.chronicle-rail { display:flex; gap:16px; position:relative; overflow-x:auto; overflow-y:hidden; padding:4px 3px 20px; scrollbar-width:auto; scrollbar-color:var(--color-vault-border-light) var(--color-vault-bg); scroll-snap-type:x proximity; overscroll-behavior-x:contain; }
+.chronicle-rail-year { flex:0 0 320px; min-width:0; scroll-snap-align:start; }
+.chronicle-rail.is-compact .chronicle-rail-year { flex-basis:260px; }
+.chronicle-rail-dot { position:relative; display:flex; justify-content:center; align-items:center; margin-bottom:16px; height:34px; }
+.chronicle-rail-dot::before { content:''; position:absolute; left:-11px; right:-11px; height:2px; background:var(--color-vault-border); }
+.chronicle-rail-dot>span { position:relative; display:flex; justify-content:center; align-items:center; width:34px; height:34px; border-radius:50%; border:2px solid var(--color-neon-purple); background:var(--color-vault-bg); color:var(--color-neon-purple); font-size:12px; font-weight:800; }
+.chronicle-rail-card { height:620px; max-height:75svh; min-height:360px; overflow-y:auto; scrollbar-width:thin; padding:16px; background:var(--color-vault-surface); border:1px solid var(--color-vault-border); border-radius:14px; }
+.chronicle-rail-card>h2 { font-size:26px; font-weight:900; line-height:1.4; margin-bottom:24px; }
+.chronicle-rail-card>h2>small { display:block; margin-top:6px; color:var(--color-text-muted); font-size:12px; font-weight:400; }
+.chronicle-rail-section { margin-bottom:24px; }
+.chronicle-rail-section>h3 { display:flex; align-items:center; gap:7px; margin-bottom:12px; color:var(--color-text-secondary); font-size:13px; font-weight:700; }
+.chronicle-rail-section>h3 svg { color:var(--color-mint); flex:none; }
+.chronicle-rail-platform { display:block; padding:12px; border:1px solid var(--color-vault-border); border-radius:10px; background:var(--color-vault-surface-light); margin:8px 0; }
+.chronicle-rail-platform h4 { color:var(--color-neon-blue); font-size:14px; font-weight:700; overflow-wrap:anywhere; line-height:1.6; }
+.chronicle-rail-platform p { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; color:var(--color-text-secondary); font-size:12px; line-height:1.8; margin-top:6px; }
+.chronicle-rail-platform small { display:block; margin-top:8px; font-size:12px; color:var(--color-text-secondary); }
+.chronicle-rail-games { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.chronicle-rail-games>a { min-width:0; padding:8px; border:1px solid var(--color-vault-border); background:var(--color-vault-bg); border-radius:10px; }
+.chronicle-rail-games>a:hover,.chronicle-rail-platform:hover { border-color:var(--color-mint); }
+.chronicle-rail-cover { display:flex; align-items:center; justify-content:center; aspect-ratio:3/4; border-radius:6px; overflow:hidden; background:var(--color-vault-surface-light); color:var(--color-mint); }
+.chronicle-rail-cover img { width:100%; height:100%; object-fit:cover; }
+.chronicle-rail-games h4 { font-size:12px; font-weight:700; line-height:1.6; overflow-wrap:anywhere; margin-top:10px; }
+.chronicle-rail-games p { font-size:12px; line-height:1.6; overflow-wrap:anywhere; color:var(--color-text-muted); margin-top:6px; }
+.chronicle-rail-event { border-left:2px solid var(--color-amber); padding-left:12px; margin-bottom:16px; font-size:13px; line-height:1.8; overflow-wrap:anywhere; }
+.chronicle-rail-event h4 { font-weight:700; }
+.chronicle-rail-event p { color:var(--color-text-secondary); white-space:pre-wrap; }
+.chronicle-rail-event a,.chronicle-rail-event summary { display:block; color:var(--color-mint); padding:8px 0; min-height:44px; }
+.chronicle-rail-year.is-empty .chronicle-rail-card { background:var(--color-vault-bg); border-style:dashed; }
+@media(max-width:767px) { .chronicle.is-rail-view { padding:24px 18px 36px; } .chronicle-rail-year { flex-basis:min(300px,82vw); } .chronicle-rail.is-compact .chronicle-rail-year { flex-basis:250px; } .is-rail-view .chronicle-tools { padding:16px; } }
 @media(max-width:1023px) { .chronicle { padding:28px 24px 48px; } .chronicle-layout { grid-template-columns:180px minmax(0,1fr); gap:20px; } .chronicle-games,.chronicle-platforms { grid-template-columns:minmax(0,1fr); } }
 @media(max-width:767px) { .chronicle { padding:24px 18px 36px; } .chronicle h1 { font-size:32px; } .chronicle-lead { font-size:15px; } .chronicle-stamp { display:none; } .chronicle-hero { margin-bottom:20px; } .chronicle-decades button { padding:10px 16px; } .chronicle-tools { padding:16px; gap:12px; margin-bottom:20px; } .chronicle-search { min-width:0; flex-basis:100%; } .chronicle-jump { flex:1; } .chronicle-jump select { flex:1; min-width:0; } .chronicle-categories { gap:8px 14px; } .chronicle-categories>span { flex-basis:100%; margin:0; } .chronicle-layout { grid-template-columns:minmax(0,1fr); gap:20px; } .chronicle-year-nav { position:static; padding:16px; } .chronicle-years { grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; } .chronicle-years button { font-size:12px; min-height:56px; } .chronicle-years button small { font-size:10px; } .chronicle-year-nav>a { display:none; } .chronicle-year-nav>p { margin-bottom:12px; } .chronicle-year-heading h2 { font-size:38px; } .chronicle-section-heading { font-size:17px; } .chronicle-platform,.chronicle-game { padding:14px; gap:12px; } .chronicle-content { scroll-margin-top:155px; } }

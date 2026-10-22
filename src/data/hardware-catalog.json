@@ -11,8 +11,8 @@
     "summary": "작아진 본체와 1TB SSD. UHD Blu-ray 드라이브를 포함한 2023년 모델.",
     "sourceUrl": "https://blog.playstation.com/2023/10/10/new-look-for-ps5-console-this-holiday-season/",
     "sourceLabel": "PlayStation 공식 자료",
-    "image": "/hardware/ps5-slim.png",
-    "checkedAt": "2026-10-21",
+    "image": "/hardware/ps5-slim-disc.png",
+    "checkedAt": "2026-10-22",
     "model": "2023 소형 모델",
     "color": "화이트",
     "contents": [
@@ -21,7 +21,14 @@
       "가로 배치용 스탠드"
     ],
     "notes": [
-      "세로 스탠드는 별도 판매. 출시 시점 사양이며 이후 리비전과 구분합니다."
+      "세로 스탠드는 별도 판매. 출시 시점 사양이며 이후 리비전과 구분합니다.",
+      "공식 제품 사진의 세로 스탠드는 별도 판매입니다. 출시 사양은 2023년 발표 자료 기준입니다."
+    ],
+    "additionalSources": [
+      {
+        "label": "PlayStation 공식 모델별 제품 사진",
+        "url": "https://www.playstation.com/en-us/ps5/"
+      }
     ]
   },
   {
@@ -36,12 +43,18 @@
     "summary": "2023년 발표된 1TB 디지털 모델. 대응 디스크 드라이브를 별도로 장착할 수 있습니다.",
     "sourceUrl": "https://blog.playstation.com/2023/10/10/new-look-for-ps5-console-this-holiday-season/",
     "sourceLabel": "PlayStation 공식 자료",
-    "image": "/hardware/ps5-slim.png",
-    "checkedAt": "2026-10-21",
+    "image": "/hardware/ps5-slim-digital.png",
+    "checkedAt": "2026-10-22",
     "model": "2023 소형 모델",
     "color": "화이트",
     "notes": [
-      "사진은 같은 발표의 디스크·디지털 모델 비교 이미지입니다."
+      "공식 제품 사진의 세로 스탠드는 별도 판매입니다. 출시 사양은 2023년 발표 자료 기준입니다."
+    ],
+    "additionalSources": [
+      {
+        "label": "PlayStation 공식 모델별 제품 사진",
+        "url": "https://www.playstation.com/en-us/ps5/"
+      }
     ]
   },
   {
