@@ -1,0 +1,1 @@
+export default function TimelineLoading(){return <div className="chronicle" role="status" aria-label="연대기를 불러오는 중"><p className="directory-eyebrow">게임 위키 / 시대의 기록</p><h1>시간의 기록을 꺼내고 있어요</h1><p className="chronicle-note">연도별 게임과 기기 문서를 모으고 있어요.</p><div className="skeleton h-32 rounded-2xl mb-6"/><div className="skeleton h-80 rounded-2xl"/></div>;}

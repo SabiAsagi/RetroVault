@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import './globals.css';
 import './brand.css';
 import './directory.css';
+import './timeline.css';
 
 import { Providers } from '../components/Providers';
 import NavigationApp from '../components/NavigationApp';
