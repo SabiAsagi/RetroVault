@@ -75,6 +75,10 @@
 .chronicle-view button[aria-pressed=true] { background:var(--color-mint); border-color:var(--color-mint); color:var(--color-vault-bg); font-weight:800; }
 .chronicle.is-rail-view { max-width:1600px; padding:24px 24px 40px; }
 .is-rail-view .chronicle-hero { margin-bottom:20px; }
+.is-rail-view .chronicle-hero .directory-eyebrow { display:none; }
+.is-rail-view .chronicle-navigation { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:16px; }
+.is-rail-view .chronicle-view { margin-bottom:0; flex:none; }
+.is-rail-view .chronicle-decades { padding:0; margin:0; min-width:0; }
 .is-rail-view h1 { font-size:26px; margin:8px 0; }
 .is-rail-view .chronicle-lead { font-size:14px; }
 .is-rail-view .chronicle-lead br { display:none; }
@@ -110,6 +114,6 @@
 .chronicle-rail-event p { color:var(--color-text-secondary); white-space:pre-wrap; }
 .chronicle-rail-event a,.chronicle-rail-event summary { display:block; color:var(--color-mint); padding:8px 0; min-height:44px; }
 .chronicle-rail-year.is-empty .chronicle-rail-card { background:var(--color-vault-bg); border-style:dashed; }
-@media(max-width:767px) { .chronicle.is-rail-view { padding:24px 18px 36px; } .chronicle-rail-year { flex-basis:min(300px,82vw); } .chronicle-rail.is-compact .chronicle-rail-year { flex-basis:250px; } .is-rail-view .chronicle-tools { padding:16px; } }
+@media(max-width:767px) { .chronicle.is-rail-view { padding:24px 18px 36px; } .chronicle-rail-year { flex-basis:min(300px,82vw); } .chronicle-rail.is-compact .chronicle-rail-year { flex-basis:250px; } .is-rail-view .chronicle-tools { padding:16px; } .is-rail-view .chronicle-navigation { display:block; } .is-rail-view .chronicle-decades { padding-top:12px; } }
 @media(max-width:1023px) { .chronicle { padding:28px 24px 48px; } .chronicle-layout { grid-template-columns:180px minmax(0,1fr); gap:20px; } .chronicle-games,.chronicle-platforms { grid-template-columns:minmax(0,1fr); } }
 @media(max-width:767px) { .chronicle { padding:24px 18px 36px; } .chronicle h1 { font-size:32px; } .chronicle-lead { font-size:15px; } .chronicle-stamp { display:none; } .chronicle-hero { margin-bottom:20px; } .chronicle-decades button { padding:10px 16px; } .chronicle-tools { padding:16px; gap:12px; margin-bottom:20px; } .chronicle-search { min-width:0; flex-basis:100%; } .chronicle-jump { flex:1; } .chronicle-jump select { flex:1; min-width:0; } .chronicle-categories { gap:8px 14px; } .chronicle-categories>span { flex-basis:100%; margin:0; } .chronicle-layout { grid-template-columns:minmax(0,1fr); gap:20px; } .chronicle-year-nav { position:static; padding:16px; } .chronicle-years { grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; } .chronicle-years button { font-size:12px; min-height:56px; } .chronicle-years button small { font-size:10px; } .chronicle-year-nav>a { display:none; } .chronicle-year-nav>p { margin-bottom:12px; } .chronicle-year-heading h2 { font-size:38px; } .chronicle-section-heading { font-size:17px; } .chronicle-platform,.chronicle-game { padding:14px; gap:12px; } .chronicle-content { scroll-margin-top:155px; } }
