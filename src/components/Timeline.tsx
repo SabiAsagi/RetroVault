@@ -35,8 +35,8 @@ export default function Timeline({games,platforms,timelineEvents,currentYear,ini
   }
   useEffect(()=>{
     const legacy=window.location.hash.match(/^#year-card-(\d{4})$/);
-    const year=parseTimelineYear(legacy?.[1],currentYear);
-    if(year!==null){setSelectedYear(year);setDecade(Math.floor(year/10)*10);requestAnimationFrame(()=>content.current?.scrollIntoView({block:'start',behavior:'instant'}));}
+    const year=parseTimelineYear(legacy?.[1],currentYear)??parseTimelineYear(new URLSearchParams(window.location.search).get('year'),currentYear);
+    if(year!==null){setSelectedYear(year);setDecade(Math.floor(year/10)*10);if(legacy)requestAnimationFrame(()=>content.current?.scrollIntoView({block:'start',behavior:'instant'}));}
     const restore=()=>{const y=parseTimelineYear(new URLSearchParams(window.location.search).get('year'),currentYear);if(y!==null){setSelectedYear(y);setDecade(Math.floor(y/10)*10);setAllPlatforms(false);}};
     window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);
   },[currentYear]);
