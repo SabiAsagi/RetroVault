@@ -88,6 +88,9 @@
 .chronicle-rail-hint { color:var(--color-text-muted); font-size:12px; line-height:1.8; margin:8px 0 12px; }
 .chronicle-rail { display:flex; gap:16px; position:relative; overflow-x:auto; overflow-y:hidden; padding:4px 3px 20px; scrollbar-width:auto; scrollbar-color:var(--color-vault-border-light) var(--color-vault-bg); scroll-snap-type:x proximity; overscroll-behavior-x:contain; }
 .chronicle-rail-year { flex:0 0 320px; min-width:0; scroll-snap-align:start; }
+.chronicle-rail { cursor:grab; }
+.chronicle-rail.is-dragging { scroll-snap-type:none; user-select:none; }
+.chronicle-rail.is-dragging,.chronicle-rail.is-dragging * { cursor:grabbing !important; }
 .chronicle-rail.is-compact .chronicle-rail-year { flex-basis:260px; }
 .chronicle-rail-dot { position:relative; display:flex; justify-content:center; align-items:center; margin-bottom:16px; height:34px; }
 .chronicle-rail-dot::before { content:''; position:absolute; left:-11px; right:-11px; height:2px; background:var(--color-vault-border); }
