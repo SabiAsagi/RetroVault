@@ -79,6 +79,7 @@ export async function getDashboardData() {
       include: {
         user: { select: { id: true, nickname: true, name: true, image: true } },
         items: {
+          where: { item: { visibility: 'public' } },
           take: 3,
           include: {
             item: {

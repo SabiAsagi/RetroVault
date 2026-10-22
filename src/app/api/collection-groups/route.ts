@@ -56,7 +56,7 @@ export async function POST(request: Request) {
         userId: session.user.id,
         name,
         description,
-        isPublic: isPublic ?? true,
+        isPublic: isPublic ?? false,
       }
     });
 

@@ -49,3 +49,27 @@ RetroVault는 게임을 좋아하는 사용자가 과거와 현재의 게임 정
 
 아카이브에 없는 게임, 플랫폼, 회사 정보를 직접 추가 건의할 수 있습니다.  
 이미 등록된 정보에 오류가 있거나 보완이 필요한 경우 수정 건의를 통해 데이터 품질을 개선할 수 있습니다.
+
+## 개발과 배포
+
+Next.js, Prisma, NextAuth를 사용하며 PostgreSQL에 서비스 데이터를, Vercel Blob에 업로드 파일을 저장합니다. 기존 Vercel 프로젝트와 저장소 연결을 유지합니다.
+
+```sh
+npm ci
+cp .env.example .env
+npm run dev
+```
+
+실제 연결 정보는 로컬 `.env` 또는 Vercel 프로젝트 설정에 입력합니다. 비밀값을 Git에 커밋하지 않습니다. PostgreSQL 연결 두 종류, NextAuth URL·secret, 사용하는 로그인 제공자의 키, Blob 토큰이 필요합니다. IGDB 키는 동기화 작업을 실행할 때 필요합니다.
+
+```sh
+npm test
+npm run typecheck
+npm run build
+```
+
+빌드는 Prisma 클라이언트 생성과 Next.js 빌드만 수행합니다. 스키마 변경이 필요한 경우 대상 DB와 백업을 확인한 뒤 `npm run db:push`를 별도로 실행합니다. 데이터 초기화·동기화 스크립트는 일반 배포에 포함하지 않습니다.
+
+Vercel의 기존 Git 연결에서 미리보기 배포를 확인한 후 운영 브랜치에 반영합니다. 환경별 `NEXTAUTH_URL`과 로그인 제공자의 콜백 URL이 일치해야 합니다. 미리보기에서 데이터를 변경하기 전 미리보기용 DB·Blob 설정도 확인합니다.
+
+자동 테스트는 DB와 Blob을 모의 처리합니다. 실제 로그인·DB 저장·파일 업로드는 배포 환경에서 별도로 확인해야 합니다.

@@ -1,71 +1,12 @@
-"use client";
-import { useState } from "react";
-import { Mail, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import Link from 'next/link';
+import { SUPPORT_EMAIL } from '@/lib/legal';
 
 export default function RecoverPage() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubmitted(true);
-    }
-  };
-
-  return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-56px)] bg-vault-bg px-4 py-8">
-      <div className="glass-panel border border-vault-border rounded-2xl p-8 w-full max-w-md shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/5 to-transparent pointer-events-none" />
-        
-        <div className="text-center mb-8 relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-neon-blue to-neon-purple mx-auto flex items-center justify-center crt-lines shadow-lg mb-4">
-            <Mail size={24} className="text-vault-bg" />
-          </div>
-          <h2 className="text-2xl font-bold text-text-primary mb-2">비밀번호 찾기</h2>
-          <p className="text-sm text-text-muted">가입하신 이메일 주소를 입력하시면<br/>비밀번호 재설정 링크를 보내드립니다.</p>
-        </div>
-
-        {submitted ? (
-          <div className="text-center relative z-10">
-            <div className="bg-mint/10 border border-mint/30 rounded-lg p-6 mb-6">
-              <p className="text-text-primary font-bold mb-2">이메일이 발송되었습니다!</p>
-              <p className="text-sm text-text-secondary">{email} 계정으로 전송된 링크를 확인해주세요.</p>
-            </div>
-            <Link href="/login" className="text-mint hover:text-mint-dim font-bold flex items-center justify-center gap-2">
-              로그인 화면으로 돌아가기 <ArrowRight size={16} />
-            </Link>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
-            <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1">이메일</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue/30 transition-all"
-                placeholder="가입한 이메일 입력"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 bg-neon-blue hover:bg-neon-blue/80 text-white font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(28,126,214,0.3)] hover:shadow-[0_0_25px_rgba(28,126,214,0.5)] flex items-center justify-center gap-2 mt-6"
-            >
-              재설정 링크 받기
-            </button>
-            
-            <div className="mt-6 text-center text-sm">
-              <Link href="/login" className="text-text-muted hover:text-text-primary">
-                돌아가기
-              </Link>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
-  );
+  return <section className="mx-auto flex min-h-[60vh] max-w-lg flex-col justify-center px-5 py-12">
+    <h1 className="mb-4 text-3xl font-bold text-text-primary">계정 복구 문의</h1>
+    <p className="mb-4 text-base leading-8 text-text-secondary">자동 비밀번호 재설정 메일 기능은 아직 제공하지 않습니다. 가입한 이메일로 아래 운영팀 주소에 복구를 요청해 주세요. 소셜 계정은 해당 제공자의 계정 복구를 이용해 주세요.</p>
+    <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('[겜자취] 계정 복구 요청')}`} className="my-3 min-h-11 break-all rounded-xl bg-mint px-5 py-4 text-center font-bold text-vault-bg">{SUPPORT_EMAIL}</a>
+    <p className="mt-3 text-sm leading-7 text-text-muted">가입 이메일과 계정 닉네임을 적어주세요. 비밀번호와 인증 코드는 보내지 마세요. 운영팀이 본인 확인과 후속 절차를 안내합니다.</p>
+    <Link href="/login" className="mt-6 min-h-11 py-3 text-center text-mint hover:underline">로그인으로 돌아가기</Link>
+  </section>;
 }

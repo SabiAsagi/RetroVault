@@ -584,7 +584,7 @@ export default function Admin({ collection, games, timelineEvents, stats, users,
         <div className="bg-vault-surface border border-vault-border rounded-xl p-4 sticky top-24">
           <div className="mb-6 px-2">
             <h2 className="text-lg font-black text-text-primary">Admin Console</h2>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">RetroVault Manager</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">겜자취 Manager</p>
           </div>
           
           <nav className="space-y-1">

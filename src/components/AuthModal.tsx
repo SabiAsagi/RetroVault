@@ -27,7 +27,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <div className="flex justify-between items-center px-6 py-4 border-b border-vault-border bg-vault-surface-light">
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-mint" size={20} />
-            <h2 className="text-lg font-black text-text-primary">RetroVault</h2>
+            <h2 className="text-lg font-black text-text-primary">겜자취</h2>
           </div>
           <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-1">
             <X size={20} />

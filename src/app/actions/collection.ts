@@ -5,6 +5,25 @@ import { authOptions } from "@/lib/auth";
 import { CollectionItem } from "@/types";
 import { revalidatePath } from "next/cache";
 import { DEFAULT_OWNERSHIP_STATUS, DEFAULT_PLAY_STATUS } from "@/constants/collection";
+import { z } from 'zod';
+
+const collectionUpdateSchema = z.object({
+  ownershipStatus: z.enum(['위시리스트', '미개봉', '전부 보유', '일부 누락', '보유중(실물)', '보유중(디지털)', '구독플랜']).optional(),
+  status: z.enum(['위시리스트', '미개봉', '전부 보유', '일부 누락', '보유중(실물)', '보유중(디지털)', '구독플랜']).optional(),
+  purchaseType: z.enum(['패키지', '다운로드', '구독']).nullable().optional(),
+  condition: z.enum(['Mint', 'Excellent', 'Good', 'Fair', 'Poor']).nullable().optional(),
+  region: z.enum(['KOR', 'JPN', 'USA', 'EUR', 'OTHER']).nullable().optional(),
+  purchaseDate: z.string().nullable().optional(),
+  purchasePrice: z.number().int().nonnegative().nullable().optional(),
+  memo: z.string().nullable().optional(),
+  playStartDate: z.string().nullable().optional(),
+  clearDate: z.string().nullable().optional(),
+  playTime: z.number().int().nonnegative().nullable().optional(),
+  playStatus: z.enum(['미플레이', '플레이중', '엔딩 완료', '중단', '반복 플레이중']).optional(),
+  rating: z.number().int().min(0).max(5).nullable().optional(),
+  visibility: z.enum(['public', 'private', 'friends']).optional(),
+  groupId: z.string().optional(),
+}).strict();
 
 export async function getUserCollection(): Promise<CollectionItem[]> {
   const session = await getServerSession(authOptions);
@@ -42,7 +61,10 @@ export async function updateCollectionItem(gameId: string, data: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not logged in");
 
-  const { groupId, ...itemData } = data;
+  const { groupId, status, ...itemData } = collectionUpdateSchema.parse(data);
+  if (status !== undefined && itemData.ownershipStatus === undefined) {
+    itemData.ownershipStatus = status;
+  }
 
   const item = await prisma.collectionItem.upsert({
     where: {
@@ -53,6 +75,7 @@ export async function updateCollectionItem(gameId: string, data: any) {
       userId: session.user.id,
       gameId,
       ownershipStatus: itemData.ownershipStatus || DEFAULT_OWNERSHIP_STATUS,
+      visibility: 'private',
       ...itemData
     }
   });
@@ -79,12 +102,13 @@ export async function updateCollectionItem(gameId: string, data: any) {
         }
       });
     }
-  } else {
+  } else if (groupId === '') {
     await prisma.collectionGroupItem.deleteMany({
       where: { itemId: item.id }
     });
   }
 
+  revalidatePath('/collection');
   revalidatePath('/community');
 }
 
@@ -92,7 +116,10 @@ export async function batchUpdateCollectionItems(gameIds: string[], data: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not logged in");
 
-  const { groupId, ...itemData } = data;
+  const { groupId, status, ...itemData } = collectionUpdateSchema.parse(data);
+  if (status !== undefined && itemData.ownershipStatus === undefined) {
+    itemData.ownershipStatus = status;
+  }
 
   // Use Promise.all to update all items because of complex upsert/group logic
   await Promise.all(gameIds.map(async (gameId) => {
@@ -105,6 +132,7 @@ export async function batchUpdateCollectionItems(gameIds: string[], data: any) {
         userId: session.user.id,
         gameId,
         ownershipStatus: itemData.ownershipStatus || DEFAULT_OWNERSHIP_STATUS,
+        visibility: 'private',
         ...itemData
       }
     });
@@ -134,5 +162,25 @@ export async function batchUpdateCollectionItems(gameIds: string[], data: any) {
     }
   }));
 
+  revalidatePath('/collection');
+  revalidatePath('/community');
+}
+
+export async function reorderCollectionItems(gameIds: string[]) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error('Not logged in');
+  if (!Array.isArray(gameIds) || gameIds.some(id => typeof id !== 'string' || !id) ||
+      new Set(gameIds).size !== gameIds.length) {
+    throw new Error('Invalid collection order');
+  }
+
+  // Each update is scoped to the signed-in owner. A missing item rolls back the order.
+  await prisma.$transaction(gameIds.map((gameId, sortOrder) =>
+    prisma.collectionItem.update({
+      where: { userId_gameId: { userId: session.user.id, gameId } },
+      data: { sortOrder },
+    })
+  ));
+  revalidatePath('/collection');
   revalidatePath('/community');
 }

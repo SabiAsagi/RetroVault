@@ -12,6 +12,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
   if (q) {
     where.OR = [
       { title: { contains: q, mode: 'insensitive' } },
+      { platform: { name: { contains: q, mode: 'insensitive' } } },
       { developer: { name: { contains: q, mode: 'insensitive' } } },
       { publisher: { name: { contains: q, mode: 'insensitive' } } },
     ];

@@ -111,10 +111,7 @@ export default function MyVault({
 
   const filteredCollection = sortedCollection.filter(c => {
     if (visibilityFilter !== 'all' && c.visibility !== visibilityFilter) return false;
-    if (selectedGroup !== 'all') {
-      const group = groups.find(g => g.id === selectedGroup);
-      if (group && !group.items?.some((i: any) => i.itemId === c.id)) return false;
-    }
+    if (selectedGroup !== 'all' && c.groupId !== selectedGroup) return false;
     return true;
   });
 
@@ -221,7 +218,7 @@ export default function MyVault({
             <Package className="text-mint" size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-text-primary leading-none mb-1">내 컬렉션</h2>
+            <h2 className="text-lg font-black text-text-primary leading-none mb-1">내 다락</h2>
             <p className="text-xs text-text-muted">총 {collection.length}개의 게임을 보유 중입니다</p>
           </div>
         </div>
@@ -647,7 +644,6 @@ export default function MyVault({
       <CollectionSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
-        games={games}
         onSelectGame={(game) => {
           setSearchModalOpen(false);
           setGameToAdd(game);

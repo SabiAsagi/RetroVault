@@ -10,7 +10,7 @@ import {
 import { ThemeToggle } from './ThemeToggle';
 import { useSession, signOut } from 'next-auth/react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { LogoIcon } from './LogoIcon';
+import { BrandLogo } from './BrandLogo';
 
 interface NavItem {
   id: string;
@@ -22,18 +22,18 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: '#4AEDC4', group: 'main' },
-  { id: 'archive', path: '/games', label: '게임 아카이브', icon: <Archive size={16} />, color: '#4EA8FF', group: 'main' },
-  { id: 'consoles', path: '/platforms', label: '콘솔/플랫폼 아카이브', icon: <Database size={16} />, color: '#A78BFA', group: 'main' },
-  { id: 'companies', path: '/companies', label: '게임 제작사 아카이브', icon: <Archive size={16} />, color: '#FFB547', group: 'main' },
-  { id: 'community', path: '/community', label: '유저 컬렉션 탐색', icon: <User size={16} />, color: '#FFB547', group: 'main' },
-  { id: 'timeline', path: '/timeline', label: '레트로 타임라인', icon: <Clock size={16} />, color: '#A78BFA', group: 'main' },
+  { id: 'dashboard', path: '/', label: '홈', icon: <Home size={16} />, color: 'var(--color-mint)', group: 'main' },
+  { id: 'archive', path: '/games', label: '게임 위키', icon: <Archive size={16} />, color: 'var(--color-mint)', group: 'main' },
+  { id: 'consoles', path: '/platforms', label: '플랫폼', icon: <Database size={16} />, color: 'var(--color-mint)', group: 'main' },
+  { id: 'companies', path: '/companies', label: '제작사', icon: <Archive size={16} />, color: 'var(--color-mint)', group: 'main' },
+  { id: 'community', path: '/community', label: '다락 구경', icon: <User size={16} />, color: 'var(--color-mint)', group: 'main' },
+  { id: 'timeline', path: '/timeline', label: '연대기', icon: <Clock size={16} />, color: 'var(--color-mint)', group: 'main' },
 
-  { id: 'profile', path: '/profile/me', label: '프로필', icon: <User size={16} />, color: '#4EA8FF', group: 'user' },
-  { id: 'friends', path: '/friends', label: '친구', icon: <Users size={16} />, color: '#4AEDC4', group: 'user' },
-  { id: 'vault', path: '/collection', label: '내 컬렉션', icon: <BookOpen size={16} />, color: '#FFB547', group: 'user' },
+  { id: 'profile', path: '/profile/me', label: '프로필', icon: <User size={16} />, color: 'var(--color-mint)', group: 'user' },
+  { id: 'friends', path: '/friends', label: '친구', icon: <Users size={16} />, color: 'var(--color-mint)', group: 'user' },
+  { id: 'vault', path: '/collection', label: '내 다락', icon: <BookOpen size={16} />, color: 'var(--color-mint)', group: 'user' },
   { id: 'stats', path: '/stats', label: '컬렉션 분석', icon: <BarChart3 size={16} />, color: '#FF6B6B', group: 'user' },
-  { id: 'achievements', path: '/achievements', label: '업적', icon: <Trophy size={16} />, color: '#FFB547', group: 'user' },
+  { id: 'achievements', path: '/achievements', label: '업적', icon: <Trophy size={16} />, color: 'var(--color-mint)', group: 'user' },
 
   { id: 'admin', path: '/admin', label: '관리자', icon: <Settings size={16} />, color: '#FF6B6B', group: 'admin' },
 ];
@@ -51,13 +51,14 @@ const searchCategories: { value: SearchCategory; label: string; path?: string }[
   { value: 'collection', label: '컬렉션', path: '/community' },
 ];
 
-const bottomTabIds = ['dashboard', 'archive', 'consoles', 'community', 'timeline'];
+const bottomTabIds = ['dashboard', 'archive', 'consoles', 'community', 'vault'];
 
 const bottomTabLabels: Record<string, string> = {
   dashboard: '홈',
-  archive: '게임',
-  consoles: '플랫폼',
-  community: '커뮤니티',
+  archive: '게임 위키',
+  consoles: '도감',
+  community: '다락 구경',
+  vault: '내 다락',
   timeline: '타임라인',
 };
 
@@ -112,7 +113,7 @@ export default function NavigationApp() {
     return '';
   };
 
-  const activeTabId = getActiveItemId();
+  const activeTabId = pathname.startsWith('/hardware/') ? 'consoles' : getActiveItemId();
 
   const handleNavClick = (path: string) => {
     if (path === '/games') {
@@ -128,26 +129,21 @@ export default function NavigationApp() {
   return (
     <>
       <header className="sticky top-0 z-50 glass-panel border-b border-vault-border bg-vault-bg/80 backdrop-blur-md">
-        <div className="flex items-center h-14 px-2 sm:px-4 gap-2 sm:gap-3 max-w-screen-2xl mx-auto">
+        <div className="flex flex-wrap sm:flex-nowrap items-center min-h-20 px-4 sm:px-8 py-3 gap-2 sm:gap-4 max-w-screen-2xl mx-auto">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-vault-surface border border-vault-border text-text-secondary hover:text-mint hover:border-mint/40 transition-all shrink-0"
+            aria-label="전체 메뉴 열기" className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-vault-surface border border-vault-border text-text-secondary hover:text-mint hover:border-mint/40 transition-all shrink-0"
           >
             <Menu size={17} />
           </button>
 
-          <Link href="/" className="flex items-center gap-2 shrink-0 group cursor-pointer">
-            <LogoIcon size={36} />
-            <div className="hidden sm:block">
-              <h1 className="font-pixel text-xs text-text-primary group-hover:text-mint transition-colors leading-none mb-1">
-                RetroVault
-              </h1>
-              <p className="text-[9px] text-text-muted leading-none tracking-wider">DIGITAL MUSEUM</p>
-            </div>
+          <Link href="/" className="nav-brand flex items-center shrink-0 group cursor-pointer" aria-label="겜자취 홈">
+            <span className="nav-brand-mobile"><BrandLogo width={140} /></span>
+            <span className="hidden sm:flex"><BrandLogo /></span>
           </Link>
 
           {/* Global Search Bar */}
-          <div className="relative min-w-0 flex-1 max-w-xl mx-0 sm:mx-6 z-[80]">
+          <div className="relative min-w-0 basis-full sm:basis-auto order-last sm:order-none flex-1 sm:max-w-xl mx-0 sm:mx-6 z-[80]">
             <select
               value={searchCategory}
               onChange={(e) => setSearchCategory(e.target.value as SearchCategory)}
@@ -243,8 +239,8 @@ export default function NavigationApp() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 ml-auto shrink-0">
-            <div className="hidden sm:block"><ThemeToggle /></div>
+          <div className="nav-account-controls flex items-center gap-2 ml-auto shrink-0">
+            <div className="block"><ThemeToggle /></div>
             {!isAuthenticated ? (
               <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-mint text-vault-bg text-xs font-bold hover:bg-mint-dim transition-colors">
                 <LogIn size={13} />
@@ -295,7 +291,7 @@ export default function NavigationApp() {
         </div>
 
         <nav className="hidden lg:flex items-center gap-0 px-4 max-w-screen-2xl mx-auto border-t border-vault-border/40 overflow-x-auto">
-          {navItems.filter(item => item.group === 'main' || item.group === 'admin').map(item => {
+          {navItems.filter(item => item.group === 'main' || item.id === 'vault' || item.group === 'admin').map(item => {
             const isActive = activeTabId === item.id;
             if (item.id === 'admin' && (user as any)?.role !== 'ADMIN' && (user as any)?.role !== 'INFO_MANAGER' && (user as any)?.role !== 'USER_MANAGER' && (user as any)?.role !== 'MODERATOR') return null;
             return (
@@ -328,13 +324,9 @@ export default function NavigationApp() {
       )}
 
       <aside className={`fixed top-0 left-0 z-[70] h-full w-72 glass-panel border-r border-vault-border shadow-2xl lg:hidden transition-transform duration-300 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between px-5 h-14 border-b border-vault-border">
+        <div className="flex items-center justify-between px-5 h-16 border-b border-vault-border">
           <div className="flex items-center gap-2.5">
-            <LogoIcon size={28} />
-            <div>
-              <p className="font-pixel text-[8px] text-text-primary">RetroVault</p>
-              <p className="text-[8px] text-text-muted">DIGITAL MUSEUM</p>
-            </div>
+            <BrandLogo width={140} />
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all">
             <X size={17} />
@@ -373,13 +365,14 @@ export default function NavigationApp() {
           {bottomTabIds.map(id => {
             const item = navItems.find(navItem => navItem.id === id);
             if (!item) return null;
-            const isActive = activeTabId === item.id;
+            const isActive = activeTabId === item.id || (id === 'consoles' && (activeTabId === 'companies' || pathname.startsWith('/hardware')));
             return (
               <Link
                 key={item.id}
                 href={item.path}
                 onClick={() => handleNavClick(item.path)}
-                aria-label={item.label}
+                aria-label={bottomTabLabels[item.id] || item.label}
+                aria-current={isActive ? 'page' : undefined}
                 className={`relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-bold transition-colors ${
                   isActive ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary'
                 }`}

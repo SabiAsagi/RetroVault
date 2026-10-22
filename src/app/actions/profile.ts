@@ -36,7 +36,6 @@ export async function getUserProfile(userId: string) {
     select: {
       id: true,
       name: true,
-      email: true,
       nickname: true,
       bio: true,
       image: true,
@@ -52,10 +51,7 @@ export async function getUserProfile(userId: string) {
   const publicCollection = await prisma.collectionItem.findMany({
     where: { 
       userId, 
-      OR: [
-        { visibility: { not: 'private' } },
-        { visibility: null }
-      ]
+      visibility: 'public',
     },
     orderBy: { sortOrder: 'asc' }
   });
@@ -63,7 +59,7 @@ export async function getUserProfile(userId: string) {
   const publicGroups = await prisma.collectionGroup.findMany({
     where: { userId, isPublic: true },
     orderBy: { likes: 'desc' },
-    include: { items: true }
+    include: { items: { where: { item: { visibility: 'public' } } } }
   });
 
   return { user, collection: publicCollection, collectionGroups: publicGroups };
@@ -81,7 +77,6 @@ export async function getUserProfileByNickname(nickname: string) {
     select: {
       id: true,
       name: true,
-      email: true,
       nickname: true,
       bio: true,
       image: true,
@@ -97,10 +92,7 @@ export async function getUserProfileByNickname(nickname: string) {
   const publicCollection = await prisma.collectionItem.findMany({
     where: { 
       userId: user.id, 
-      OR: [
-        { visibility: { not: 'private' } },
-        { visibility: null }
-      ]
+      visibility: 'public',
     },
     orderBy: { sortOrder: 'asc' }
   });
@@ -108,7 +100,7 @@ export async function getUserProfileByNickname(nickname: string) {
   const publicGroups = await prisma.collectionGroup.findMany({
     where: { userId: user.id, isPublic: true },
     orderBy: { likes: 'desc' },
-    include: { items: true }
+    include: { items: { where: { item: { visibility: 'public' } } } }
   });
 
   return { user, collection: publicCollection, collectionGroups: publicGroups };

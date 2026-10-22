@@ -3,6 +3,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
+import SocialSignIn from '@/components/SocialSignIn';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -43,7 +44,7 @@ export default function LoginPage() {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-mint to-neon-blue mx-auto flex items-center justify-center crt-lines shadow-lg neon-mint mb-4">
             <span className="font-pixel text-[12px] text-vault-bg font-bold">RV</span>
           </div>
-          <h2 className="text-2xl font-bold text-text-primary mb-2">RetroVault 로그인</h2>
+          <h2 className="text-2xl font-bold text-text-primary mb-2">겜자취 로그인</h2>
           <p className="text-sm text-text-muted">나만의 레트로 게임 아카이브에 오신 것을 환영합니다.</p>
         </div>
 
@@ -62,7 +63,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-vault-surface border border-vault-border rounded-lg px-4 py-2 text-text-primary focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint/30 transition-all"
-              placeholder="admin@retrovault.kr"
+              placeholder="user@example.com"
             />
           </div>
           <div>
@@ -101,26 +102,7 @@ export default function LoginPage() {
           <div className="flex-1 h-px bg-vault-border" />
         </div>
 
-        <div className="mt-4 flex gap-3 relative z-10">
-          <button
-            onClick={() => signIn("google", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-text-primary text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            구글
-          </button>
-          <button
-            onClick={() => signIn("kakao", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-[#FEE500] hover:bg-[#FEE500]/80 text-[#000000] border border-[#FEE500] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            카카오
-          </button>
-          <button
-            onClick={() => signIn("naver", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-[#03C75A] hover:bg-[#03C75A]/80 text-white border border-[#03C75A] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            네이버
-          </button>
-        </div>
+        <SocialSignIn />
 
         <div className="mt-8 text-center text-xs text-text-secondary relative z-10 flex flex-col gap-2">
           <div>

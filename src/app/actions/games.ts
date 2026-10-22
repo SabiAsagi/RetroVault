@@ -55,6 +55,16 @@ function mapGameToDTO(g: any, opts?: { includeDetail?: boolean }): Game {
   return base as unknown as Game;
 }
 
+export async function getCollectionGames(): Promise<Game[]> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return [];
+  const games = await prisma.game.findMany({
+    where: { collectedBy: { some: { userId: session.user.id } } },
+    select: gameSelect,
+  });
+  return games.map(game => mapGameToDTO(game));
+}
+
 export async function getGamesFromDB(query: string = "", limit: number = 1000): Promise<Game[]> {
   const games = await prisma.game.findMany({
     where: query ? {

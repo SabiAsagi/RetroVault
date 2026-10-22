@@ -1,0 +1,397 @@
+[
+  {
+    "id": "ps5-slim-disc-2023",
+    "platformKey": "ps5",
+    "name": "PS5 슬림 · 디스크 모델",
+    "kinds": [
+      "model"
+    ],
+    "releaseDate": "2023-11",
+    "region": "미국 출시 기준",
+    "summary": "작아진 본체와 1TB SSD. UHD Blu-ray 드라이브를 포함한 2023년 모델.",
+    "sourceUrl": "https://blog.playstation.com/2023/10/10/new-look-for-ps5-console-this-holiday-season/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "/hardware/ps5-slim-disc.png",
+    "checkedAt": "2026-10-22",
+    "model": "2023 소형 모델",
+    "color": "화이트",
+    "contents": [
+      "본체",
+      "디스크 드라이브",
+      "가로 배치용 스탠드"
+    ],
+    "notes": [
+      "세로 스탠드는 별도 판매. 출시 시점 사양이며 이후 리비전과 구분합니다.",
+      "공식 제품 사진의 세로 스탠드는 별도 판매입니다. 출시 사양은 2023년 발표 자료 기준입니다."
+    ],
+    "additionalSources": [
+      {
+        "label": "PlayStation 공식 모델별 제품 사진",
+        "url": "https://www.playstation.com/en-us/ps5/"
+      }
+    ]
+  },
+  {
+    "id": "ps5-slim-digital-2023",
+    "platformKey": "ps5",
+    "name": "PS5 슬림 · 디지털 에디션",
+    "kinds": [
+      "model"
+    ],
+    "releaseDate": "2023-11",
+    "region": "미국 출시 기준",
+    "summary": "2023년 발표된 1TB 디지털 모델. 대응 디스크 드라이브를 별도로 장착할 수 있습니다.",
+    "sourceUrl": "https://blog.playstation.com/2023/10/10/new-look-for-ps5-console-this-holiday-season/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "/hardware/ps5-slim-digital.png",
+    "checkedAt": "2026-10-22",
+    "model": "2023 소형 모델",
+    "color": "화이트",
+    "notes": [
+      "공식 제품 사진의 세로 스탠드는 별도 판매입니다. 출시 사양은 2023년 발표 자료 기준입니다."
+    ],
+    "additionalSources": [
+      {
+        "label": "PlayStation 공식 모델별 제품 사진",
+        "url": "https://www.playstation.com/en-us/ps5/"
+      }
+    ]
+  },
+  {
+    "id": "ps5-pro-2024",
+    "platformKey": "ps5",
+    "name": "PS5 Pro",
+    "kinds": [
+      "model"
+    ],
+    "releaseDate": "2024-11-07",
+    "region": "글로벌 공식 발표 기준",
+    "summary": "GPU·레이 트레이싱·PSSR을 강화한 PS5 모델.",
+    "sourceUrl": "https://blog.playstation.com/2024/11/07/getting-started-with-playstation-5-pro-out-today/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "/hardware/ps5-pro.jpg",
+    "checkedAt": "2026-10-21",
+    "model": "Pro",
+    "color": "화이트",
+    "notes": [
+      "디스크 드라이브는 별도 구매입니다."
+    ]
+  },
+  {
+    "id": "ps5-spider-man-2-bundle",
+    "platformKey": "ps5",
+    "name": "PS5 · Marvel’s Spider-Man 2 한정판 번들",
+    "kinds": [
+      "edition",
+      "bundle"
+    ],
+    "releaseDate": "2023-09-01",
+    "region": "글로벌 발표 · 판매 지역별 확인 필요",
+    "summary": "심비오트 디자인 본체 커버와 컨트롤러를 담은 한정 번들.",
+    "sourceUrl": "https://blog.playstation.com/2023/07/20/first-look-ps5-console-marvels-spider-man-2-limited-edition-bundle/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "/hardware/ps5-spider.jpg",
+    "checkedAt": "2026-10-21",
+    "model": "초기형 PS5 · 디스크 모델",
+    "color": "블랙·레드 특별 디자인",
+    "gameQuery": "Marvel's Spider-Man 2",
+    "contents": [
+      "한정 디자인 PS5 본체",
+      "한정 디자인 DualSense",
+      "게임 일반판 디지털 교환권"
+    ],
+    "notes": [
+      "게임 교환권 사용은 2023-10-20부터. 실물 게임 디스크 동봉이 아닙니다.",
+      "별도 판매 커버·컨트롤러와 완제품 번들을 구분합니다."
+    ]
+  },
+  {
+    "id": "ps4-slim-2016",
+    "platformKey": "ps4",
+    "name": "PlayStation 4 Slim",
+    "kinds": [
+      "model"
+    ],
+    "releaseDate": "2016-09-15",
+    "region": "일본·북미·유럽 발표 기준",
+    "summary": "CUH-2000 시리즈. 기존 PS4를 더 작고 가볍게 만든 모델.",
+    "sourceUrl": "https://sonyinteractive.com/en/press-releases/sony-interactive-entertainment-to-launch-slimmer-and-lighter-playstation4-in-september-available-at-29980yen-299-299-and-259/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "",
+    "checkedAt": "2026-10-21",
+    "model": "CUH-2000",
+    "notes": [
+      "최초 발표는 500GB HDD 모델 기준입니다."
+    ]
+  },
+  {
+    "id": "ps4-pro-2016",
+    "platformKey": "ps4",
+    "name": "PlayStation 4 Pro",
+    "kinds": [
+      "model"
+    ],
+    "releaseDate": "2016-11-10",
+    "region": "일본·북미·유럽 발표 기준",
+    "summary": "CUH-7000 시리즈. 영상 처리와 대응 게임의 표현을 강화한 모델.",
+    "sourceUrl": "https://sonyinteractive.com/en/press-releases/sony-interactive-entertainment-unveils-playstation4-pro-delivering-enhanced-ps4-experience/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "",
+    "checkedAt": "2026-10-21",
+    "model": "CUH-7000"
+  },
+  {
+    "id": "ds-lite",
+    "platformKey": "ds",
+    "name": "Nintendo DS Lite",
+    "kinds": [
+      "model"
+    ],
+    "releaseDate": "2006-03-02",
+    "region": "일본",
+    "summary": "얇고 가벼운 DS 모델. 화면 밝기를 4단계로 조절할 수 있습니다.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-white.jpg",
+    "checkedAt": "2026-10-21",
+    "model": "DS Lite",
+    "notes": [
+      "아래 색상 이름과 출시일은 일본 공식 페이지 기준입니다."
+    ]
+  },
+  {
+    "id": "ds-lite-crimson-black",
+    "platformKey": "ds",
+    "name": "DS Lite · 크림슨/블랙",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2007-10-04",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-crimson-black.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "크림슨/블랙"
+  },
+  {
+    "id": "ds-lite-metallic-rose",
+    "platformKey": "ds",
+    "name": "DS Lite · 메탈릭 로제",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2007-06-23",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-metallic-rose.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "메탈릭 로제"
+  },
+  {
+    "id": "ds-lite-gloss-silver",
+    "platformKey": "ds",
+    "name": "DS Lite · 글로스 실버",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2007-06-23",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-gloss-silver.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "글로스 실버"
+  },
+  {
+    "id": "ds-lite-jet-black",
+    "platformKey": "ds",
+    "name": "DS Lite · 제트 블랙",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2006-09-02",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-jet-black.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "제트 블랙"
+  },
+  {
+    "id": "ds-lite-noble-pink",
+    "platformKey": "ds",
+    "name": "DS Lite · 노블 핑크",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2006-07-20",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-noble-pink.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "노블 핑크"
+  },
+  {
+    "id": "ds-lite-ice-blue",
+    "platformKey": "ds",
+    "name": "DS Lite · 아이스 블루",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2006-03-11",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-ice-blue.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "아이스 블루"
+  },
+  {
+    "id": "ds-lite-enamel-navy",
+    "platformKey": "ds",
+    "name": "DS Lite · 에나멜 네이비",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2006-03-11",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-enamel-navy.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "에나멜 네이비"
+  },
+  {
+    "id": "ds-lite-crystal-white",
+    "platformKey": "ds",
+    "name": "DS Lite · 크리스털 화이트",
+    "kinds": [
+      "color"
+    ],
+    "releaseDate": "2006-03-02",
+    "region": "일본",
+    "summary": "DS Lite의 공식 본체 색상.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/series/dslite/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-crystal-white.jpg",
+    "checkedAt": "2026-10-21",
+    "parentId": "ds-lite",
+    "model": "DS Lite",
+    "color": "크리스털 화이트"
+  },
+  {
+    "id": "ds-lite-ac-adapter",
+    "platformKey": "ds",
+    "name": "DS Lite 전용 AC 어댑터",
+    "kinds": [
+      "accessory"
+    ],
+    "releaseDate": "",
+    "region": "일본 공식 자료 기준",
+    "summary": "USG-002. DS Lite 전용 전원 어댑터.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/accessories/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "/hardware/dslite-adapter.jpg",
+    "checkedAt": "2026-10-21",
+    "compatibility": [
+      "Nintendo DS Lite"
+    ],
+    "notes": [
+      "기존 DS·DSi용 어댑터와 호환되지 않습니다."
+    ]
+  },
+  {
+    "id": "ds-lite-rumble",
+    "platformKey": "ds",
+    "name": "DS Lite 진동 카트리지",
+    "kinds": [
+      "accessory"
+    ],
+    "releaseDate": "",
+    "region": "일본 공식 자료 기준",
+    "summary": "USG-006. 대응 소프트웨어에서 진동을 지원합니다.",
+    "sourceUrl": "https://www.nintendo.co.jp/ds/accessories/index.html",
+    "sourceLabel": "Nintendo 공식 자료",
+    "image": "",
+    "checkedAt": "2026-10-21",
+    "compatibility": [
+      "Nintendo DS Lite"
+    ],
+    "notes": [
+      "DS·DSi·DSi LL에서는 사용할 수 없습니다. 대응 소프트웨어 표시를 확인해야 합니다."
+    ]
+  },
+  {
+    "id": "ps5-disc-drive",
+    "platformKey": "ps5",
+    "name": "PS5용 별도 디스크 드라이브",
+    "kinds": [
+      "accessory"
+    ],
+    "releaseDate": "",
+    "region": "공식 발표 기준",
+    "summary": "디지털 본체에 장착하는 별도 UHD Blu-ray 디스크 드라이브.",
+    "sourceUrl": "https://blog.playstation.com/2024/11/07/getting-started-with-playstation-5-pro-out-today/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "",
+    "checkedAt": "2026-10-21",
+    "compatibility": [
+      "PS5 2023 소형 디지털 모델",
+      "PS5 Pro"
+    ],
+    "notes": [
+      "초기형 PS5 디지털 에디션에는 장착할 수 없습니다. 본체 모델을 먼저 확인해주세요."
+    ],
+    "additionalSources": [
+      {
+        "label": "2023 소형 PS5 발표 · 드라이브 장착 안내",
+        "url": "https://blog.playstation.com/2023/10/10/new-look-for-ps5-console-this-holiday-season/"
+      }
+    ]
+  },
+  {
+    "id": "ps5-vertical-stand-2023",
+    "platformKey": "ps5",
+    "name": "PS5 세로 스탠드 · 2023",
+    "kinds": [
+      "accessory"
+    ],
+    "releaseDate": "2023-11",
+    "region": "미국 출시 발표 기준",
+    "summary": "2023년 소형 본체와 함께 발표된 별도 판매 세로 스탠드.",
+    "sourceUrl": "https://blog.playstation.com/2023/10/10/new-look-for-ps5-console-this-holiday-season/",
+    "sourceLabel": "PlayStation 공식 자료",
+    "image": "",
+    "checkedAt": "2026-10-21",
+    "compatibility": [
+      "2023년 발표에서 안내한 PS5 모델"
+    ],
+    "notes": [
+      "2023년 발표는 당시 PS5 전 모델 대응을 안내합니다. 이후 출시 기기는 해당 모델의 공식 호환표를 추가 확인해주세요."
+    ]
+  }
+]

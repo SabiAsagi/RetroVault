@@ -37,49 +37,7 @@ export function getRarityClass(rarity: Rarity): string {
 }
 
 export function BoxArtPlaceholder({ game }: { game: Game }) {
-  const [c1, c2] = PLATFORM_COLORS[game.platform] ?? ['#243550', '#314869'];
-
-  const genre = (game.genre || 'UNK').slice(0, 3).toUpperCase();
-  const year = String(game.releaseYear || '').slice(2);
-
-  return (
-    <div
-      className="box-art-placeholder w-full aspect-[3/4]"
-      style={{ background: `linear-gradient(145deg, ${c1} 0%, ${c2} 100%)` }}
-    >
-      {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 px-2 py-1.5 flex items-center justify-between">
-        <span className="font-pixel text-[5px] text-text-primary/40 cursor-help" title={game.platform}>{(game.platform || 'UNK').slice(0, 8)}</span>
-        <span className="font-pixel text-[5px] text-text-primary/40">'{year}</span>
-      </div>
-
-      {/* Center content */}
-      <div className="z-10 relative text-center px-3">
-        {/* Genre badge */}
-        <div
-          className="inline-block px-1.5 py-0.5 rounded text-[6px] font-pixel mb-2 text-text-primary/70 cursor-help"
-          style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
-          title={game.genre}
-        >
-          {genre}
-        </div>
-
-        {/* Title */}
-        <p className="font-pixel text-[6px] leading-relaxed text-text-primary/90 break-words line-clamp-4">
-          {game.title}
-        </p>
-
-        {/* Publisher */}
-        <p className="text-[8px] text-text-primary/50 mt-2 truncate">{game.publisher}</p>
-      </div>
-
-      {/* Bottom accent line */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-0.5 opacity-40"
-        style={{ background: `linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)` }}
-      />
-    </div>
-  );
+  return <div className="cartridge-art"><span>{game.platform || 'GAME'}</span><div className="cartridge-label"><small>ARCHIVE / {game.releaseYear || '—'}</small><strong title={game.title}>{game.title}</strong><em>게임 위키 · 겜자취</em></div></div>;
 }
 
 import { useState, useEffect } from 'react';
@@ -104,13 +62,14 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
   return (
     <div
       className="game-card bg-vault-surface border border-vault-border rounded-lg overflow-hidden cursor-pointer group"
+      role="link" tabIndex={0} aria-label={`${game.title} 문서 읽기`} onKeyDown={e => { if (e.key === 'Enter' && e.target === e.currentTarget) onClick?.(game); }}
       onClick={() => onClick?.(game)}
     >
       {/* Cover Art */}
       <div className="relative overflow-hidden">
         <div className={showBlur ? "blur-md scale-105 filter select-none transition-all duration-300" : ""}>
           {game.imageUrl ? (
-            <img src={game.imageUrl} alt={game.title} className="w-full aspect-[3/4] object-cover" />
+            <img src={game.imageUrl} alt={game.title} className="w-full aspect-square object-cover" />
           ) : (
             <BoxArtPlaceholder game={game} />
           )}
@@ -158,7 +117,7 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
         <h3 className="text-xs font-semibold text-text-primary line-clamp-2 break-words h-8 group-hover:text-mint transition-colors leading-tight" title={game.title}>
           {game.title}
         </h3>
-        <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} 쨌 {game.releaseYear}</p>
+        <p className="text-[10px] text-text-muted truncate mt-0.5">{game.platform} · {game.releaseYear}</p>
 
         <div className="flex items-center justify-between mt-2">
           {/* Rating, Views, and Genre */}
@@ -182,7 +141,8 @@ export default function GameCard({ game, isOwned, onAddToCollection, onClick }: 
                 ? 'bg-mint/20 text-mint border border-mint/30'
                 : 'bg-vault-surface-light text-text-muted hover:text-mint hover:bg-mint/10 border border-transparent hover:border-mint/20'
             }`}
-            title={isOwned ? '而щ젆?섏뿉 ?덉쓬' : '而щ젆?섏뿉 異붽?'}
+            title={isOwned ? '내 다락에 있음' : '내 다락에 담기'}
+            aria-label={`${game.title}: ${isOwned ? '내 다락에 있음' : '내 다락에 담기'}`}
           >
             {isOwned ? <Check size={16} /> : <Plus size={16} />}
           </button>

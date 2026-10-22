@@ -14,6 +14,7 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
   const { showToast } = useToast();
   const [groups, setGroups] = useState<any[]>([]);
   const [newGroupName, setNewGroupName] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,7 +38,7 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
       const res = await fetch('/api/collection-groups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newGroupName, description: '', isPublic: true })
+        body: JSON.stringify({ name: newGroupName, description: '', isPublic })
       });
       if (res.ok) {
         setNewGroupName('');
@@ -69,17 +70,22 @@ export default function CollectionGroupModal({ isOpen, onClose, collection, game
           <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
             <Folder className="text-mint" size={20} /> 컬렉션 그룹 관리
           </h3>
-          <button onClick={onClose} className="text-text-muted hover:text-text-primary">
+          <button onClick={onClose} aria-label="그룹 관리 닫기" className="text-text-muted hover:text-text-primary">
             <X size={20} />
           </button>
         </div>
 
+        <label className="mb-3 flex min-h-11 items-center gap-2 text-sm text-text-secondary">
+          <input type="checkbox" checked={isPublic} onChange={event => setIsPublic(event.target.checked)} />
+          그룹 공개
+        </label>
         <div className="flex gap-2 mb-6">
           <input 
             type="text" 
             value={newGroupName} 
             onChange={e => setNewGroupName(e.target.value)} 
             placeholder="새 그룹 이름..."
+            aria-label="새 그룹 이름"
             className="flex-1 bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-mint"
           />
           <button 

@@ -295,7 +295,7 @@ export default function GameDetailModal({
               className="flex-1 py-2.5 bg-mint text-vault-bg text-sm font-bold rounded-lg hover:bg-mint-dim transition-colors flex items-center justify-center gap-2"
             >
               <Plus size={16} />
-              내 컬렉션에 추가
+              내 다락에 추가
             </button>
             <button
               onClick={() => onAddToWishlist(game.id)}

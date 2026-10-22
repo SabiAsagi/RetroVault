@@ -39,6 +39,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(toast => (
           <div 
             key={toast.id} 
+            role={toast.type === 'error' ? 'alert' : 'status'}
+            aria-atomic="true"
             className="pointer-events-auto flex items-center gap-3 bg-vault-surface border border-vault-border rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] p-5 pr-14 min-w-[320px] max-w-[90vw] relative animate-in zoom-in-95 fade-in duration-300"
           >
             {toast.type === 'success' && <CheckCircle size={20} className="text-mint shrink-0" />}

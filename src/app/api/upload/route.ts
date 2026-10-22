@@ -51,8 +51,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     const arrayBuffer = await request.arrayBuffer();
+    if (arrayBuffer.byteLength > MAX_UPLOAD_BYTES) {
+      return NextResponse.json({ error: 'File is too large' }, { status: 413 });
+    }
     if (arrayBuffer.byteLength === 0) {
-      throw new Error("Empty file");
+      return NextResponse.json({ error: 'File is empty' }, { status: 400 });
     }
     
     const pathname = `uploads/${session.user.id}/${Date.now()}-${sanitizeFilename(filename)}`;

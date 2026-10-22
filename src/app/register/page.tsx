@@ -1,9 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import RegistrationConsent from '@/components/RegistrationConsent';
+import SocialSignIn from '@/components/SocialSignIn';
+import { EMPTY_REGISTRATION_CONSENT, hasRegistrationConsent, POLICY_VERSION } from '@/lib/legal';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -12,11 +15,20 @@ export default function RegisterPage() {
   const [nickname, setNickname] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(EMPTY_REGISTRATION_CONSENT);
+  const [requiresConsent, setRequiresConsent] = useState(false);
+  useEffect(() => {
+    setRequiresConsent(new URLSearchParams(window.location.search).get('notice') === 'consent-required');
+  }, []);
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!hasRegistrationConsent(consent)) {
+      setError('만 14세 이상 확인과 필수 동의를 완료해주세요.');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
@@ -34,7 +46,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, nickname }),
+        body: JSON.stringify({ email, password, nickname, ...consent, policyVersion: POLICY_VERSION }),
       });
 
       const data = await res.json();
@@ -73,12 +85,13 @@ export default function RegisterPage() {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-mint to-neon-blue mx-auto flex items-center justify-center crt-lines shadow-lg neon-mint mb-4">
             <span className="font-pixel text-[12px] text-vault-bg font-bold">RV</span>
           </div>
-          <h2 className="text-2xl font-bold text-text-primary mb-2">RetroVault 회원가입</h2>
+          <h2 className="text-2xl font-bold text-text-primary mb-2">겜자취 회원가입</h2>
           <p className="text-sm text-text-muted">나만의 레트로 게임 아카이브를 시작하세요.</p>
         </div>
 
+        {requiresConsent && <p role="status" className="relative z-10 mb-5 rounded-lg border border-vault-border p-4 text-sm leading-7 text-text-secondary">처음 사용하는 소셜 계정입니다. 아래 가입 전 확인을 완료한 뒤 소셜 로그인 제공자를 다시 선택해주세요.</p>}
         {error && (
-          <div className="mb-4 p-3 rounded bg-coral/10 border border-coral/30 text-coral text-sm text-center relative z-10">
+          <div role="alert" className="mb-4 p-3 rounded bg-coral/10 border border-coral/30 text-coral text-sm text-center relative z-10">
             {error}
           </div>
         )}
@@ -129,6 +142,8 @@ export default function RegisterPage() {
             />
           </div>
 
+          <RegistrationConsent value={consent} onChange={setConsent} />
+
           <button
             type="submit"
             disabled={loading}
@@ -145,26 +160,7 @@ export default function RegisterPage() {
           <div className="flex-1 h-px bg-vault-border" />
         </div>
 
-        <div className="mt-4 flex gap-3 relative z-10">
-          <button
-            onClick={() => signIn("google", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-vault-surface hover:bg-vault-surface-light border border-vault-border rounded-lg text-text-primary text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            구글
-          </button>
-          <button
-            onClick={() => signIn("kakao", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-[#FEE500] hover:bg-[#FEE500]/80 text-[#000000] border border-[#FEE500] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            카카오
-          </button>
-          <button
-            onClick={() => signIn("naver", { callbackUrl: '/' })}
-            className="flex-1 py-2.5 bg-[#03C75A] hover:bg-[#03C75A]/80 text-white border border-[#03C75A] rounded-lg text-sm font-bold transition-colors flex justify-center items-center gap-2"
-          >
-            네이버
-          </button>
-        </div>
+        <SocialSignIn consent={consent} />
 
         <div className="mt-6 text-center text-sm relative z-10">
           <span className="text-text-muted">이미 계정이 있으신가요? </span>
